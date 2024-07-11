@@ -1,0 +1,2 @@
+parse==1.20.2
+globus-sdk==3.41.0
