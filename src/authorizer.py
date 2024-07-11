@@ -16,6 +16,7 @@ API Gateway Authorizer
     Token source: Authorization
     Token validation: ^Bearer\s[^\s]+$
                       ^Bearer\s[0-9A-Za-z]+$ for access tokens issued by Globus Auth (?)
+    Authorization caching: 300 seconds
 '''
 
 class Authorizer:
