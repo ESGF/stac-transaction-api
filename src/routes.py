@@ -35,21 +35,65 @@ def match_policy(payload, acp):
     return []
 
 
-@api.route("/publish")
-def _(event, token_info, groups, payload):
+@api.route("/collections/{collection_id}/items")
+def _(event, token_info, groups, payload, collection_id):
 
     matched_groups = match_policy(payload, access_control_policy)
     matched_groups_uuid = [g.get("uuid") for g in matched_groups]
-    intersection = list(set(groups) & set(matched_groups_uuid))
-    if not intersection:
-        return api.response(403, {"message": "Forbidden"})
+
+    group_id = None
+    identity_id = None
+    for group in groups:
+        if group.get("group_id") in matched_groups_uuid:
+            group_id = group.get("group_id")
+            identity_id = group.get("identity_id")
+            break
+    if group_id is None:
+        return api.response(403, {"error": "Forbidden"})
+
+    print("group_id", group_id)
+    print("identity_id", identity_id)
+
+    identity_detail = None
+    identity_set_detail = token_info.get("identity_set_detail", [])
+    for identity in identity_set_detail:
+        if identity.get("sub") == identity_id:
+            identity_detail = identity
+            break
+
+    print(identity_detail)
+
     message = {
-        "authorization_server": token_info.get("iss"),
-        "created": datetime.now().isoformat(),
-        "event": "publish",
-        "username": token_info.get("username"),
-        "sub": token_info.get("sub"),
-        "metadata": payload
+        "metadata": {
+            "auth": {
+                "client_id": settings.publisher.get("client_id"),
+                "iss": token_info.get("iss"),
+                "sub": identity_id,
+                "username": identity_detail.get("username"),
+                "name": identity_detail.get("name"),
+                "identity_provider": identity_detail.get("identity_provider"),
+                "identity_provider_display_name": identity_detail.get("identity_provider_display_name"),
+                "email": identity_detail.get("email"),
+                "authorization_basis_type": "group",
+                "authorization_basis_service": "groups.globus.org",
+                "authorization_basis": group_id
+            },
+            "publisher": {
+                "package": "esgf_publisher",
+                "version": "1.1.1"
+            },
+            "time": datetime.now().isoformat(),
+            "schema_version": "1.0.0"
+        },
+        "data": {
+            "type": "STAC",
+            "version": "1.0.0",
+            "payload": {
+                "method": "POST",
+                "collection_id": collection_id,
+                "item": payload
+            }
+        }
     }
 
     # Send the message to the event stream service

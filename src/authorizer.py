@@ -27,7 +27,7 @@ class Authorizer:
         authorization_header = event["authorizationToken"]
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header.split(" ")[1]
-        response = confidential_client.oauth2_token_introspect(access_token)
+        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
 
         # Verify the access token
@@ -51,6 +51,14 @@ class Authorizer:
         return self.generate_policy(token_info.get("sub"), "Allow", event["methodArn"], token_info=token_info, groups=groups)
 
     def get_groups(self, token):
+        '''
+        As https://docs.globus.org/api/auth/specification/#performance states,
+        Failure to reuse these tokens can harm performance on both the resource server
+        doing the grant and any downstream resource servers it uses.
+        Amazon API Gateway Authorization caching setting can be use to cache the authorizer response,
+        and if the a new request with the same bearer token
+
+        '''
         tokens = confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
         authorizer = AccessTokenAuthorizer(groups_token["access_token"])
@@ -62,7 +70,12 @@ class Authorizer:
             memberships = group.get("my_memberships", [])
             for membership in memberships:
                 if membership.get("status") == "active":
-                    groups.append(group_id)
+                    groups.append(
+                        {
+                            "group_id": group_id,
+                            "identity_id": membership.get("identity_id")
+                        }
+                    )
                     break
         return groups
 

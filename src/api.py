@@ -1,7 +1,6 @@
 import json
 from parse import parse
 
-version = "v0.1"
 
 class API:
     def __init__(self):
@@ -49,7 +48,7 @@ class API:
                 except json.JSONDecodeError:
                     return self.response(400, {"error": "Invalid JSON in request body"})
                 return route_handler(event, access_token, groups, body, **kwargs)
-            self.routes[f"/{version}{path}"] = handler
+            self.routes[f"{path}"] = handler
             return handler
         return wrapper
 
