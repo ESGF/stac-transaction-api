@@ -1,6 +1,6 @@
 # New Document
 
-# STAC Ingest API
+# STAC Transaction API
 
 
 ### Amazon API Gateway (API with Authorizer)
@@ -15,9 +15,8 @@ Authorizer:
 API:
 ```
 /
-  /v0.1
-    /{proxy+}
-       POST
+  /{proxy+}
+    POST
 ```
 with stages:
  - dev
