@@ -10,10 +10,7 @@ class API:
         return self.handle_request(event)
 
     def response(self, status_code, body):
-        return {
-            "statusCode": status_code,
-            "body": json.dumps(body)
-        }
+        return {"statusCode": status_code, "body": json.dumps(body)}
 
     def find_handler(self, request_path):
         for path, handler in self.routes.items():
@@ -48,8 +45,10 @@ class API:
                 except json.JSONDecodeError:
                     return self.response(400, {"error": "Invalid JSON in request body"})
                 return route_handler(event, access_token, groups, body, **kwargs)
+
             self.routes[f"{path}"] = handler
             return handler
+
         return wrapper
 
 
