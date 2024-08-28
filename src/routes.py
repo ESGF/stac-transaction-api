@@ -15,7 +15,8 @@ def load_access_control_policy(url):
         return {}
 
 
-access_control_policy = load_access_control_policy(settings.api.get("access_control_policy"))
+access_control_policy = load_access_control_policy(
+    settings.api.get("access_control_policy"))
 admins = load_access_control_policy(settings.api.get("admins"))
 
 
@@ -29,7 +30,7 @@ def match_policy(payload, acp):
                 payload_value = [payload_value]
             matches = list(set(payload_value) & set(subpolicy.keys()))
             for match in matches:
-                groups = match_policy(payload, subpolicy[match])
+                groups = match_policy(payload_value[match], subpolicy[match])
                 if groups:
                     return groups
     return []
