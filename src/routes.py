@@ -31,7 +31,7 @@ def match_policy(payload, acp):
                 payload_value = [payload_value]
             matches = list(set(payload_value) & set(subpolicy.keys()))
             for match in matches:
-                groups = match_policy(payload, subpolicy[match])
+                groups = match_policy(payload_value[match], subpolicy[match])
                 if groups:
                     return groups
     return []
