@@ -19,6 +19,7 @@ API Gateway Authorizer
     Authorization caching: 300 seconds
 '''
 
+
 class Authorizer:
     def __init__(self):
         pass
@@ -27,7 +28,8 @@ class Authorizer:
         authorization_header = event["authorizationToken"]
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header.split(" ")[1]
-        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
+        response = confidential_client.oauth2_token_introspect(
+            access_token, include="identity_set_detail")
         token_info = response.data
 
         # Verify the access token
@@ -59,7 +61,8 @@ class Authorizer:
         and if the a new request with the same bearer token
 
         '''
-        tokens = confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
+        tokens = confidential_client.oauth2_get_dependent_tokens(
+            token, scope=GroupsScopes.view_my_groups_and_memberships)
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
         authorizer = AccessTokenAuthorizer(groups_token["access_token"])
         groups_client = GroupsClient(authorizer=authorizer)
