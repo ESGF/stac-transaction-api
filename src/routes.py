@@ -8,15 +8,16 @@ http = urllib3.PoolManager()
 
 
 def load_access_control_policy(url):
-    response = http.request('GET', url)
+    response = http.request("GET", url)
     if response.status == 200:
-        return json.loads(response.data.decode('utf-8'))
+        return json.loads(response.data.decode("utf-8"))
     else:
         return {}
 
 
 access_control_policy = load_access_control_policy(
-    settings.api.get("access_control_policy"))
+    settings.api.get("access_control_policy")
+)
 admins = load_access_control_policy(settings.api.get("admins"))
 
 
@@ -73,18 +74,17 @@ def _(event, token_info, groups, payload, collection_id):
                 "username": identity_detail.get("username"),
                 "name": identity_detail.get("name"),
                 "identity_provider": identity_detail.get("identity_provider"),
-                "identity_provider_display_name": identity_detail.get("identity_provider_display_name"),
+                "identity_provider_display_name": identity_detail.get(
+                    "identity_provider_display_name"
+                ),
                 "email": identity_detail.get("email"),
                 "authorization_basis_type": "group",
                 "authorization_basis_service": "groups.globus.org",
-                "authorization_basis": group_id
+                "authorization_basis": group_id,
             },
-            "publisher": {
-                "package": "esgf_publisher",
-                "version": "1.1.1"
-            },
+            "publisher": {"package": "esgf_publisher", "version": "1.1.1"},
             "time": datetime.now().isoformat(),
-            "schema_version": "1.0.0"
+            "schema_version": "1.0.0",
         },
         "data": {
             "type": "STAC",
@@ -92,9 +92,9 @@ def _(event, token_info, groups, payload, collection_id):
             "payload": {
                 "method": "POST",
                 "collection_id": collection_id,
-                "item": payload
-            }
-        }
+                "item": payload,
+            },
+        },
     }
 
     # Send the message to the event stream service

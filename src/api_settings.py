@@ -12,7 +12,7 @@ api = {
     "admins": "https://esgf2.s3.amazonaws.com/admins.json",
     "scope_id": "ca49f459-a4f8-420c-b55f-194df11abc0f",
     "scope_string": "https://auth.globus.org/scopes/6fa3b827-5484-42b9-84db-f00c7a183a6a/ingest",
-    "url": "https://n08bs7a0hc.execute-api.us-east-1.amazonaws.com/dev"
+    "url": "https://n08bs7a0hc.execute-api.us-east-1.amazonaws.com/dev",
 }
 
 from producer import stdout as publish
