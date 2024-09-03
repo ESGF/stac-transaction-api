@@ -1,0 +1,136 @@
+{
+  "message": {
+    "metadata": {
+      "auth": {
+        "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
+        "iss": "https://auth.globus.org",
+        "sub": "a8a1bf81-f9cd-4610-b4df-5e756c3a9e1a",
+        "username": "sturoscy@uchicago.edu",
+        "name": "Stephen Turoscy",
+        "identity_provider": "0dcf5063-bffd-40f7-b403-24f97e32fa47",
+        "identity_provider_display_name": "University of Chicago",
+        "email": "sturoscy@uchicago.edu",
+        "authorization_basis_type": "group",
+        "authorization_basis_service": "groups.globus.org",
+        "authorization_basis": "de5c6244-c077-11ee-9ccb-efcf15711dbe"
+      },
+      "publisher": {
+        "package": "esgf_publisher",
+        "version": "1.1.1"
+      },
+      "time": "2024-09-03T11:53:47.101508",
+      "schema_version": "1.0.0"
+    },
+    "data": {
+      "type": "STAC",
+      "version": "1.0.0",
+      "payload": {
+        "method": "POST",
+        "collection_id": "cmip6",
+        "item": {
+          "project": {
+            "CMIP6": {
+              "institution_id": {
+                "ALCF": [
+                  {
+                    "id": "CMIP6.PAMIP.NCC.NorESM2-LM.pdSST-futAntSIC.r30i1p1f1.Emon.cSoil.gn.v20191108|eagle.alcf.anl.gov",
+                    "geometry": {},
+                    "bbox": [],
+                    "datetime": "2024-08-29",
+                    "stac_extensions": ["https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"],
+                    "properties": {
+                      "mip_era": ["CMIP6"],
+                      "activity_drs": ["PAMIP"],
+                      "institution_id": ["NCC"],
+                      "source_id": ["NorESM2-LM"],
+                      "experiment_id": ["pdSST-futAntSIC"],
+                      "member_id": ["r30i1p1f1"],
+                      "table_id": ["Emon"],
+                      "variable_id": ["cSoil"],
+                      "grid_label": ["gn"],
+                      "frequency": ["mon"],
+                      "realm": ["land"],
+                      "product": ["model-output"],
+                      "nominal_resolution": ["250 km"],
+                      "source_type": ["AGCM", "AER"],
+                      "grid": ["finite-volume grid with 1.9x2.5 degree lat/lon resolution"],
+                      "creation_date": "2019-11-15T21:35:19Z",
+                      "variant_label": ["r30i1p1f1"],
+                      "sub_experiment_id": ["none"],
+                      "further_info_url": [
+                        "https://furtherinfo.es-doc.org/CMIP6.NCC.NorESM2-LM.pdSST-futAntSIC.none.r30i1p1f1"
+                      ],
+                      "activity_id": ["PAMIP"],
+                      "data_specs_version": ["01.00.31"],
+                      "title": "CMIP6.PAMIP.NCC.NorESM2-LM.pdSST-futAntSIC.r30i1p1f1.Emon.cSoil.gn",
+                      "experiment_title": ["Atmosphere time slice with present day SST and future Antarctic SIC"],
+                      "model_cohort": ["Registered"],
+                      "data_node": "eagle.alcf.anl.gov",
+                      "index_node": "esgf2.anl.gov",
+                      "master_id": "CMIP6.PAMIP.NCC.NorESM2-LM.pdSST-futAntSIC.r30i1p1f1.Emon.cSoil.gn",
+                      "instance_id": "CMIP6.PAMIP.NCC.NorESM2-LM.pdSST-futAntSIC.r30i1p1f1.Emon.cSoil.gn.v20191108",
+                      "id": "CMIP6.PAMIP.NCC.NorESM2-LM.pdSST-futAntSIC.r30i1p1f1.Emon.cSoil.gn.v20191108|eagle.alcf.anl.gov",
+                      "short_description": ["NorESM2-LM output prepared for CMIP6"],
+                      "replica": "True",
+                      "latest": "True",
+                      "type": "Dataset",
+                      "project": ["CMIP6"],
+                      "version": "20191108",
+                      "dataset_id_template_": [
+                        "%(mip_era)s.%(activity_drs)s.%(institution_id)s.%(source_id)s.%(experiment_id)s.%(member_id)s.%(table_id)s.%(variable_id)s.%(grid_label)s"
+                      ],
+                      "directory_format_template_": [
+                        "%(root)s/%(mip_era)s/%(activity_drs)s/%(institution_id)s/%(source_id)s/%(experiment_id)s/%(member_id)s/%(table_id)s/%(variable_id)s/%(grid_label)s/%(version)s"
+                      ],
+                      "variable_long_name": ["Carbon Mass in Model Soil Pool"],
+                      "cf_standard_name": ["soil_mass_content_of_carbon"],
+                      "variable_units": ["kg m-2"],
+                      "variable": ["cSoil"],
+                      "north_degrees": 90,
+                      "south_degrees": -90,
+                      "east_degrees": 357.5,
+                      "west_degrees": 0,
+                      "datetime_start": "1999-02-17T00:00:00Z",
+                      "datetime_end": "2000-01-17T12:00:00Z",
+                      "number_of_files": 1,
+                      "size": 276126,
+                      "access": ["HTTPServer", "Globus"],
+                      "citation_url": [
+                        "http://cera-www.dkrz.de/WDCC/meta/CMIP6/CMIP6.PAMIP.NCC.NorESM2-LM.pdSST-futAntSIC.r30i1p1f1.Emon.cSoil.gn.v20191108.json"
+                      ],
+                      "xlink": [
+                        "http://cera-www.dkrz.de/WDCC/meta/CMIP6/CMIP6.PAMIP.NCC.NorESM2-LM.pdSST-futAntSIC.r30i1p1f1.Emon.cSoil.gn.v20191108.json|Citation|citation",
+                        "http://hdl.handle.net/hdl:21.14100/5dd6fd3f-57ee-3cae-ad18-4b0954f6a63b|PID|pid"
+                      ],
+                      "pid": ["hdl:21.14100/5dd6fd3f-57ee-3cae-ad18-4b0954f6a63b"],
+                      "_version_": 1731868721357521000,
+                      "retracted": "False",
+                      "_timestamp": "2022-05-04T04:31:58.946Z",
+                      "score": 1
+                    },
+                    "assets": {
+                      "ALCF": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
+                        "media_type": "netcdf",
+                        "description": "HTTPS Link",
+                        "roles": ["data"],
+                        "alternate:name": "HTTPS",
+                        "alternate": {
+                          "globus": {
+                            "href": "https://app.globus.org/file-manager/?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108",
+                            "alternate:name": "GLOBUS",
+                            "description": "GLOBUS Link"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
