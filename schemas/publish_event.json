@@ -2,17 +2,21 @@
   "message": {
     "metadata": {
       "auth": {
-        "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
-        "iss": "https://auth.globus.org",
-        "sub": "a8a1bf81-f9cd-4610-b4df-5e756c3a9e1a",
-        "username": "sturoscy@uchicago.edu",
-        "name": "Stephen Turoscy",
-        "identity_provider": "0dcf5063-bffd-40f7-b403-24f97e32fa47",
-        "identity_provider_display_name": "University of Chicago",
-        "email": "sturoscy@uchicago.edu",
-        "authorization_basis_type": "group",
-        "authorization_basis_service": "groups.globus.org",
-        "authorization_basis": "de5c6244-c077-11ee-9ccb-efcf15711dbe"
+        "requester_data": {
+          "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
+          "iss": "https://auth.globus.org",
+          "sub": "a8a1bf81-f9cd-4610-b4df-5e756c3a9e1a",
+          "username": "sturoscy@uchicago.edu",
+          "name": "Stephen Turoscy",
+          "identity_provider": "0dcf5063-bffd-40f7-b403-24f97e32fa47",
+          "identity_provider_display_name": "University of Chicago",
+          "email": "sturoscy@uchicago.edu"
+        },
+        "auth_basis_data": {
+          "authorization_basis_type": "group",
+          "authorization_basis_service": "groups.globus.org",
+          "authorization_basis": "de5c6244-c077-11ee-9ccb-efcf15711dbe"
+        }
       },
       "publisher": {
         "package": "esgf_publisher",
