@@ -113,71 +113,72 @@
                       "score": 1
                     },
                     "assets": {
-                      "ALCF": {
-                        "data0001": {
-                          "href": "https://app.globus.org/file-manager/?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108",
-                          "media_type": "netcdf",
-                          "description": "GLOBUS Link",
-                          "roles": ["data"],
-                          "alternate:name": "GLOBUS",
-                          "alternate": {
-                            "https": {
-                              "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
-                              "media_type": "netcdf",
-                              "description": "HTTPS Link",
-                              "roles": ["data"],
-                              "alternate:name": "HTTPS"
-                            }
-                          }
-                        },
-                        "data0002": {
-                          "href": "https://app.globus.org/file-manager/?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108",
-                          "media_type": "netcdf",
-                          "description": "GLOBUS Link",
-                          "roles": ["data"],
-                          "alternate:name": "GLOBUS",
-                          "alternate": {
-                            "https": {
-                              "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
-                              "media_type": "netcdf",
-                              "description": "HTTPS Link",
-                              "roles": ["data"],
-                              "alternate:name": "HTTPS"
-                            }
+                      "globus": {
+                        "href": "https://app.globus.org/file-manager/?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108",
+                        "type": "text/html",
+                        "description": "Globus Web App Link",
+                        "roles": ["data"],
+                        "alternate:name": "LLNL",
+                        "alternate": {
+                          "ORNL": {
+                            "href": "https://app.globus.org/file-manager/?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108",
+                            "type": "text/html",
+                            "description": "Globus Web App Link",
+                            "roles": ["data"],
+                            "alternate:name": "ORNL"
+                          },
+                          "ALCF": {
+                            "href": "https://app.globus.org/file-manager/?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108",
+                            "type": "text/html",
+                            "description": "Globus Web App Link",
+                            "roles": ["data"],
+                            "alternate:name": "ALCF"
                           }
                         }
                       },
-                      "LLNL": {
-                        "data0001": {
-                          "href": "https://app.globus.org/file-manager/?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108",
-                          "media_type": "netcdf",
-                          "description": "GLOBUS Link",
-                          "roles": ["data"],
-                          "alternate:name": "GLOBUS",
-                          "alternate": {
-                            "https": {
-                              "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
-                              "media_type": "netcdf",
-                              "description": "HTTPS Link",
-                              "roles": ["data"],
-                              "alternate:name": "HTTPS"
-                            }
+                      "data001": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
+                        "media_type": "netcdf",
+                        "description": "HTTPS Link",
+                        "roles": ["data"],
+                        "alternate:name": "LLNL",
+                        "alternate": {
+                          "ORNL": {
+                            "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
+                            "media_type": "netcdf",
+                            "description": "HTTPS Link",
+                            "roles": ["data"],
+                            "alternate:name": "HTTPS"
+                          },
+                          "ALCF": {
+                            "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
+                            "media_type": "netcdf",
+                            "description": "HTTPS Link",
+                            "roles": ["data"],
+                            "alternate:name": "HTTPS"
                           }
-                        },
-                        "data0002": {
-                          "href": "https://app.globus.org/file-manager/?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108",
-                          "media_type": "netcdf",
-                          "description": "GLOBUS Link",
-                          "roles": ["data"],
-                          "alternate:name": "GLOBUS",
-                          "alternate": {
-                            "https": {
-                              "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
-                              "media_type": "netcdf",
-                              "description": "HTTPS Link",
-                              "roles": ["data"],
-                              "alternate:name": "HTTPS"
-                            }
+                        }
+                      },
+                      "data0002": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
+                        "media_type": "netcdf",
+                        "description": "HTTPS Link",
+                        "roles": ["data"],
+                        "alternate:name": "LLNL",
+                        "alternate": {
+                          "ORNL": {
+                            "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
+                            "media_type": "netcdf",
+                            "description": "HTTPS Link",
+                            "roles": ["data"],
+                            "alternate:name": "HTTPS"
+                          },
+                          "ALCF": {
+                            "href": "https://g-52ba3.fd635.8443.data.globus.org//css03_data/CMIP6/PAMIP/NCC/NorESM2-LM/pdSST-futAntSIC/r30i1p1f1/Emon/cSoil/gn/v20191108/cSoil_Emon_NorESM2-LM_pdSST-futAntSIC_r30i1p1f1_gn_200006-200105.nc",
+                            "media_type": "netcdf",
+                            "description": "HTTPS Link",
+                            "roles": ["data"],
+                            "alternate:name": "HTTPS"
                           }
                         }
                       }
