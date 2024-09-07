@@ -14,8 +14,8 @@ API Gateway Authorizer
     Authorizer type: Lambda
     Lambda event payload: Token
     Token source: Authorization
-    Token validation: ^Bearer\s[^\s]+$
-                      ^Bearer\s[0-9A-Za-z]+$ for access tokens issued by Globus Auth (?)
+    Token validation: ^Bearer\s[^\s]+$                                                    # noqa: W605
+                      ^Bearer\s[0-9A-Za-z]+$ for access tokens issued by Globus Auth (?)  # noqa: W605
     Authorization caching: 300 seconds
 """
 
@@ -28,46 +28,28 @@ class Authorizer:
         authorization_header = event["authorizationToken"]
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header.split(" ")[1]
-        response = confidential_client.oauth2_token_introspect(
-            access_token, include="identity_set_detail"
-        )
+        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
 
         # Verify the access token
         if not token_info.get("active", False):
-            return self.generate_policy(
-                "unknown", "Deny", event["methodArn"], token_info=token_info
-            )
+            return self.generate_policy("unknown", "Deny", event["methodArn"], token_info=token_info)
 
         if settings.api.get("client_id") not in token_info.get("aud", []):
-            return self.generate_policy(
-                token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info
-            )
+            return self.generate_policy(token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info)
 
         if settings.api.get("scope_string") != token_info.get("scope", ""):
-            return self.generate_policy(
-                token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info
-            )
+            return self.generate_policy(token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info)
 
         if settings.api.get("issuer") != token_info.get("iss", ""):
-            return self.generate_policy(
-                token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info
-            )
+            return self.generate_policy(token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info)
 
         # Get the user's groups
         groups = self.get_groups(access_token)
         if not groups:
-            return self.generate_policy(
-                token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info
-            )
+            return self.generate_policy(token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info)
 
-        return self.generate_policy(
-            token_info.get("sub"),
-            "Allow",
-            event["methodArn"],
-            token_info=token_info,
-            groups=groups,
-        )
+        return self.generate_policy(token_info.get("sub"), "Allow", event["methodArn"], token_info=token_info, groups=groups)
 
     def get_groups(self, token):
         """
@@ -76,11 +58,9 @@ class Authorizer:
         doing the grant and any downstream resource servers it uses.
         Amazon API Gateway Authorization caching setting can be use to cache the authorizer response,
         and if the a new request with the same bearer token
-
         """
-        tokens = confidential_client.oauth2_get_dependent_tokens(
-            token, scope=GroupsScopes.view_my_groups_and_memberships
-        )
+
+        tokens = confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
         authorizer = AccessTokenAuthorizer(groups_token["access_token"])
         groups_client = GroupsClient(authorizer=authorizer)
@@ -97,11 +77,12 @@ class Authorizer:
                             "identity_id": membership.get("identity_id"),
                         }
                     )
-                    break
         return groups
 
     def generate_policy(self, user, effect, resource, token_info=None, groups=None):
-        auth_response = {"principalId": user}
+        auth_response = {
+            "principalId": user,
+        }
         if effect and resource:
             auth_response["policyDocument"] = {
                 "Version": "2012-10-17",
@@ -114,7 +95,9 @@ class Authorizer:
                 ],
             }
             if token_info:
-                auth_response["context"] = {"access_token": json.dumps(token_info)}
+                auth_response["context"] = {
+                    "access_token": json.dumps(token_info),
+                }
                 if groups:
                     auth_response["context"]["groups"] = json.dumps(groups)
 
