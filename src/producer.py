@@ -1,2 +1,5 @@
+import json
+
+
 def stdout(message):
-    print(message)
+    print(json.dumps(message))

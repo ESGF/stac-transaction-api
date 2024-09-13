@@ -18,5 +18,5 @@ cp $SRC_DIR/*.py $BUILD_DIR
 docker pull $IMAGE
 docker run -it --rm -v $(pwd)/$BUILD_DIR:/var/task --user $USER_ID:$GROUP_ID $IMAGE \
     /bin/bash -c "cd /var/task && \
-                  pip install --no-deps -r requirements.txt -t . && \
+                  pip install -r requirements.txt -t . && \
                   zip -r9 $ZIP_FILE ."

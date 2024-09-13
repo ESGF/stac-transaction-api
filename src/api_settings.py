@@ -15,8 +15,6 @@ api = {
     "url": "https://n08bs7a0hc.execute-api.us-east-1.amazonaws.com/dev",
 }
 
-from producer import stdout as publish
-
 # ESGF2 STAC Ingest API client
 publisher = {
     "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
