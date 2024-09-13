@@ -1,0 +1,1640 @@
+{
+    "metadata": {
+        "auth": {
+            "requester_data": {
+                "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
+                "iss": "https://auth.globus.org",
+                "sub": "a511c7bc-d274-11e5-9aea-4bedf3cb22c7",
+                "username": "esganl@globusid.org",
+                "name": "Lukasz Lacinski",
+                "email": "lukasz+esganl@uchicago.edu"
+            },
+            "auth_basis_data": {
+                "authorization_basis_type": "group",
+                "authorization_basis_service": "groups.globus.org",
+                "authorization_basis": [
+                    {
+                        "group_id": "e734b32a-6cd0-11ef-b5b7-adf309915047",
+                        "identity_id": "4e868912-e4be-11e5-88c5-dbe133110c3e",
+                        "username": "lukasz@uchicago.edu",
+                        "name": "Lukasz Lacinski",
+                        "email": "lukasz@uchicago.edu",
+                        "identity_provider": "0dcf5063-bffd-40f7-b403-24f97e32fa47",
+                        "identity_provider_display_name": "University of Chicago",
+                        "last_authentication": 1722359036
+                    },
+                    {
+                        "group_id": "e734b32a-6cd0-11ef-b5b7-adf309915047",
+                        "identity_id": "a511c7bc-d274-11e5-9aea-4bedf3cb22c7",
+                        "username": "esganl@globusid.org",
+                        "name": "Lukasz Lacinski",
+                        "email": "lukasz+esganl@uchicago.edu",
+                        "identity_provider": "41143743-f3c8-4d60-bbdb-eeecaba85bd9",
+                        "identity_provider_display_name": "Globus ID",
+                        "last_authentication": 1724173247
+                    }
+                ]
+            }
+        },
+        "publisher": {
+            "package": "esgf_publisher",
+            "version": "5.2.3"
+        },
+        "time": "2024-09-07T19:31:31.343222",
+        "schema_version": "1.0.0"
+    },
+    "data": {
+        "type": "STAC",
+        "version": "1.0.0",
+        "payload": {
+            "method": "POST",
+            "collection_id": "CMIP6",
+            "item": {
+                "type": "Feature",
+                "stac_version": "1.0.0",
+                "extensions": [
+                    "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"
+                ],
+                "id": "CMIP6.AerChemMIP.EC-Earth-Consortium.EC-Earth3-AerChem.hist-piAer.r1i1p1f1.AERday.maxpblz.gn.v20201006",
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                null,
+                                null
+                            ],
+                            [
+                                null,
+                                null
+                            ],
+                            [
+                                null,
+                                null
+                            ],
+                            [
+                                null,
+                                null
+                            ],
+                            [
+                                null,
+                                null
+                            ]
+                        ]
+                    ]
+                },
+                "bbox": [
+                    [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+                ],
+                "collection": "CMIP6",
+                "properties": {
+                    "start_datetime": "1850-01-01T12:00:00Z",
+                    "end_datetime": "2014-12-31T12:00:00Z",
+                    "version": "20201006",
+                    "access": [
+                        "HTTPServer",
+                        "Globus"
+                    ],
+                    "activity_id": [
+                        "AerChemMIP"
+                    ],
+                    "cf_standard_name": "atmosphere_boundary_layer_thickness",
+                    "citation_url": null,
+                    "data_spec_version": null,
+                    "experiment_id": "hist-piAer",
+                    "experiment_title": "historical forcing, but with pre-industrial aerosol emissions",
+                    "frequency": "day",
+                    "further_info_url": "https://furtherinfo.es-doc.org/CMIP6.EC-Earth-Consortium.EC-Earth3-AerChem.hist-piAer.none.r1i1p1f1",
+                    "grid": "native regular 2x3 degree latxlon grid",
+                    "grid_label": "gn",
+                    "institution_id": "EC-Earth-Consortium",
+                    "mip_era": "CMIP6",
+                    "model_cohort": "Registered",
+                    "nominal_resolution": "250 km",
+                    "pid": null,
+                    "product": "model-output",
+                    "project": "CMIP6",
+                    "realm": [
+                        "aerosol"
+                    ],
+                    "source_id": "EC-Earth3-AerChem",
+                    "source_type": [
+                        "AOGCM",
+                        "AER",
+                        "CHEM"
+                    ],
+                    "sub_experiment_id": "none",
+                    "table_id": "AERday",
+                    "title": "CMIP6.AerChemMIP.EC-Earth-Consortium.EC-Earth3-AerChem.hist-piAer.r1i1p1f1.AERday.maxpblz.gn",
+                    "variable": "maxpblz",
+                    "variable_id": "maxpblz",
+                    "variable_long_name": "Maximum PBL Height",
+                    "variable_units": "m",
+                    "variant_label": "r1i1p1f1",
+                    "retracted": null
+                },
+                "assets": {
+                    "globus": {
+                        "href": "https://app.globus.org/file-manager?origin_id=8896f38e-68d1-4708-bce4-b1b3a3405809&origin_path=/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/",
+                        "description": "Globus Web App Link",
+                        "type": "text/html",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0000": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19750101-19751231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0001": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19510101-19511231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0002": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19790101-19791231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0003": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19770101-19771231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0004": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18770101-18771231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0005": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19420101-19421231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0006": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19180101-19181231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0007": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19730101-19731231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0008": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20000101-20001231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0009": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18620101-18621231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0010": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19370101-19371231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0011": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19700101-19701231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0012": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18970101-18971231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0013": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18640101-18641231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0014": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19950101-19951231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0015": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19430101-19431231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0016": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19250101-19251231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0017": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19350101-19351231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0018": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19900101-19901231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0019": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19260101-19261231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0020": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19270101-19271231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0021": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18520101-18521231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0022": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19660101-19661231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0023": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18570101-18571231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0024": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20030101-20031231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0025": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19030101-19031231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0026": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19720101-19721231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0027": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18740101-18741231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0028": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19550101-19551231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0029": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18580101-18581231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0030": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20070101-20071231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0031": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18690101-18691231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0032": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19160101-19161231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0033": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19010101-19011231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0034": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19490101-19491231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0035": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18830101-18831231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0036": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19620101-19621231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0037": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19120101-19121231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0038": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18680101-18681231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0039": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19130101-19131231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0040": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19600101-19601231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0041": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19310101-19311231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0042": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20090101-20091231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0043": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19060101-19061231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0044": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19100101-19101231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0045": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19140101-19141231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0046": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18610101-18611231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0047": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18510101-18511231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0048": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19820101-19821231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0049": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19110101-19111231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0050": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18880101-18881231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0051": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18790101-18791231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0052": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19520101-19521231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0053": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18900101-18901231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0054": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19610101-19611231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0055": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18920101-18921231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0056": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18720101-18721231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0057": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18930101-18931231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0058": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20020101-20021231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0059": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18650101-18651231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0060": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19340101-19341231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0061": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19040101-19041231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0062": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19830101-19831231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0063": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19470101-19471231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0064": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19740101-19741231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0065": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18820101-18821231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0066": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19640101-19641231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0067": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19460101-19461231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0068": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19990101-19991231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0069": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20040101-20041231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0070": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18870101-18871231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0071": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19970101-19971231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0072": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18540101-18541231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0073": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19910101-19911231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0074": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18950101-18951231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0075": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18990101-18991231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0076": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20100101-20101231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0077": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18700101-18701231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0078": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19920101-19921231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0079": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19480101-19481231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0080": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19940101-19941231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0081": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18750101-18751231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0082": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20110101-20111231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0083": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19810101-19811231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0084": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18910101-18911231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0085": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18760101-18761231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0086": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19870101-19871231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0087": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18600101-18601231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0088": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19630101-19631231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0089": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18940101-18941231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0090": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19840101-19841231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0091": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19210101-19211231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0092": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19670101-19671231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0093": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18980101-18981231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0094": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19090101-19091231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0095": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18660101-18661231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0096": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18590101-18591231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0097": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20050101-20051231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0098": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19070101-19071231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0099": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19240101-19241231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0100": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19360101-19361231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0101": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19170101-19171231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0102": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20060101-20061231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0103": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18710101-18711231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0104": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19680101-19681231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0105": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19690101-19691231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0106": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19570101-19571231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0107": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20130101-20131231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0108": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19400101-19401231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0109": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18780101-18781231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0110": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18860101-18861231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0111": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18960101-18961231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0112": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19540101-19541231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0113": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19860101-19861231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0114": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19390101-19391231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0115": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19560101-19561231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0116": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19300101-19301231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0117": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19380101-19381231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0118": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19190101-19191231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0119": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19020101-19021231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0120": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19450101-19451231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0121": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19330101-19331231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0122": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20140101-20141231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0123": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20120101-20121231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0124": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19080101-19081231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0125": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19850101-19851231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0126": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18810101-18811231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0127": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19230101-19231231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0128": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19150101-19151231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0129": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19800101-19801231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0130": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18670101-18671231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0131": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19960101-19961231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0132": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18530101-18531231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0133": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19320101-19321231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0134": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19650101-19651231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0135": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18840101-18841231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0136": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19410101-19411231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0137": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19930101-19931231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0138": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19780101-19781231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0139": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19980101-19981231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0140": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18500101-18501231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0141": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19890101-19891231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0142": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19000101-19001231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0143": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18800101-18801231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0144": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20080101-20081231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0145": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19500101-19501231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0146": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19280101-19281231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0147": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19880101-19881231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0148": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19710101-19711231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0149": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19590101-19591231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0150": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19760101-19761231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0151": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18850101-18851231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0152": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19200101-19201231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0153": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19580101-19581231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0154": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18550101-18551231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0155": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18560101-18561231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0156": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19290101-19291231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0157": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18890101-18891231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0158": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_20010101-20011231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0159": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19220101-19221231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0160": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19440101-19441231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0161": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19530101-19531231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0162": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18730101-18731231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0163": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_19050101-19051231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    },
+                    "data0164": {
+                        "href": "https://g-52ba3.fd635.8443.data.globus.org/css03_data/CMIP6/AerChemMIP/EC-Earth-Consortium/EC-Earth3-AerChem/hist-piAer/r1i1p1f1/AERday/maxpblz/gn/v20201006/maxpblz_AERday_EC-Earth3-AerChem_hist-piAer_r1i1p1f1_gn_18630101-18631231.nc",
+                        "description": "HTTPServer Link",
+                        "type": "application/netcdf",
+                        "roles": [
+                            "data"
+                        ],
+                        "alternate:name": "eagle.alcf.anl.gov"
+                    }
+                }
+            }
+        }
+    }
+}

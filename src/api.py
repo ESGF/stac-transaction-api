@@ -10,7 +10,10 @@ class API:
         return self.handle_request(event)
 
     def response(self, status_code, body):
-        return {"statusCode": status_code, "body": json.dumps(body)}
+        return {
+            "statusCode": status_code,
+            "body": json.dumps(body),
+        }
 
     def find_handler(self, request_path):
         for path, handler in self.routes.items():
