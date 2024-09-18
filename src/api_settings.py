@@ -1,10 +1,12 @@
 import os
+from utils import get_secret
+
 
 # ESGF2 Globus Project
 project_id = "cae45630-2a4b-47b9-b704-d870e341da67"
 
-# ESGF2 STAC Transaction API client
-api = {
+# ESGF2 STAC Transaction API service
+stac_api = {
     "client_id": "6fa3b827-5484-42b9-84db-f00c7a183a6a",
     "client_secret": os.environ.get("CLIENT_SECRET"),
     "issuer": "https://auth.globus.org",
@@ -15,8 +17,32 @@ api = {
     "url": "https://n08bs7a0hc.execute-api.us-east-1.amazonaws.com/dev",
 }
 
-# ESGF2 STAC Ingest API client
+# ESGF2 STAC Transaction API client
 publisher = {
     "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
     "redirect_uri": "https://auth.globus.org/v2/web/auth-code",
 }
+
+# ESGF2 Event Stream Service
+secretsmanager = {
+    "region_name": "us-east-1",
+    "secret_name": os.environ.get("SECRET_NAME"),
+}
+sasl_secret = get_secret(secretsmanager)
+
+event_stream = {
+    "config": {
+        "bootstrap.servers": "b-1.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096,"
+        "b-2.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096,"
+        "b-3.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096",
+        "security.protocol": "SASL_SSL",
+        "sasl.mechanism": "SCRAM-SHA-512",
+        "sasl.username": sasl_secret.get("username"),
+        "sasl.password": sasl_secret.get("password"),
+    },
+    "topic": "esgf2",
+}
+
+if os.environ.get("PRODUCER_DEBUG"):
+    event_stream["config"]["debug"] = "all"
+    event_stream["config"]["log_level"] = 7

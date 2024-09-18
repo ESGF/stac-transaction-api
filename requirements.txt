@@ -11,3 +11,4 @@ mangum==0.17.0
 stac-fastapi.types==3.0.1
 stac-fastapi.extensions==3.0.1
 stac-fastapi.api==3.0.1
+confluent-kafka==2.3.0
