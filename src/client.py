@@ -1,31 +1,16 @@
 from typing import Optional, Union
 import json
-import urllib3
 from datetime import datetime
 from fastapi import Request, HTTPException, status, Response
 from stac_fastapi.types.core import BaseTransactionsClient
 from stac_fastapi.types.core import Collection, Item
-import api_settings as settings
 
 
-http = urllib3.PoolManager()
+class TransactionClient(BaseTransactionsClient):
 
-
-def load_access_control_policy(url):
-    response = http.request("GET", url)
-    if response.status == 200:
-        return json.loads(response.data.decode("utf-8"))
-    else:
-        return {}
-
-
-access_control_policy = load_access_control_policy(settings.api.get("access_control_policy"))
-
-
-class Producer(BaseTransactionsClient):
-
-    def __init__(self):
-        pass
+    def __init__(self, producer, acl):
+        self.producer = producer
+        self.acl = acl
 
     def allowed_groups(self, properties, acp) -> list:
         if isinstance(acp, list):
@@ -48,7 +33,7 @@ class Producer(BaseTransactionsClient):
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
             raise ValueError("Item project must match path collection_id")
-        allowed_groups = self.allowed_groups(properties, access_control_policy)
+        allowed_groups = self.allowed_groups(properties, self.acl)
         print(json.dumps(allowed_groups))
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
         print(json.dumps(allowed_groups_uuid))
@@ -141,10 +126,19 @@ class Producer(BaseTransactionsClient):
             },
         }
 
-        print(json.dumps(message, default=str).encode("utf-8"))
+        try:
+            self.producer.produce(
+                topic="esgf2",
+                key=item.id.encode("utf-8"),
+                value=json.dumps(message, default=str).encode("utf-8"),
+            )
+        except Exception as e:
+            print(f"Error producing message: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+
         return Response(
-            content="Item queued for publication",
             status_code=status.HTTP_202_ACCEPTED,
+            content="Item queued for publication",
         )
 
     async def update_item(
@@ -183,7 +177,11 @@ class Producer(BaseTransactionsClient):
             },
         }
 
-        print(json.dumps(message, default=str).encode("utf-8"))
+        self.producer.produce(
+            None,
+            json.dumps(message, default=str).encode("utf-8"),
+        )
+
         return Response(
             content="Item queued for update",
             status_code=status.HTTP_202_ACCEPTED,
@@ -223,7 +221,10 @@ class Producer(BaseTransactionsClient):
             },
         }
 
-        print(json.dumps(message, default=str).encode("utf-8"))
+        self.producer.produce(
+            None,
+            json.dumps(message, default=str).encode("utf-8"),
+        )
         return Response(
             content="Item queued for deletion",
             status_code=status.HTTP_202_ACCEPTED,
