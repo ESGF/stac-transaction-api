@@ -1,14 +1,24 @@
 import os
 from utils import get_secret
 
+region_name = "us-east-1"
 
 # ESGF2 Globus Project
 project_id = "cae45630-2a4b-47b9-b704-d870e341da67"
 
+# ESGF2 STAC Transaction API client
+publisher = {
+    "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
+    "redirect_uri": "https://auth.globus.org/v2/web/auth-code",
+}
+
+globus_auth_secret_name = os.environ.get("GLOBUS_AUTH_SECRET_NAME")
+globus_auth_secret = get_secret(region_name, globus_auth_secret_name)
+
 # ESGF2 STAC Transaction API service
 stac_api = {
     "client_id": "6fa3b827-5484-42b9-84db-f00c7a183a6a",
-    "client_secret": os.environ.get("CLIENT_SECRET"),
+    "client_secret": globus_auth_secret.get("client_secret"),
     "issuer": "https://auth.globus.org",
     "access_control_policy": "https://esgf2.s3.amazonaws.com/access_control_policy.json",
     "admins": "https://esgf2.s3.amazonaws.com/admins.json",
@@ -17,18 +27,9 @@ stac_api = {
     "url": "https://n08bs7a0hc.execute-api.us-east-1.amazonaws.com/dev",
 }
 
-# ESGF2 STAC Transaction API client
-publisher = {
-    "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
-    "redirect_uri": "https://auth.globus.org/v2/web/auth-code",
-}
-
 # ESGF2 Event Stream Service
-secretsmanager = {
-    "region_name": "us-east-1",
-    "secret_name": os.environ.get("SECRET_NAME"),
-}
-sasl_secret = get_secret(secretsmanager)
+amazon_msk_secret_name = os.environ.get("AMAZON_MSK_SECRET_NAME")
+sasl_secret = get_secret(region_name, amazon_msk_secret_name)
 
 event_stream = {
     "config": {

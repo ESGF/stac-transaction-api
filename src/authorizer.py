@@ -25,9 +25,9 @@ class Authorizer:
         pass
 
     def __call__(self, event, context):
-        authorization_header = event["authorizationToken"]
+        authorization_header = event.get("authorizationToken")
         # Set API Gateway token validation correctly to avoid IndexError exception
-        access_token = authorization_header.split(" ")[1]
+        access_token = authorization_header[7:]
         response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
 
