@@ -5,7 +5,7 @@ from stac_fastapi.types.config import ApiSettings
 from client import TransactionClient
 from producer import KafkaProducer
 from utils import load_access_control_policy
-from api_settings import event_stream, stac_api
+from settings import event_stream, stac_api
 
 
 app = FastAPI(debug=True)
