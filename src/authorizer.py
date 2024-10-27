@@ -1,7 +1,7 @@
 import json
 from globus_sdk import ConfidentialAppAuthClient, AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes
-import api_settings as settings
+import settings
 
 
 confidential_client = ConfidentialAppAuthClient(
@@ -25,31 +25,32 @@ class Authorizer:
         pass
 
     def __call__(self, event, context):
-        authorization_header = event["authorizationToken"]
+        authorization_header = event.get("authorizationToken")
         # Set API Gateway token validation correctly to avoid IndexError exception
-        access_token = authorization_header.split(" ")[1]
+        access_token = authorization_header[7:]
         response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
+        resource_arn = event["methodArn"].split("/", 1)[0] + "/*"
 
         # Verify the access token
         if not token_info.get("active", False):
-            return self.generate_policy("unknown", "Deny", event["methodArn"], token_info=token_info)
+            return self.generate_policy("unknown", "Deny", resource_arn, token_info=token_info)
 
         if settings.api.get("client_id") not in token_info.get("aud", []):
-            return self.generate_policy(token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info)
+            return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         if settings.api.get("scope_string") != token_info.get("scope", ""):
-            return self.generate_policy(token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info)
+            return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         if settings.api.get("issuer") != token_info.get("iss", ""):
-            return self.generate_policy(token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info)
+            return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         # Get the user's groups
         groups = self.get_groups(access_token)
         if not groups:
-            return self.generate_policy(token_info.get("sub"), "Deny", event["methodArn"], token_info=token_info)
+            return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
-        return self.generate_policy(token_info.get("sub"), "Allow", event["methodArn"], token_info=token_info, groups=groups)
+        return self.generate_policy(token_info.get("sub"), "Allow", resource_arn, token_info=token_info, groups=groups)
 
     def get_groups(self, token):
         """

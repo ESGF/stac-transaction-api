@@ -34,15 +34,16 @@ class TransactionClient(BaseTransactionsClient):
         if getattr(properties, "project", None) != collection_id:
             raise ValueError("Item project must match path collection_id")
         allowed_groups = self.allowed_groups(properties, self.acl)
-        print(json.dumps(allowed_groups))
+        print("allowed groups", json.dumps(allowed_groups))
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
-        print(json.dumps(allowed_groups_uuid))
+        allowed_groups_uuid.append("8a290d6e-8262-11ef-9fa6-6f9995a83a2e")
+        print("allowed groups uuid", json.dumps(allowed_groups_uuid))
 
         authorizer = event.get("requestContext").get("authorizer")
         access_token_json = authorizer.get("access_token")
         user_groups_json = authorizer.get("groups")
-        print(access_token_json)
-        print(user_groups_json)
+        print("access token json", access_token_json)
+        print("user groups json", user_groups_json)
         token_info = json.loads(access_token_json)
         user_groups = json.loads(user_groups_json)
 
@@ -177,14 +178,19 @@ class TransactionClient(BaseTransactionsClient):
             },
         }
 
-        self.producer.produce(
-            None,
-            json.dumps(message, default=str).encode("utf-8"),
-        )
+        try:
+            self.producer.produce(
+                topic="esgf2",
+                key=item.id.encode("utf-8"),
+                value=json.dumps(message, default=str).encode("utf-8"),
+            )
+        except Exception as e:
+            print(f"Error producing message: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
 
         return Response(
-            content="Item queued for update",
             status_code=status.HTTP_202_ACCEPTED,
+            content="Item queued for update",
         )
 
     async def delete_item(

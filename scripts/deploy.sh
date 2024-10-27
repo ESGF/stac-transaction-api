@@ -7,7 +7,15 @@ function update_lambda_function {
     lambda_function=$1
     aws --profile ${AWS_PROFILE} lambda update-function-code \
         --function-name ${lambda_function} \
-        --zip-file fileb://build/${ZIP_FILE}
+        --zip-file fileb://${ZIP_FILE} \
+        --no-cli-pager
+}
+
+function publish_version {
+    lambda_function=$1
+    aws --profile ${AWS_PROFILE} lambda publish-version \
+        --function-name ${lambda_function} \
+        --no-cli-pager
 }
 
 function update_configuration {
@@ -17,26 +25,21 @@ function update_configuration {
                                   ENVIRONMENT=${ENVIRONMENT}}"
 }
 
-if [ $# -ne 2 ]; then
+if [ $# -lt 2 ]; then
     echo 'Usage:'
-    echo '    deploy.sh {authorizer|api {prod|dev}'
+    echo '    deploy.sh {upodate_code|publish_version} {api|authorizer} [dev]'
     exit 1
 fi
 
 case $1 in
-    api)
-        lambda_function='api'
+    update_code)
+        lambda_function=$2
         ./scripts/build.sh
         update_lambda_function ${lambda_function}
-        #sleep 5
-        #update_configuration ${lambda_function}
         ;;
-    authorizer)
-        lambda_function='authorizer'
-        ./scripts/build.sh
-        update_lambda_function ${lambda_function}
-        #sleep 5
-        #update_configuration ${lambda_function}
+    publish_version)
+        lambda_function=$2
+        publish_version ${lambda_function}
         ;;
     *)
         echo 'Unrecognized lambda function'
