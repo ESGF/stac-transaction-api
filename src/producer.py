@@ -12,7 +12,7 @@ class BaseProducer(ABC):
 
 class StdoutProducer(BaseProducer):
     def produce(self, topic, message):
-        print(message)
+        print("message", message)
 
 
 class KafkaProducer(BaseProducer):

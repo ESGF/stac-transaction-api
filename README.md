@@ -17,22 +17,26 @@ API:
 /
   /{proxy+}
     POST
+    PUT
+    DELETE
 ```
 with stages:
  - dev
  - stage
  - prod
-
+and stage variable `lambdaAlias` set for each stage to `dev`, `stage`, `prod`, respectively.
 
 ### Amazon Lambda
 
 The two functions share the same deployment zip file (`lambda.zip`):
  - `authorizer`
    - Runtime: Python 3.10
-   - Handler: `ingest.authorizer`
+   - Handler: `authorizer.authorizer`
  - `api`
    - Runtime: Python 3.10
-   - Handler: `ingest.api`
+   - Handler: `api.api`
+Different versions of the `api` Lambda function have assigned aliases `dev`, `stage`, `prod`.
+API Gateway reads the `lambdaAlias` variable uses its value as an alias, `api:${stageVariables.lambdaAlias}` to call a corresponding version of the `api` Lambda function.
 
 Build the deployment zip file:
 ```
@@ -41,5 +45,5 @@ Build the deployment zip file:
 
 Update Lambda function code:
 ```
-./scripts/deploy.sh {authorizer|api} {dev|prod}
+./scripts/deploy.sh {update_code|publish_version} {api|authorizer} [dev]
 ```

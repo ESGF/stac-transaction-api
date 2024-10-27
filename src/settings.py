@@ -44,6 +44,6 @@ event_stream = {
     "topic": "esgf2",
 }
 
-if os.environ.get("PRODUCER_DEBUG"):
+if os.environ.get("PRODUCER_DEBUG").lower() == "true":
     event_stream["config"]["debug"] = "all"
     event_stream["config"]["log_level"] = 7
