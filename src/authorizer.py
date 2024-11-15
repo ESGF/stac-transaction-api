@@ -1,12 +1,14 @@
 import json
 from globus_sdk import ConfidentialAppAuthClient, AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes
-import settings
+
+import settings.local as settings
+# import settings.production as settings
 
 
 confidential_client = ConfidentialAppAuthClient(
-    client_id=settings.api.get("client_id"),
-    client_secret=settings.api.get("client_secret"),
+    client_id=settings.stac_api.get("client_id"),
+    client_secret=settings.stac_api.get("client_secret"),
 )
 
 """
@@ -36,13 +38,13 @@ class Authorizer:
         if not token_info.get("active", False):
             return self.generate_policy("unknown", "Deny", resource_arn, token_info=token_info)
 
-        if settings.api.get("client_id") not in token_info.get("aud", []):
+        if settings.stac_api.get("client_id") not in token_info.get("aud", []):
             return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
-        if settings.api.get("scope_string") != token_info.get("scope", ""):
+        if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
             return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
-        if settings.api.get("issuer") != token_info.get("iss", ""):
+        if settings.stac_api.get("issuer") != token_info.get("iss", ""):
             return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         # Get the user's groups

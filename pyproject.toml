@@ -10,21 +10,22 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
+boto3 = "1.35.60"
 certifi = "2024.6.2"
 cffi = "1.16.0"
 charset-normalizer = "3.3.2"
+confluent-kafka = "2.6.0"
 cryptography = "42.0.8"
+fastapi = "0.114.0"
 globus-sdk = "3.41.0"
 idna = "3.7"
-pyjwt = "2.8.0"
-requests = "2.32.3"
-fastapi = "0.114.0"
 mangum = "0.17.0"
+pyjwt = "2.8.0"
+python-dotenv = "1.0.1"
+requests = "2.32.3"
 stac-fastapi-types = "3.0.1"
 stac-fastapi-extensions = "3.0.1"
 stac-fastapi-api = "3.0.1"
-confluent-kafka = "2.3.0"
-
 
 [build-system]
 requires = ["poetry-core"]

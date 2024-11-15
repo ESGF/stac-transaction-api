@@ -5,7 +5,9 @@ from stac_fastapi.types.config import ApiSettings
 from client import TransactionClient
 from producer import KafkaProducer
 from utils import load_access_control_policy
-from settings import event_stream, stac_api
+
+from settings.local import event_stream, stac_api
+# from settings.production import event_stream, stac_api
 
 
 app = FastAPI(debug=True)
@@ -23,4 +25,4 @@ app.state.router_prefix = ""
 transaction_extension = TransactionExtension(client=core_client, settings=settings)
 transaction_extension.register(app)
 
-api = Mangum(app, lifespan="off")
+handler = Mangum(app, lifespan="off")

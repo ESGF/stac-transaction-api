@@ -1,5 +1,5 @@
 import os
-from utils import get_secret
+from src.utils import get_secret
 
 region_name = "us-east-1"
 
