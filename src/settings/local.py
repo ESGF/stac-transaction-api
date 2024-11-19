@@ -1,8 +1,12 @@
+import logging
 import os
+import socket
 from dotenv import load_dotenv
 
 
 load_dotenv()
+logger = logging.getLogger("kafka")
+logger.setLevel(logging.WARN)
 
 region_name = "us-east-1"
 
@@ -29,8 +33,8 @@ stac_api = {
 
 event_stream = {
     "config": {
-        "bootstrap.servers": "localhost:9092",
-        "debug": "all"
+        "bootstrap.servers": "host.docker.internal:9092",
+        "client.id": socket.gethostname()
     },
-    "topic": "esgf2",
+    "topic": "esgfng",
 }

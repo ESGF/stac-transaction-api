@@ -1,9 +1,9 @@
-from typing import Optional, Union
 import json
 from datetime import datetime
-from fastapi import Request, HTTPException, status, Response
+from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient
 from stac_fastapi.types.core import Collection, Item
+from typing import Optional, Union
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -27,23 +27,26 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def authorize(self, item: Item, event: dict, collection_id: str) -> dict:
+    def authorize(self, item: Item, request: Request, collection_id: str) -> dict:
         properties = item.properties
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
-            raise ValueError("Item project must match path collection_id")
+            raise ValueError("Item project must match path collection_id")\
+
         allowed_groups = self.allowed_groups(properties, self.acl)
         print("allowed groups", json.dumps(allowed_groups))
+
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
         allowed_groups_uuid.append("8a290d6e-8262-11ef-9fa6-6f9995a83a2e")
         print("allowed groups uuid", json.dumps(allowed_groups_uuid))
 
-        authorizer = event.get("requestContext").get("authorizer")
-        access_token_json = authorizer.get("access_token")
-        user_groups_json = authorizer.get("groups")
+        authorizer = request.state.authorizer
+        access_token_json = authorizer["context"].get("access_token")
+        user_groups_json = authorizer["context"].get("groups")
         print("access token json", access_token_json)
         print("user groups json", user_groups_json)
+
         token_info = json.loads(access_token_json)
         user_groups = json.loads(user_groups_json)
 
@@ -102,9 +105,9 @@ class TransactionClient(BaseTransactionsClient):
         # item = await self.get_item(item.id, collection_id)
         # if item:
         #     raise HTTPException(status_code=409, detail="Item already exists")
-        event = request.scope.get("aws.event")
-        auth = self.authorize(item, event, collection_id)
-        user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
+
+        auth = self.authorize(item, request, collection_id)
+        user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
 
         message = {
             "metadata": {
@@ -129,7 +132,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic="esgf2",
+                topic="esgfng",
                 key=item.id.encode("utf-8"),
                 value=json.dumps(message, default=str).encode("utf-8"),
             )
@@ -180,7 +183,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic="esgf2",
+                topic="esgfng",
                 key=item.id.encode("utf-8"),
                 value=json.dumps(message, default=str).encode("utf-8"),
             )

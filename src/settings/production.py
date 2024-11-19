@@ -1,5 +1,9 @@
 import os
-from src.utils import get_secret
+from dotenv import load_dotenv
+from utils import get_secret
+
+
+load_dotenv()
 
 region_name = "us-east-1"
 
@@ -28,20 +32,18 @@ stac_api = {
 }
 
 # ESGF2 Event Stream Service
-amazon_msk_secret_name = os.environ.get("AMAZON_MSK_SECRET_NAME")
+amazon_msk_secret_name = os.environ.get("CONFLUENT_CLOUD_SECRET_NAME")
 sasl_secret = get_secret(region_name, amazon_msk_secret_name)
 
 event_stream = {
     "config": {
-        "bootstrap.servers": "b-1.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096,"
-        "b-2.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096,"
-        "b-3.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096",
+        "bootstrap.servers": "pkc-p11xm.us-east-1.aws.confluent.cloud:9092",
         "security.protocol": "SASL_SSL",
-        "sasl.mechanism": "SCRAM-SHA-512",
+        "sasl.mechanisms": "SCRAM-SHA-512",
         "sasl.username": sasl_secret.get("username"),
-        "sasl.password": sasl_secret.get("password"),
+        "sasl.password": sasl_secret.get("password")
     },
-    "topic": "esgf2",
+    "topic": "esgfng"
 }
 
 if os.environ.get("PRODUCER_DEBUG").lower() == "true":
