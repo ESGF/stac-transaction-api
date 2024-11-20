@@ -1,8 +1,28 @@
-# New Document
-
 # STAC Transaction API
 
+### Running Locally
+Prerequisites
+- [Docker](https://www.docker.com/) installed
+- `CLIENT_ID` and `CLIENT_SECRET` created from [Globus Developers Setting](https://app.globus.org/settings/developers)
 
+Getting up and running
+- Create a `.env.local` file under `src/settings`
+-- Add the `CLIENT_ID` and `CLIENT_SECRET` to the `.env.local` file
+- `docker compose up` Build the local Confluent kafka environment. This can take a minute or two to complete.
+- `docker build -t stac-transaction-fastapi .` Build the FastAPI container
+- Run the below docker run command
+    ```
+    docker run --name stac-transaction-fastapi \
+        -p 9000:8080 \ 
+        -it stac-transaction-fastapi
+    ```
+
+## To-do
+- Basic instructions for deployment to AWS ECS
+- Add Consumer support
+- Add Discovery support
+
+# DEPRECATED
 ### Amazon API Gateway (API with Authorizer)
 
 Authorizer:
@@ -47,20 +67,3 @@ Update Lambda function code:
 ```
 ./scripts/deploy.sh {update_code|publish_version} {api|authorizer} [dev]
 ```
-
-### Running Locally
-Prerequisites
-- [Docker](https://www.docker.com/) installed
-- `CLIENT_ID` and `CLIENT_SECRET` created from [Globus Developers Setting](https://app.globus.org/settings/developers)
-
-Getting up and running
-- Create a `.env.local` file under `src/settings`
--- Add the `CLIENT_ID` and `CLIENT_SECRET` to the `.env.local` file
-- `docker compose up` Build the local Confluent kafka environment. This can take a minute or two to complete.
-- `docker build -t stac-transaction-fastapi .` Build the FastAPI container
-- Run the below docker run command
-    ```
-    docker run --name stac-transaction-fastapi \
-        -p 9000:8080 \ 
-        -it stac-transaction-fastapi
-    ```
