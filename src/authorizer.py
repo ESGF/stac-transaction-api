@@ -14,9 +14,9 @@ confidential_client = ConfidentialAppAuthClient(
 )
 
 """
-API Gateway Authorizer
-    Authorizer type: Lambda
-    Lambda event payload: Token
+FastAPI Middleware Authorizer
+    Authorizer type: FastAPI Middleware
+    Event payload: Token
     Token source: Authorization
     Token validation: ^Bearer\s[^\s]+$                                                    # noqa: W605
                       ^Bearer\s[0-9A-Za-z]+$ for access tokens issued by Globus Auth (?)  # noqa: W605

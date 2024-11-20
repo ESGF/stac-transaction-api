@@ -32,8 +32,8 @@ stac_api = {
 }
 
 # ESGF2 Event Stream Service
-amazon_msk_secret_name = os.environ.get("CONFLUENT_CLOUD_SECRET_NAME")
-sasl_secret = get_secret(region_name, amazon_msk_secret_name)
+confluent_cloud_secret_name = os.environ.get("CONFLUENT_CLOUD_SECRET_NAME")
+sasl_secret = get_secret(region_name, confluent_cloud_secret_name)
 
 event_stream = {
     "config": {

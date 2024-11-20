@@ -1,6 +1,7 @@
 import json
 import boto3
 import urllib3
+import urllib3.util
 
 
 def get_secret(region_name, secret_name):
@@ -20,6 +21,12 @@ def get_secret(region_name, secret_name):
 
 
 def load_access_control_policy(url):
+    parsed = urllib3.util.parse_url(url)
+    if parsed.scheme == "file":
+        with open(parsed.path) as file:
+            print("Access Control Policy loaded")
+            return json.load(file)
+
     http = urllib3.PoolManager()
     response = http.request("GET", url)
     if response.status == 200:

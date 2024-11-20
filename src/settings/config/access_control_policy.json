@@ -1,0 +1,15 @@
+{
+  "project": {
+    "CMIP6": {
+      "institution_id": {
+        "ESGFNG": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ]
+      }
+    }
+  }
+}

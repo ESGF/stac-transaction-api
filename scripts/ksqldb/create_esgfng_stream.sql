@@ -12,13 +12,13 @@ CREATE STREAM esgfng_stream (
     >,
     data STRUCT<
         payload STRUCT<
+            collection_id VARCHAR,
+            method VARCHAR,
             item STRUCT<
                 id VARCHAR,
                 type VARCHAR,
                 collection VARCHAR,
-                start_datetime VARCHAR,
                 `PROPERTIES` STRUCT<
-                    title VARCHAR,
                     version VARCHAR
                 >
             >
