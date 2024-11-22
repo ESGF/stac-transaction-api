@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from stac_fastapi.extensions.core.transaction import TransactionExtension
 from stac_fastapi.types.config import ApiSettings
 
@@ -8,10 +9,19 @@ from producer import KafkaProducer
 from utils import load_access_control_policy
 
 from settings.local import event_stream, stac_api
-# from settings.production import event_stream, stac_api
 
 
 app = FastAPI(debug=True)
+
+
+# Health Check for AWS
+@app.get("/healthcheck")
+async def healthcheck():
+    return JSONResponse(
+        content={"healthcheck": True},
+        media_type="application/json",
+        status_code=200
+    )
 
 access_control_policy = load_access_control_policy(url=stac_api.get("access_control_policy"))
 producer = KafkaProducer(config=event_stream.get("config"))

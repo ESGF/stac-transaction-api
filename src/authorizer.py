@@ -5,7 +5,6 @@ from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import settings.local as settings
-# import settings.production as settings
 
 
 confidential_client = ConfidentialAppAuthClient(
@@ -26,6 +25,11 @@ FastAPI Middleware Authorizer
 
 class Authorizer(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        # Health check endpoint for AWS ALB target group
+        # Need to bypass authorization for this endpoint
+        if request.url.path == "/healthcheck":
+            return await call_next(request)
+
         authorization_header = request.headers.get("authorization")
 
         # Set API Gateway token validation correctly to avoid IndexError exception
