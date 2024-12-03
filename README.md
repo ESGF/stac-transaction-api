@@ -13,7 +13,7 @@ Getting up and running
 - Run the below docker run command
     ```
     docker run --name stac-transaction-fastapi \
-        -p 9000:8080 \ 
+        -p 8001:8001 \ 
         -it stac-transaction-fastapi
     ```
 
