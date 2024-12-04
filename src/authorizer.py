@@ -1,11 +1,12 @@
 import json
+
 from fastapi import Request
-from globus_sdk import ConfidentialAppAuthClient, AccessTokenAuthorizer, GroupsClient
+from globus_sdk import (AccessTokenAuthorizer, ConfidentialAppAuthClient,
+                        GroupsClient)
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import settings.local as settings
-
+import settings
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),
@@ -23,7 +24,7 @@ FastAPI Middleware Authorizer
 """
 
 
-class Authorizer(BaseHTTPMiddleware):
+class GlobusAuthorizer(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Health check endpoint for AWS ALB target group
         # Need to bypass authorization for this endpoint
@@ -59,6 +60,73 @@ class Authorizer(BaseHTTPMiddleware):
             policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         policy = self.generate_policy(token_info.get("sub"), "Allow", resource_arn, token_info=token_info, groups=groups)
+        request.state.authorizer = policy  # This is awesome by the way :)
+        return await call_next(request)
+
+    def get_groups(self, token):
+        """
+        As https://docs.globus.org/api/auth/specification/#performance states,
+        Failure to reuse these tokens can harm performance on both the resource server
+        doing the grant and any downstream resource servers it uses.
+        Amazon API Gateway Authorization caching setting can be use to cache the authorizer response,
+        and if the a new request with the same bearer token
+        """
+
+        tokens = confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
+        groups_token = tokens.by_resource_server[GroupsClient.resource_server]
+        authorizer = AccessTokenAuthorizer(groups_token["access_token"])
+        groups_client = GroupsClient(authorizer=authorizer)
+        groups_response = groups_client.get_my_groups()
+        groups = []
+        for group in groups_response:
+            group_id = group.get("id")
+            memberships = group.get("my_memberships", [])
+            for membership in memberships:
+                if membership.get("status") == "active":
+                    groups.append(
+                        {
+                            "group_id": group_id,
+                            "identity_id": membership.get("identity_id"),
+                        }
+                    )
+        return groups
+
+    def generate_policy(self, user, effect, resource, token_info=None, groups=None):
+        auth_response = {
+            "principalId": user,
+        }
+        if effect and resource:
+            auth_response["policyDocument"] = {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": "execute-api:Invoke",
+                        "Effect": effect,
+                        "Resource": resource,
+                    }
+                ],
+            }
+            if token_info:
+                auth_response["context"] = {
+                    "access_token": json.dumps(token_info),
+                }
+                if groups:
+                    auth_response["context"]["groups"] = json.dumps(groups)
+
+        # Write the auth_response to the authorizer's CloudWatch log
+        # print(auth_response)
+
+        return auth_response
+
+
+class EGIAuthorizer(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Health check endpoint for AWS ALB target group
+        # Need to bypass authorization for this endpoint
+        if request.url.path == "/healthcheck":
+            return await call_next(request)
+        
+        policy = self.generate_policy("DUMMY CEDA USER", "Allow", "*")
         request.state.authorizer = policy  # This is awesome by the way :)
         return await call_next(request)
 

@@ -1,8 +1,8 @@
 import logging
 import os
 import socket
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 
 # Suppress some kafka message streams
 logger = logging.getLogger("kafka")
@@ -39,6 +39,7 @@ stac_api = {
     "scope_id": "ca49f459-a4f8-420c-b55f-194df11abc0f",
     "scope_string": "https://auth.globus.org/scopes/6fa3b827-5484-42b9-84db-f00c7a183a6a/ingest",
     "url": "0.0.0.0:9000",
+    "authorizer": "globus",
 }
 
 event_stream = {

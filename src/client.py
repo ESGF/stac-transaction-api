@@ -1,9 +1,13 @@
 import json
 from datetime import datetime
-from fastapi import HTTPException, Request, Response, status
-from stac_fastapi.types.core import BaseTransactionsClient
-from stac_fastapi.types.core import Collection, Item
 from typing import Optional, Union
+
+from esgf_playground_utils.models.kafka import (Auth, CreatePayload, Data,
+                                                KafkaEvent, Metadata,
+                                                Publisher, RequesterData,
+                                                RevokePayload, UpdatePayload)
+from fastapi import HTTPException, Request, Response, status
+from stac_fastapi.types.core import BaseTransactionsClient, Collection, Item
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -77,21 +81,41 @@ class TransactionClient(BaseTransactionsClient):
                     }
         print("authorized_identities", json.dumps(authorized_identities))
 
-        auth = {
-            "requester_data": {
-                "client_id": token_info.get("client_id"),
-                "iss": token_info.get("iss"),
-                "sub": token_info.get("sub"),
-                "username": token_info.get("username"),
-                "name": token_info.get("name"),
-                "email": token_info.get("email"),
-            },
-            "auth_basis_data": {
-                "authorization_basis_type": "group",
-                "authorization_basis_service": "groups.globus.org",
-                "authorization_basis": authorized_identities,
-            },
-        }
+        requester_data = RequesterData(
+            sub=token_info.get("sub"),
+            user_id=token_info.get("username"),
+            identity_provider=identity.get("identity_provider"),
+            identity_provider_display_name=identity.get("identity_provider_display_name"),
+        )
+
+        auth = Auth(
+            auth_policy_id="ESGF-Publish-00012",
+            client_id=token_info.get("client_id"),
+            requester_data=requester_data,
+        )
+
+        return auth
+
+    def dummy_authorize(self, item: Item, request: Request, collection_id: str) -> Auth:
+        properties = item.properties
+        if item.collection != collection_id:
+            raise ValueError("Item collection must match path collection_id")
+        if getattr(properties, "project", None) != collection_id:
+            raise ValueError("Item project must match path collection_id")\
+
+        requester_data = RequesterData(
+            auth_service="egi.check.in",
+            sub="b16b12b6-d274-11e5-8e41-5fea585a1aa2",
+            user_id="7fd9ab20-f6c5-4902-a7ac-b40bc4d8ad7b",
+            identity_provider="0dcf5063-bffd-40f7-b403-24f97e32fa47",
+            identity_provider_display_name="EGI Checkin",
+        )
+
+        auth = Auth(
+            auth_policy_id="ESGF-Publish-00012",
+            client_id="CEDA-transaction-client",
+            requester_data=requester_data,
+        )
 
         return auth
 
@@ -101,40 +125,25 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         collection_id: str,
     ) -> Optional[Union[Item, Response, None]]:
-        # Get the item from the database to verify that it does not exist
-        # item = await self.get_item(item.id, collection_id)
-        # if item:
-        #     raise HTTPException(status_code=409, detail="Item already exists")
 
-        auth = self.authorize(item, request, collection_id)
+        auth = self.dummy_authorize(item, request, collection_id)
         user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
 
-        message = {
-            "metadata": {
-                "auth": auth,
-                "publisher": {
-                    "package": user_agent[0],
-                    "version": user_agent[1] if len(user_agent) > 1 else "",
-                },
-                "time": datetime.now().isoformat(),
-                "schema_version": "1.0.0",
-            },
-            "data": {
-                "type": "STAC",
-                "version": "1.0.0",
-                "payload": {
-                    "method": "POST",
-                    "collection_id": collection_id,
-                    "item": await request.json(),
-                },
-            },
-        }
+        payload = CreatePayload(method="POST", collection_id=collection_id, item=item)
+        data = Data(type="STAC", version="1.0.0", payload=payload)
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        metadata = Metadata(
+            auth=auth, publisher=publisher, time=datetime.now().isoformat(), schema_version="1.0.0"
+        )
+        event = KafkaEvent(metadata=metadata, data=data)
+
+        # "item": await request.json()
 
         try:
             self.producer.produce(
                 topic="esgfng",
                 key=item.id.encode("utf-8"),
-                value=json.dumps(message, default=str).encode("utf-8"),
+                value=event.model_dump_json().encode("utf8"),
             )
         except Exception as e:
             print(f"Error producing message: {e}")
@@ -152,40 +161,23 @@ class TransactionClient(BaseTransactionsClient):
         collection_id: str,
         item_id: str,
     ) -> Optional[Union[Item, Response]]:
-        event = request.scope.get("aws.event")
-        # Get the item from the database to verify that it exists
-        # item = await self.get_item(item_id, collection_id)
-        # if not item:
-        #     raise HTTPException(status_code=404, detail="Item not found")
-        auth = self.authorize(item, event, collection_id)
-        user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
 
-        message = {
-            "metadata": {
-                "auth": auth,
-                "publisher": {
-                    "package": user_agent[0],
-                    "version": user_agent[1] if len(user_agent) > 1 else "",
-                },
-                "time": datetime.now().isoformat(),
-                "schema_version": "1.0.0",
-            },
-            "data": {
-                "type": "STAC",
-                "version": "1.0.0",
-                "payload": {
-                    "method": "PUT",
-                    "collection_id": collection_id,
-                    "item": await request.json(),
-                },
-            },
-        }
+        auth = self.dummy_authorize(item, request, collection_id)
+        user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
+
+        payload = UpdatePayload(method="PUT", collection_id=collection_id, item_id=item_id, item=item)
+        data = Data(type="STAC", version="1.0.0", payload=payload)
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        metadata = Metadata(
+            auth=auth, publisher=publisher, time=datetime.now().isoformat(), schema_version="1.0.0"
+        )
+        event = KafkaEvent(metadata=metadata, data=data)
 
         try:
             self.producer.produce(
                 topic="esgfng",
-                key=item.id.encode("utf-8"),
-                value=json.dumps(message, default=str).encode("utf-8"),
+                key=item_id.encode("utf-8"),
+                value=event.model_dump_json().encode("utf8"),
             )
         except Exception as e:
             print(f"Error producing message: {e}")
@@ -209,34 +201,27 @@ class TransactionClient(BaseTransactionsClient):
 
         user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
 
-        message = {
-            "metadata": {
-                "auth": None,  # auth,
-                "publisher": {
-                    "package": user_agent[0],
-                    "version": user_agent[1] if len(user_agent) > 1 else "",
-                },
-                "time": datetime.now().isoformat(),
-                "schema_version": "1.0.0",
-            },
-            "data": {
-                "type": "STAC",
-                "version": "1.0.0",
-                "payload": {
-                    "method": "DELETE",
-                    "collection_id": collection_id,
-                    "item_id": item_id,
-                },
-            },
-        }
-
-        self.producer.produce(
-            None,
-            json.dumps(message, default=str).encode("utf-8"),
+        payload = RevokePayload(method="DELETE", collection_id=collection_id, item_id=item_id)
+        data = Data(type="STAC", version="1.0.0", payload=payload)
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        metadata = Metadata(
+            auth=Auth(), publisher=publisher, time=datetime.now().isoformat(), schema_version="1.0.0"
         )
+        event = KafkaEvent(metadata=metadata, data=data)
+
+        try:
+            self.producer.produce(
+                topic="esgfng",
+                key=item_id.encode("utf-8"),
+                value=event.model_dump_json().encode("utf8"),
+            )
+        except Exception as e:
+            print(f"Error producing message: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+
         return Response(
-            content="Item queued for deletion",
             status_code=status.HTTP_202_ACCEPTED,
+            content="Item queued for update",
         )
 
     async def create_collection(self, collection: Collection, **kwargs) -> Collection:
