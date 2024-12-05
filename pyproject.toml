@@ -26,7 +26,7 @@ requests = "2.32.3"
 stac-fastapi-types = "3.0.1"
 stac-fastapi-extensions = "3.0.1"
 stac-fastapi-api = "3.0.1"
-esgf-playground-utils = {git = "https://github.com/ESGF/esgf-playground-utils", rev = "a2f2573"}
+esgf-playground-utils = {git = "https://github.com/rhysrevans3/esgf-playground-utils.git", rev = "a2f573"}
 
 [build-system]
 requires = ["poetry-core"]

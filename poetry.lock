@@ -525,9 +525,9 @@ stac-pydantic = "^3.1.1"
 
 [package.source]
 type = "git"
-url = "https://github.com/ESGF/esgf-playground-utils"
-reference = "a2f2573"
-resolved_reference = "a2f2573521afa7892bc5c04745d7c2896bca0166"
+url = "https://github.com/rhysrevans3/esgf-playground-utils.git"
+reference = "a2f573"
+resolved_reference = "a2f573\n"
 
 [[package]]
 name = "exceptiongroup"
@@ -1046,4 +1046,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2988253b695110bffbce7dc3a8eb0bbf2e771fa07e67184273239dd51d93be6d"
+content-hash = "794dc47bda96de91c383e4f2bdf6eed931c58c81b10dec2bce1df6b832cfeba3"
