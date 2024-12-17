@@ -2,6 +2,7 @@ import json
 from settings.config.CMIP6ItemModel import CMIP6Item
 from datetime import datetime
 from fastapi import HTTPException, Request, Response, status
+from pydantic import ValidationError
 from stac_fastapi.types.core import BaseTransactionsClient
 from stac_fastapi.types.core import Collection, Item
 from typing import Optional, Union
@@ -111,7 +112,12 @@ class TransactionClient(BaseTransactionsClient):
         user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
 
         stac_item = await request.json()
-        stac_item_model = CMIP6Item(**stac_item)
+        try:
+            CMIP6Item(**stac_item)
+        except ValidationError as e:
+            print(e.errors())
+            raise HTTPException(status_code=400, detail=str(e.errors()))
+
         message = {
             "metadata": {
                 "auth": auth,
