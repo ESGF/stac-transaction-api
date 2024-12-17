@@ -1,4 +1,4 @@
-from pydantic import AnyUrl, ConfigDict
+from pydantic import ConfigDict, HttpUrl
 from stac_pydantic import Item, ItemProperties
 from typing import List, Optional
 
@@ -9,14 +9,14 @@ class CMIP6ItemProperties(ItemProperties):
     access: List[str]
     activity_id: List[str]
     cf_standard_name: str
-    citation_url: AnyUrl
+    citation_url: HttpUrl
     data_spec_version: Optional[str] = None
     datetime: Optional[datetimevalidate.datetime] = None
     end_datetime: datetimevalidate.datetime
     experiment_id: str
     experiment_title: str
     frequency: str
-    further_info_url: AnyUrl
+    further_info_url: HttpUrl
     grid: str
     grid_label: str
     institution_id: str
