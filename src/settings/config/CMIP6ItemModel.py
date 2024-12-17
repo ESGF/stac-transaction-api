@@ -48,9 +48,3 @@ class CMIP6ItemProperties(ItemProperties):
 
 class CMIP6Item(Item):
     properties: CMIP6ItemProperties
-
-
-# from stac_pydantic.extensions import validate_extensions
-# model = CMIP6Item(**stac_item)
-# validate_extensions(model, reraise_exception=True)
-# print(model)
