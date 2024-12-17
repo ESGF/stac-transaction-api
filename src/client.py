@@ -1,4 +1,5 @@
 import json
+from settings.config.CMIP6ItemModel import CMIP6Item
 from datetime import datetime
 from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient
@@ -109,6 +110,8 @@ class TransactionClient(BaseTransactionsClient):
         auth = self.authorize(item, request, collection_id)
         user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
 
+        stac_item = await request.json()
+        stac_item_model = CMIP6Item(**stac_item)
         message = {
             "metadata": {
                 "auth": auth,
@@ -125,7 +128,7 @@ class TransactionClient(BaseTransactionsClient):
                 "payload": {
                     "method": "POST",
                     "collection_id": collection_id,
-                    "item": await request.json(),
+                    "item": stac_item,
                 },
             },
         }
