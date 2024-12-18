@@ -1,4 +1,5 @@
 import json
+
 from fastapi import Request
 from globus_sdk import ConfidentialAppAuthClient, AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes

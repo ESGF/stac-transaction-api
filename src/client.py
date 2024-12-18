@@ -1,8 +1,9 @@
 import json
-from settings.config.CMIP6ItemModel import CMIP6Item
+
 from datetime import datetime
 from fastapi import HTTPException, Request, Response, status
 from pydantic import ValidationError
+from settings.config.CMIP6ItemModel import CMIP6Item
 from stac_fastapi.types.core import BaseTransactionsClient
 from stac_fastapi.types.core import Collection, Item
 from typing import Optional, Union
