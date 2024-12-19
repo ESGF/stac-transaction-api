@@ -83,11 +83,6 @@ class TransactionClient(BaseTransactionsClient):
                 "name": token_info.get("name"),
                 "email": token_info.get("email"),
             },
-            "auth_basis_data": {
-                "authorization_basis_type": "group",
-                "authorization_basis_service": "groups.globus.org",
-                "authorization_basis": authorized_identities,
-            },
         }
 
         return auth
@@ -129,7 +124,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic="esgf2",
+                topic="esgf2.data-challenges.01.transactions",
                 key=item.id.encode("utf-8"),
                 value=json.dumps(message, default=str).encode("utf-8"),
             )

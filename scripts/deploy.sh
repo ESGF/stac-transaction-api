@@ -27,7 +27,7 @@ function update_configuration {
 
 if [ $# -lt 2 ]; then
     echo 'Usage:'
-    echo '    deploy.sh {upodate_code|publish_version} {api|authorizer} [dev]'
+    echo '    deploy.sh {update_code|publish_version} {api|authorizer} [dev]'
     exit 1
 fi
 

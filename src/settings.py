@@ -33,15 +33,13 @@ sasl_secret = get_secret(region_name, amazon_msk_secret_name)
 
 event_stream = {
     "config": {
-        "bootstrap.servers": "b-1.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096,"
-        "b-2.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096,"
-        "b-3.esgf2a.3wk15r.c9.kafka.us-east-1.amazonaws.com:9096",
+        "bootstrap.servers": "pkc-p11xm.us-east-1.aws.confluent.cloud:9092",
         "security.protocol": "SASL_SSL",
-        "sasl.mechanism": "SCRAM-SHA-512",
+        "sasl.mechanism": "PLAIN",
         "sasl.username": sasl_secret.get("username"),
         "sasl.password": sasl_secret.get("password"),
     },
-    "topic": "esgf2",
+    "topic": "esgf2.data-challenges.01.transactions",
 }
 
 if os.environ.get("PRODUCER_DEBUG").lower() == "true":
