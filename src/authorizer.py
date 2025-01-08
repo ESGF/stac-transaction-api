@@ -1,12 +1,11 @@
 import json
 
 from fastapi import Request
-from globus_sdk import (AccessTokenAuthorizer, ConfidentialAppAuthClient,
-                        GroupsClient)
+from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsClient
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import settings
+import src.settings.production as settings
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),
@@ -35,7 +34,9 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header[7:]
-        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
+        response = confidential_client.oauth2_token_introspect(
+            access_token, include="identity_set_detail"
+        )
         token_info = response.data
 
         # resource_arn = event["methodArn"].split("/", 1)[0] + "/*"
@@ -43,23 +44,39 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         # Verify the access token
         if not token_info.get("active", False):
-            policy = self.generate_policy("unknown", "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                "unknown", "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("client_id") not in token_info.get("aud", []):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("issuer") != token_info.get("iss", ""):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         # Get the user's groups
         groups = self.get_groups(access_token)
         if not groups:
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
-        policy = self.generate_policy(token_info.get("sub"), "Allow", resource_arn, token_info=token_info, groups=groups)
+        policy = self.generate_policy(
+            token_info.get("sub"),
+            "Allow",
+            resource_arn,
+            token_info=token_info,
+            groups=groups,
+        )
         request.state.authorizer = policy  # This is awesome by the way :)
         return await call_next(request)
 
@@ -72,7 +89,9 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
         and if the a new request with the same bearer token
         """
 
-        tokens = confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
+        tokens = confidential_client.oauth2_get_dependent_tokens(
+            token, scope=GroupsScopes.view_my_groups_and_memberships
+        )
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
         authorizer = AccessTokenAuthorizer(groups_token["access_token"])
         groups_client = GroupsClient(authorizer=authorizer)
@@ -125,7 +144,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         # Need to bypass authorization for this endpoint
         if request.url.path == "/healthcheck":
             return await call_next(request)
-        
+
         policy = self.generate_policy("DUMMY CEDA USER", "Allow", "*")
         request.state.authorizer = policy  # This is awesome by the way :)
         return await call_next(request)
@@ -139,7 +158,9 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         and if the a new request with the same bearer token
         """
 
-        tokens = confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
+        tokens = confidential_client.oauth2_get_dependent_tokens(
+            token, scope=GroupsScopes.view_my_groups_and_memberships
+        )
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
         authorizer = AccessTokenAuthorizer(groups_token["access_token"])
         groups_client = GroupsClient(authorizer=authorizer)

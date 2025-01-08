@@ -6,7 +6,7 @@ from stac_fastapi.types.config import ApiSettings
 from authorizer import EGIAuthorizer, GlobusAuthorizer
 from client import TransactionClient
 from producer import KafkaProducer
-from settings import event_stream, stac_api
+from src.settings.production import event_stream, stac_api
 from utils import load_access_control_policy
 
 app = FastAPI(debug=True)
@@ -18,10 +18,13 @@ async def healthcheck():
     return JSONResponse(
         content={"healthcheck": True},
         media_type="application/json",
-        status_code=200
+        status_code=200,
     )
 
-access_control_policy = load_access_control_policy(url=stac_api.get("access_control_policy"))
+
+access_control_policy = load_access_control_policy(
+    url=stac_api.get("access_control_policy")
+)
 producer = KafkaProducer(config=event_stream.get("config"))
 core_client = TransactionClient(producer=producer, acl=access_control_policy)
 
