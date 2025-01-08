@@ -6,7 +6,7 @@ from stac_fastapi.types.config import ApiSettings
 from authorizer import EGIAuthorizer, GlobusAuthorizer
 from client import TransactionClient
 from producer import KafkaProducer
-from src.settings.production import event_stream, stac_api
+from settings.production import event_stream, stac_api
 from utils import load_access_control_policy
 
 app = FastAPI(debug=True)

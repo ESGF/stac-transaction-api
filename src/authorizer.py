@@ -5,7 +5,7 @@ from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsC
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import src.settings.production as settings
+import settings.production as settings
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),
