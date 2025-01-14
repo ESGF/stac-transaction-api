@@ -112,8 +112,10 @@ class TransactionClient(BaseTransactionsClient):
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
-            raise ValueError("Item project must match path collection_id")
+            if getattr(properties, "project", None)[0] != collection_id:
+                raise ValueError("Item project must match path collection_id")
         requester_data = RequesterData(
+            iss="egi",
             auth_service="egi.check.in",
             sub="b16b12b6-d274-11e5-8e41-5fea585a1aa2",
             user_id="7fd9ab20-f6c5-4902-a7ac-b40bc4d8ad7b",
@@ -144,7 +146,7 @@ class TransactionClient(BaseTransactionsClient):
         payload = CreatePayload(method="POST", collection_id=collection_id, item=item)
         data = Data(type="STAC", version="1.0.0", payload=payload)
         publisher = Publisher(
-            user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
         )
         metadata = Metadata(
             auth=auth,
