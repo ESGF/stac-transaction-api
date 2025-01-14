@@ -2,10 +2,17 @@ import json
 from datetime import datetime
 from typing import Optional, Union
 
-from esgf_playground_utils.models.kafka import (Auth, CreatePayload, Data,
-                                                KafkaEvent, Metadata,
-                                                Publisher, RequesterData,
-                                                RevokePayload, UpdatePayload)
+from esgf_playground_utils.models.kafka import (
+    Auth,
+    CreatePayload,
+    Data,
+    KafkaEvent,
+    Metadata,
+    Publisher,
+    RequesterData,
+    RevokePayload,
+    UpdatePayload,
+)
 from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient, Collection, Item
 
@@ -36,7 +43,7 @@ class TransactionClient(BaseTransactionsClient):
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
-            raise ValueError("Item project must match path collection_id")\
+            raise ValueError("Item project must match path collection_id")
 
         allowed_groups = self.allowed_groups(properties, self.acl)
         print("allowed groups", json.dumps(allowed_groups))
@@ -76,7 +83,9 @@ class TransactionClient(BaseTransactionsClient):
                         "name": identity.get("name"),
                         "email": identity.get("email"),
                         "identity_provider": identity.get("identity_provider"),
-                        "identity_provider_display_name": identity.get("identity_provider_display_name"),
+                        "identity_provider_display_name": identity.get(
+                            "identity_provider_display_name"
+                        ),
                         "last_authentication": identity.get("last_authentication"),
                     }
         print("authorized_identities", json.dumps(authorized_identities))
@@ -85,7 +94,9 @@ class TransactionClient(BaseTransactionsClient):
             sub=token_info.get("sub"),
             user_id=token_info.get("username"),
             identity_provider=identity.get("identity_provider"),
-            identity_provider_display_name=identity.get("identity_provider_display_name"),
+            identity_provider_display_name=identity.get(
+                "identity_provider_display_name"
+            ),
         )
 
         auth = Auth(
@@ -101,8 +112,7 @@ class TransactionClient(BaseTransactionsClient):
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
-            raise ValueError("Item project must match path collection_id")\
-
+            raise ValueError("Item project must match path collection_id")
         requester_data = RequesterData(
             auth_service="egi.check.in",
             sub="b16b12b6-d274-11e5-8e41-5fea585a1aa2",
@@ -127,13 +137,22 @@ class TransactionClient(BaseTransactionsClient):
     ) -> Optional[Union[Item, Response, None]]:
 
         auth = self.dummy_authorize(item, request, collection_id)
-        user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
+        user_agent = (
+            request.headers.get("headers", {}).get("User-Agent", "/").split("/")
+        )
 
         payload = CreatePayload(method="POST", collection_id=collection_id, item=item)
         data = Data(type="STAC", version="1.0.0", payload=payload)
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
         metadata = Metadata(
-            auth=auth, publisher=publisher, time=datetime.now().isoformat(), schema_version="1.0.0"
+            auth=auth,
+            publisher=publisher,
+            time=datetime.now().isoformat(),
+            schema_version="1.0.0",
+            event_id="dummy",
+            request_id="dummy",
         )
         event = KafkaEvent(metadata=metadata, data=data)
 
@@ -163,13 +182,24 @@ class TransactionClient(BaseTransactionsClient):
     ) -> Optional[Union[Item, Response]]:
 
         auth = self.dummy_authorize(item, request, collection_id)
-        user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
+        user_agent = (
+            request.headers.get("headers", {}).get("User-Agent", "/").split("/")
+        )
 
-        payload = UpdatePayload(method="PUT", collection_id=collection_id, item_id=item_id, item=item)
+        payload = UpdatePayload(
+            method="PUT", collection_id=collection_id, item_id=item_id, item=item
+        )
         data = Data(type="STAC", version="1.0.0", payload=payload)
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
         metadata = Metadata(
-            auth=auth, publisher=publisher, time=datetime.now().isoformat(), schema_version="1.0.0"
+            auth=auth,
+            publisher=publisher,
+            time=datetime.now().isoformat(),
+            schema_version="1.0.0",
+            event_id="dummy",
+            request_id="dummy",
         )
         event = KafkaEvent(metadata=metadata, data=data)
 
@@ -201,11 +231,20 @@ class TransactionClient(BaseTransactionsClient):
 
         user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
 
-        payload = RevokePayload(method="DELETE", collection_id=collection_id, item_id=item_id)
+        payload = RevokePayload(
+            method="DELETE", collection_id=collection_id, item_id=item_id
+        )
         data = Data(type="STAC", version="1.0.0", payload=payload)
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
         metadata = Metadata(
-            auth=Auth(), publisher=publisher, time=datetime.now().isoformat(), schema_version="1.0.0"
+            auth=Auth(),
+            publisher=publisher,
+            time=datetime.now().isoformat(),
+            schema_version="1.0.0",
+            event_id="dummy",
+            request_id="dummy",
         )
         event = KafkaEvent(metadata=metadata, data=data)
 
