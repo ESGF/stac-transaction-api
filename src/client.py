@@ -164,7 +164,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic=event_stream.topic,
+                topic=event_stream.get("topic"),
                 key=item.id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
@@ -209,7 +209,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic=event_stream.topic,
+                topic=event_stream.get("topic"),
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
@@ -254,7 +254,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic=event_stream.topic,
+                topic=event_stream.get("topic"),
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
