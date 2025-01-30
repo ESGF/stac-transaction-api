@@ -16,6 +16,8 @@ from esgf_playground_utils.models.kafka import (
 from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient, Collection, Item
 
+from settings.production import event_stream
+
 
 class TransactionClient(BaseTransactionsClient):
 
@@ -162,7 +164,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic="esgfng",
+                topic=event_stream.topic,
                 key=item.id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
@@ -207,7 +209,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic="esgfng",
+                topic=event_stream.topic,
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
@@ -252,7 +254,7 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic="esgfng",
+                topic=event_stream.topic,
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
