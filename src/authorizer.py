@@ -5,7 +5,7 @@ from globus_sdk import ConfidentialAppAuthClient, AccessTokenAuthorizer, GroupsC
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import settings.local as settings
+import settings.transaction as settings
 
 
 confidential_client = ConfidentialAppAuthClient(

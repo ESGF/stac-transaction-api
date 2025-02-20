@@ -1,12 +1,21 @@
 import json
+import uuid
 
 from datetime import datetime
+from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
 from fastapi import HTTPException, Request, Response, status
-from pydantic import ValidationError
-from settings.config.CMIP6ItemModel import CMIP6Item
+from pydantic import HttpUrl, ValidationError
 from stac_fastapi.types.core import BaseTransactionsClient
 from stac_fastapi.types.core import Collection, Item
 from typing import Optional, Union
+
+
+class ESGFItemPropertiesEdited(ESGFItemProperties):
+    citation_url: Optional[HttpUrl] = None
+
+
+class CMIP6ItemEdited(CMIP6Item):
+    properties: ESGFItemPropertiesEdited
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -35,20 +44,19 @@ class TransactionClient(BaseTransactionsClient):
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
-            raise ValueError("Item project must match path collection_id")\
+            raise ValueError("Item project must match path collection_id")
 
         allowed_groups = self.allowed_groups(properties, self.acl)
-        print("allowed groups", json.dumps(allowed_groups))
+        # print("allowed groups", json.dumps(allowed_groups))
 
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
-        allowed_groups_uuid.append("8a290d6e-8262-11ef-9fa6-6f9995a83a2e")
-        print("allowed groups uuid", json.dumps(allowed_groups_uuid))
+        # print("allowed groups uuid", json.dumps(allowed_groups_uuid))
 
         authorizer = request.state.authorizer
         access_token_json = authorizer["context"].get("access_token")
         user_groups_json = authorizer["context"].get("groups")
-        print("access token json", access_token_json)
-        print("user groups json", user_groups_json)
+        # print("access token json", access_token_json)
+        # print("user groups json", user_groups_json)
 
         token_info = json.loads(access_token_json)
         user_groups = json.loads(user_groups_json)
@@ -84,10 +92,7 @@ class TransactionClient(BaseTransactionsClient):
             "requester_data": {
                 "client_id": token_info.get("client_id"),
                 "iss": token_info.get("iss"),
-                "sub": token_info.get("sub"),
-                "username": token_info.get("username"),
-                "name": token_info.get("name"),
-                "email": token_info.get("email"),
+                "sub": token_info.get("sub")
             },
             "auth_basis_data": {
                 "authorization_basis_type": "group",
@@ -114,7 +119,7 @@ class TransactionClient(BaseTransactionsClient):
 
         stac_item = await request.json()
         try:
-            CMIP6Item(**stac_item)
+            CMIP6ItemEdited(**stac_item)
         except ValidationError as e:
             print(e.errors())
             raise HTTPException(status_code=400, detail=str(e.errors()))
@@ -122,16 +127,17 @@ class TransactionClient(BaseTransactionsClient):
         message = {
             "metadata": {
                 "auth": auth,
+                "event_id": uuid.uuid4(),
                 "publisher": {
                     "package": user_agent[0],
                     "version": user_agent[1] if len(user_agent) > 1 else "",
                 },
+                "request_id": uuid.uuid4(),
                 "time": datetime.now().isoformat(),
                 "schema_version": "1.0.0",
             },
             "data": {
                 "type": "STAC",
-                "version": "1.0.0",
                 "payload": {
                     "method": "POST",
                     "collection_id": collection_id,
