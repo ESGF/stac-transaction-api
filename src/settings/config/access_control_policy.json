@@ -2,7 +2,14 @@
   "project": {
     "CMIP6": {
       "institution_id": {
-        "ESGFNG": [
+        "ALCF": [
+          {
+            "name": "ESGF2 ALCF",
+            "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
+            "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
+          }
+        ],
+        "E3SM-Project": [
           {
             "name": "ESGFNG LOCAL",
             "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",

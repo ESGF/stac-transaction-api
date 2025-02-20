@@ -1,26 +1,35 @@
-import os
-import sys
 import argparse
 import json
-from globus_sdk import NativeAppAuthClient, RefreshTokenAuthorizer, AuthClient
+import os
+import sys
+
+from globus_sdk import (
+    AuthAPIError,
+    AuthClient,
+    NativeAppAuthClient,
+    RefreshTokenAuthorizer,
+)
 from globus_sdk.scopes import AuthScopes
-from globus_sdk import AuthAPIError
 from globus_sdk.tokenstorage import SimpleJSONFileAdapter
 
 
-globus_client_id = "ab9883f5-37d4-4066-b69f-ff3313e16dd8"
+globus_client_id = "4950867e-8eb0-49db-9573-840056513340"
 view_my_groups_and_memberships_scope_uuid = "73320ffe-4cb4-4b25-a0a3-83d53d59ce4f"
 
 
 class WestDeployment:
     def __init__(self):
-        self.native_client = NativeAppAuthClient(client_id=globus_client_id, app_name="West Deployment Client")
+        self.native_client = NativeAppAuthClient(
+            client_id=globus_client_id, app_name="West Deployment Client"
+        )
         self.scopes = [AuthScopes.manage_projects, "openid", "profile", "email"]
         filename = os.path.expanduser("~/.deployment_tokens.json")
         self.token_storage = SimpleJSONFileAdapter(filename)
 
     def do_login_flow(self):
-        self.native_client.oauth2_start_flow(requested_scopes=self.scopes, refresh_tokens=True)
+        self.native_client.oauth2_start_flow(
+            requested_scopes=self.scopes, refresh_tokens=True
+        )
         authorize_url = self.native_client.oauth2_get_authorize_url(prompt="login")
         print("Please go to this URL and login: {0}".format(authorize_url))
         auth_code = input("Please enter the code here: ").strip()
@@ -60,7 +69,10 @@ class WestDeployment:
         for project in r.data.get("projects", []):
             project_name = project.get("project_name", "")
             display_name = project.get("display_name", "")
-            if project_name != "ESGF2 Data Challenges" or display_name != "ESGF2 Data Challenges":
+            if (
+                project_name != "ESGF2 Data Challenges"
+                or display_name != "ESGF2 Data Challenges"
+            ):
                 continue
             admin_identities = project.get("admins", []).get("identities", [])
             for identity in admin_identities:
@@ -71,7 +83,9 @@ class WestDeployment:
                 break
 
         if not project_id:
-            r = self.auth_client.create_project("ESGF2 Data Challenges", self.email, admin_ids=[self.sub])
+            r = self.auth_client.create_project(
+                "ESGF2 Data Challenges", self.email, admin_ids=[self.sub]
+            )
             project_id = r.data.get("project", {}).get("id")
         self.project_id = project_id
         print(f"project_id: {self.project_id}")
@@ -90,10 +104,14 @@ class WestDeployment:
             sys.exit(1)
 
     def create_client(self, new_client_name):
-        r = self.auth_client.create_client(new_client_name, self.project_id, client_type="resource_server")
+        r = self.auth_client.create_client(
+            new_client_name, self.project_id, client_type="resource_server"
+        )
 
         self.service_client_id = r.data.get("client").get("id")
-        r = self.auth_client.create_client_credential(self.service_client_id, "STAC Transaction API service client")
+        r = self.auth_client.create_client_credential(
+            self.service_client_id, "STAC Transaction API service client"
+        )
         print(json.dumps(r.data, indent=4))
         self.service_client_secret = r.data.get("credential").get("secret")
 
@@ -118,7 +136,9 @@ class WestDeployment:
         self.auth_client = self.get_auth_client()
         self.get_user_info()
         self.get_project()
-        new_client_name = f"ESGF2 Data Challenge Transaction API service client - {name_suffix}"
+        new_client_name = (
+            f"ESGF2 Data Challenge Transaction API service client - {name_suffix}"
+        )
         self.get_client(new_client_name)
         try:
             self.create_client(new_client_name)

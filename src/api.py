@@ -8,8 +8,7 @@ from client import TransactionClient
 from producer import KafkaProducer
 from utils import load_access_control_policy
 
-from settings.local import event_stream, stac_api
-
+from settings.transaction import event_stream, stac_api
 
 app = FastAPI(debug=True)
 

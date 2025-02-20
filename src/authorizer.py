@@ -1,10 +1,11 @@
 import json
+
 from fastapi import Request
 from globus_sdk import ConfidentialAppAuthClient, AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import settings.local as settings
+import settings.transaction as settings
 
 
 confidential_client = ConfidentialAppAuthClient(
