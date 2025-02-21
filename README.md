@@ -6,16 +6,17 @@ Prerequisites
 - `CLIENT_ID` and `CLIENT_SECRET` created from [Globus Developers Setting](https://app.globus.org/settings/developers)
 
 Getting up and running
-- Create a `.env.local` file under `src/settings`
--- Add the `CLIENT_ID` and `CLIENT_SECRET` to the `.env.local` file
-- `docker compose up` Build the local Confluent kafka environment. This can take a minute or two to complete.
-- `docker build -t stac-transaction-fastapi .` Build the FastAPI container
-- Run the below docker run command
+- Create a `.env` file under `src/settings`
+-- Add the `CLIENT_ID` and `CLIENT_SECRET` and set `RUN_ENVIRONMENT=local` in the `.env` file
+- To build the local Confluent kafka environment as well as the transaction API, run `docker compose up` This can take a minute or two to complete.
+- If you only want to build the FastAPI container without the local kafka cluster, run
     ```
+    docker build -t stac-transaction-fastapi .
     docker run --name stac-transaction-fastapi \
         -p 8001:8001 \ 
         -it stac-transaction-fastapi
     ```
+- For ECS deployments, there are basic scripts in the scripts directory for building and deploying
 
 ## To-do
 - Basic instructions for deployment to AWS ECS
