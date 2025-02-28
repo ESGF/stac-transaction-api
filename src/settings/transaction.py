@@ -37,10 +37,10 @@ stac_api = {
 if run_environment == "local":
     event_stream = {
         "config": {
-            "bootstrap.servers": "broker:9092",
+            "bootstrap.servers": "host.docker.internal:9092",
             "client.id": socket.gethostname()
         },
-        "topic": "esgfng",
+        "topic": "esgf-local",
     }
 else:
     event_stream = {

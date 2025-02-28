@@ -7,6 +7,7 @@ from fastapi import HTTPException, Request, Response, status
 from pydantic import HttpUrl, ValidationError
 from stac_fastapi.types.core import BaseTransactionsClient
 from stac_fastapi.types.core import Collection, Item
+from settings.transaction import event_stream
 from typing import Optional, Union
 
 
@@ -148,12 +149,17 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic="esgfng",
+                topic=event_stream.get("topic", "esgf-local"),
                 key=item.id.encode("utf-8"),
                 value=json.dumps(message, default=str).encode("utf-8"),
             )
         except Exception as e:
             print(f"Error producing message: {e}")
+            self.producer.produce(
+                topic="esgf-errors",
+                key=item.id.encode("utf-8"),
+                value=json.dumps(message, default=str).encode("utf-8")
+            )
             raise HTTPException(status_code=500, detail=str(e))
 
         return Response(
