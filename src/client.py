@@ -112,7 +112,7 @@ class TransactionClient(BaseTransactionsClient):
 
         return auth
 
-    def ceda_authorize(self, item: Item, role: str, request: Request) -> Auth:
+    def egi_authorize(self, item: Item, role: str, request: Request) -> Auth:
         """_summary_
 
         Args:
@@ -138,7 +138,7 @@ class TransactionClient(BaseTransactionsClient):
         collection_id: str,
     ) -> Optional[Union[Item, Response, None]]:
 
-        auth = self.ceda_authorize(item, request, collection_id)
+        auth = self.egi_authorize(item=item, role="CREATE", request=request)
 
         headers = request.headers.get("headers", {})
         user_agent = headers.get("User-Agent", "/").split("/")
@@ -182,10 +182,9 @@ class TransactionClient(BaseTransactionsClient):
         item_id: str,
     ) -> Optional[Union[Item, Response]]:
 
-        auth = self.ceda_authorize(item, request, collection_id)
-        user_agent = (
-            request.headers.get("headers", {}).get("User-Agent", "/").split("/")
-        )
+        auth = self.egi_authorize(item=item, role="UPDATE", request=request)
+        headers = request.headers.get("headers", {})
+        user_agent = headers.get("User-Agent", "/").split("/")
 
         payload = UpdatePayload(
             method="PUT", collection_id=collection_id, item_id=item_id, item=item
@@ -199,8 +198,8 @@ class TransactionClient(BaseTransactionsClient):
             publisher=publisher,
             time=datetime.now().isoformat(),
             schema_version="1.0.0",
-            event_id="dummy",
-            request_id="dummy",
+            event_id=uuid.uuid4(),
+            request_id=headers.get("X-Request-ID", uuid.uuid4()),
         )
         event = KafkaEvent(metadata=metadata, data=data)
 
