@@ -1,4 +1,5 @@
 import json
+import uuid
 from datetime import datetime
 from typing import Optional, Union
 
@@ -17,6 +18,8 @@ from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient, Collection, Item
 
 from settings.production import event_stream
+
+from .types import Authorizer
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -109,29 +112,24 @@ class TransactionClient(BaseTransactionsClient):
 
         return auth
 
-    def dummy_authorize(self, item: Item, request: Request, collection_id: str) -> Auth:
-        properties = item.properties
-        if item.collection != collection_id:
-            raise ValueError("Item collection must match path collection_id")
-        if getattr(properties, "project", None) != collection_id:
-            if getattr(properties, "project", None)[0] != collection_id:
-                raise ValueError("Item project must match path collection_id")
-        requester_data = RequesterData(
-            iss="egi",
-            auth_service="egi.check.in",
-            sub="b16b12b6-d274-11e5-8e41-5fea585a1aa2",
-            user_id="7fd9ab20-f6c5-4902-a7ac-b40bc4d8ad7b",
-            identity_provider="0dcf5063-bffd-40f7-b403-24f97e32fa47",
-            identity_provider_display_name="EGI Checkin",
-        )
+    def ceda_authorize(self, item: Item, role: str, request: Request) -> Auth:
+        """_summary_
 
-        auth = Auth(
-            auth_policy_id="ESGF-Publish-00012",
-            client_id="CEDA-transaction-client",
-            requester_data=requester_data,
-        )
+        Args:
+            item (Item): item to check authorization for
+            role (str): role to check authorization for
+            request (Request): current request
 
-        return auth
+        Returns:
+            Auth: Auth object if successful
+        """
+        authorizer: Authorizer = request.state.authorizer
+        authorizer.authorize(item, role)
+
+        return Auth(
+            client_id=authorizer.client_id,
+            requester_data=authorizer.requester_data,
+        )
 
     async def create_item(
         self,
@@ -140,27 +138,26 @@ class TransactionClient(BaseTransactionsClient):
         collection_id: str,
     ) -> Optional[Union[Item, Response, None]]:
 
-        auth = self.dummy_authorize(item, request, collection_id)
-        user_agent = (
-            request.headers.get("headers", {}).get("User-Agent", "/").split("/")
-        )
+        auth = self.ceda_authorize(item, request, collection_id)
+
+        headers = request.headers.get("headers", {})
+        user_agent = headers.get("User-Agent", "/").split("/")
 
         payload = CreatePayload(method="POST", collection_id=collection_id, item=item)
-        data = Data(type="STAC", version="1.0.0", payload=payload)
+        data = Data(type="STAC", payload=payload)
+
         publisher = Publisher(
             package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
         )
+
         metadata = Metadata(
             auth=auth,
             publisher=publisher,
-            time=datetime.now().isoformat(),
             schema_version="1.0.0",
-            event_id="dummy",
-            request_id="dummy",
+            event_id=uuid.uuid4(),
+            request_id=headers.get("X-Request-ID", uuid.uuid4()),
         )
         event = KafkaEvent(metadata=metadata, data=data)
-
-        # "item": await request.json()
 
         try:
             self.producer.produce(
@@ -168,8 +165,8 @@ class TransactionClient(BaseTransactionsClient):
                 key=item.id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
+
         except Exception as e:
-            print(f"Error producing message: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
         return Response(
@@ -185,7 +182,7 @@ class TransactionClient(BaseTransactionsClient):
         item_id: str,
     ) -> Optional[Union[Item, Response]]:
 
-        auth = self.dummy_authorize(item, request, collection_id)
+        auth = self.ceda_authorize(item, request, collection_id)
         user_agent = (
             request.headers.get("headers", {}).get("User-Agent", "/").split("/")
         )
@@ -214,7 +211,6 @@ class TransactionClient(BaseTransactionsClient):
                 value=event.model_dump_json().encode("utf8"),
             )
         except Exception as e:
-            print(f"Error producing message: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
         return Response(
@@ -259,12 +255,11 @@ class TransactionClient(BaseTransactionsClient):
                 value=event.model_dump_json().encode("utf8"),
             )
         except Exception as e:
-            print(f"Error producing message: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
-            content="Item queued for update",
+            content="Item queued for deletion",
         )
 
     async def create_collection(self, collection: Collection, **kwargs) -> Collection:

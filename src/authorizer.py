@@ -1,11 +1,17 @@
 import json
+import re
 
+import httpx
+from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import Request
 from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsClient
 from globus_sdk.scopes import GroupsScopes
+from httpx_auth import OAuth2ClientCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import settings.production as settings
+
+from .types import Authorizer, Node, Project
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),
@@ -139,69 +145,58 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
 
 class EGIAuthorizer(BaseHTTPMiddleware):
+    """
+    EGI Authorization middleware.
+    """
+
     async def dispatch(self, request: Request, call_next):
-        # Health check endpoint for AWS ALB target group
         # Need to bypass authorization for this endpoint
         if request.url.path == "/healthcheck":
             return await call_next(request)
 
-        policy = self.generate_policy("DUMMY CEDA USER", "Allow", "*")
-        request.state.authorizer = policy  # This is awesome by the way :)
-        return await call_next(request)
+        authorization_header = request.headers.get("authorization")
 
-    def get_groups(self, token):
-        """
-        As https://docs.globus.org/api/auth/specification/#performance states,
-        Failure to reuse these tokens can harm performance on both the resource server
-        doing the grant and any downstream resource servers it uses.
-        Amazon API Gateway Authorization caching setting can be use to cache the authorizer response,
-        and if the a new request with the same bearer token
-        """
+        access_token = authorization_header[7:]
 
-        tokens = confidential_client.oauth2_get_dependent_tokens(
-            token, scope=GroupsScopes.view_my_groups_and_memberships
+        auth = OAuth2ClientCredentials(
+            settings.stac_api.get("token_url"),
+            client_id=settings.stac_api.get("client_id"),
+            client_secret=settings.stac_api.get("client_secret"),
         )
-        groups_token = tokens.by_resource_server[GroupsClient.resource_server]
-        authorizer = AccessTokenAuthorizer(groups_token["access_token"])
-        groups_client = GroupsClient(authorizer=authorizer)
-        groups_response = groups_client.get_my_groups()
-        groups = []
-        for group in groups_response:
-            group_id = group.get("id")
-            memberships = group.get("my_memberships", [])
-            for membership in memberships:
-                if membership.get("status") == "active":
-                    groups.append(
-                        {
-                            "group_id": group_id,
-                            "identity_id": membership.get("identity_id"),
-                        }
-                    )
-        return groups
 
-    def generate_policy(self, user, effect, resource, token_info=None, groups=None):
-        auth_response = {
-            "principalId": user,
-        }
-        if effect and resource:
-            auth_response["policyDocument"] = {
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Action": "execute-api:Invoke",
-                        "Effect": effect,
-                        "Resource": resource,
-                    }
-                ],
-            }
-            if token_info:
-                auth_response["context"] = {
-                    "access_token": json.dumps(token_info),
-                }
-                if groups:
-                    auth_response["context"]["groups"] = json.dumps(groups)
+        async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
+            response = await client.post(
+                settings.stac_api.get("userinfo_endpoint"),
+                headers={
+                    "Content-type": "application/json",
+                    "Authorization": f"Bearer ${access_token}",
+                },
+                timeout=5,
+                auth=auth,
+            )
 
-        # Write the auth_response to the authorizer's CloudWatch log
-        # print(auth_response)
+        token_info = response.data
 
-        return auth_response
+        authorizer = Authorizer(
+            client_id=settings.stac_api.get("client_id"),
+            requester_data=RequesterData(
+                sub=token_info["sub"],
+                iss="egi_chicken",
+            ),
+        )
+
+        for entitlement in token_info["eduperson_entitlement"]:
+            match = re.search(settings.stac_api.get("regex"), entitlement)
+
+            if match.group("type") == "project":
+                authorizer.projects.add(
+                    Project(id=match.group("id"), role=match.group("role"))
+                )
+
+            elif match.group("type") == "node":
+                authorizer.nodes.add(
+                    Node(id=match.group("id"), role=match.group("role"))
+                )
+
+        request.state.authorizer = authorizer
+        return await call_next(request)
