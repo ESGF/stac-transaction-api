@@ -1,5 +1,6 @@
-from abc import ABC, abstractmethod
 import attr
+
+from abc import ABC, abstractmethod
 from confluent_kafka import Producer
 
 

@@ -9,7 +9,7 @@ from globus_sdk.scopes import GroupsScopes
 from httpx_auth import OAuth2ClientCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import settings.production as settings
+import settings.transaction as settings
 
 from .types import Authorizer, Node, Project
 
