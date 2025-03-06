@@ -178,7 +178,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         token_info = response.data
 
         authorizer = Authorizer(
-            client_id=settings.stac_api.get("client_id"),
+            client_id=settings.event_stream.get("client_id"),
             requester_data=RequesterData(
                 sub=token_info["sub"],
                 iss="egi_chicken",
