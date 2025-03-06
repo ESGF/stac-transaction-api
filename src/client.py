@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
+from esgf_playground_utils.models.item import CMIP6Item
 from esgf_playground_utils.models.kafka import (
     Auth,
     CreatePayload,
@@ -16,20 +16,11 @@ from esgf_playground_utils.models.kafka import (
     UpdatePayload,
 )
 from fastapi import HTTPException, Request, Response, status
-from pydantic import HttpUrl
-from stac_fastapi.types.core import BaseTransactionsClient, Collection, Item
+from stac_fastapi.types.core import BaseTransactionsClient, Collection
 
 from settings.transaction import event_stream
 
 from .types import Authorizer
-
-
-class ESGFItemPropertiesEdited(ESGFItemProperties):
-    citation_url: Optional[HttpUrl] = None
-
-
-class CMIP6ItemEdited(CMIP6Item):
-    properties: ESGFItemPropertiesEdited
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -53,7 +44,7 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def authorize(self, item: Item, request: Request, collection_id: str) -> dict:
+    def authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
         properties = item.properties
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
@@ -121,11 +112,11 @@ class TransactionClient(BaseTransactionsClient):
 
         return auth
 
-    def egi_authorize(self, item: Item, role: str, request: Request) -> Auth:
+    def egi_authorize(self, item: CMIP6Item, role: str, request: Request) -> Auth:
         """_summary_
 
         Args:
-            item (Item): item to check authorization for
+            item (CMIP6Item): item to check authorization for
             role (str): role to check authorization for
             request (Request): current request
 
@@ -142,10 +133,10 @@ class TransactionClient(BaseTransactionsClient):
 
     async def create_item(
         self,
-        item: Item,
+        item: CMIP6Item,
         request: Request,
         collection_id: str,
-    ) -> Optional[Union[Item, Response, None]]:
+    ) -> Optional[Union[CMIP6Item, Response, None]]:
 
         auth = self.egi_authorize(item=item, role="CREATE", request=request)
 
@@ -185,11 +176,11 @@ class TransactionClient(BaseTransactionsClient):
 
     async def update_item(
         self,
-        item: Item,
+        item: CMIP6Item,
         request: Request,
         collection_id: str,
         item_id: str,
-    ) -> Optional[Union[Item, Response]]:
+    ) -> Optional[Union[CMIP6Item, Response]]:
 
         auth = self.egi_authorize(item=item, role="UPDATE", request=request)
         headers = request.headers.get("headers", {})
@@ -231,7 +222,7 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         collection_id: str,
         item_id: str,
-    ) -> Optional[Union[Item, Response]]:
+    ) -> Optional[Union[CMIP6Item, Response]]:
         event = request.scope.get("aws.event")
         # Get the item from the database
         # item = await self.get_item(collection_id, item_id)
