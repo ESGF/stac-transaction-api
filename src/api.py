@@ -7,7 +7,6 @@ from authorizer import EGIAuthorizer, GlobusAuthorizer
 from client import TransactionClient
 from producer import KafkaProducer
 from settings.transaction import event_stream, stac_api
-from utils import load_access_control_policy
 
 app = FastAPI(debug=True)
 
@@ -22,11 +21,8 @@ async def healthcheck():
     )
 
 
-access_control_policy = load_access_control_policy(
-    url=stac_api.get("access_control_policy")
-)
 producer = KafkaProducer(config=event_stream.get("config"))
-core_client = TransactionClient(producer=producer, acl=access_control_policy)
+core_client = TransactionClient(producer=producer)
 
 settings = ApiSettings(
     api_title="STAC Transaction API",

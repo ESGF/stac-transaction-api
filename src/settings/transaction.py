@@ -4,6 +4,8 @@ import socket
 
 from dotenv import load_dotenv
 
+from src.utils import load_access_control_policy
+
 # Load the .env file
 load_dotenv()
 
@@ -26,10 +28,11 @@ stac_api = {
     "client_id": os.environ.get("GLOBUS_CLIENT_ID"),
     "client_secret": os.environ.get("GLOBUS_CLIENT_SECRET"),
     "issuer": "https://auth.globus.org",
-    "access_control_policy": policy_path,
     "scope_string": "https://auth.globus.org/scopes/6fa3b827-5484-42b9-84db-f00c7a183a6a/ingest",
     "authorizer": "globus",
 }
+
+access_control_policy = load_access_control_policy(url=policy_path)
 
 # Kafka connection details
 if run_environment == "local":

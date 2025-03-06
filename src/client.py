@@ -19,14 +19,14 @@ from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient, Collection
 
 from models import Authorizer
-from settings.transaction import event_stream
+from settings.transaction import access_control_policy, event_stream
 
 
 class TransactionClient(BaseTransactionsClient):
 
-    def __init__(self, producer, acl):
+    def __init__(self, producer):
         self.producer = producer
-        self.acl = acl
+        self.acl = access_control_policy
 
     def allowed_groups(self, properties, acp) -> list:
         if isinstance(acp, list):
