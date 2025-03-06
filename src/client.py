@@ -26,7 +26,6 @@ class TransactionClient(BaseTransactionsClient):
 
     def __init__(self, producer):
         self.producer = producer
-        self.acl = access_control_policy
 
     def allowed_groups(self, properties, acp) -> list:
         if isinstance(acp, list):
@@ -50,7 +49,7 @@ class TransactionClient(BaseTransactionsClient):
         if getattr(properties, "project", None) != collection_id:
             raise ValueError("Item project must match path collection_id")
 
-        allowed_groups = self.allowed_groups(properties, self.acl)
+        allowed_groups = self.allowed_groups(properties, access_control_policy)
         # print("allowed groups", json.dumps(allowed_groups))
 
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
@@ -166,7 +165,7 @@ class TransactionClient(BaseTransactionsClient):
             )
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
@@ -209,7 +208,7 @@ class TransactionClient(BaseTransactionsClient):
                 value=event.model_dump_json().encode("utf8"),
             )
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
@@ -253,7 +252,7 @@ class TransactionClient(BaseTransactionsClient):
                 value=event.model_dump_json().encode("utf8"),
             )
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
