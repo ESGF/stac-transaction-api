@@ -18,9 +18,8 @@ from esgf_playground_utils.models.kafka import (
 from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient, Collection
 
+from models import Authorizer
 from settings.transaction import event_stream
-
-from .types import Authorizer
 
 
 class TransactionClient(BaseTransactionsClient):

@@ -10,8 +10,7 @@ from httpx_auth import OAuth2ClientCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import settings.transaction as settings
-
-from .types import Authorizer, Node, Project
+from models import Authorizer, Node, Project
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),
