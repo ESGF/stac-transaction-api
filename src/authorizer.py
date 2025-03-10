@@ -1,12 +1,16 @@
 import json
+import re
 
+import httpx
+from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import Request
-from globus_sdk import ConfidentialAppAuthClient, AccessTokenAuthorizer, GroupsClient
+from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsClient
 from globus_sdk.scopes import GroupsScopes
+from httpx_auth import OAuth2ClientCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import settings.transaction as settings
-
+from models import Authorizer, Node, Project
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),
@@ -24,7 +28,7 @@ FastAPI Middleware Authorizer
 """
 
 
-class Authorizer(BaseHTTPMiddleware):
+class GlobusAuthorizer(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Health check endpoint for AWS ALB target group
         # Need to bypass authorization for this endpoint
@@ -35,7 +39,9 @@ class Authorizer(BaseHTTPMiddleware):
 
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header[7:]
-        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
+        response = confidential_client.oauth2_token_introspect(
+            access_token, include="identity_set_detail"
+        )
         token_info = response.data
 
         # resource_arn = event["methodArn"].split("/", 1)[0] + "/*"
@@ -43,23 +49,39 @@ class Authorizer(BaseHTTPMiddleware):
 
         # Verify the access token
         if not token_info.get("active", False):
-            policy = self.generate_policy("unknown", "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                "unknown", "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("client_id") not in token_info.get("aud", []):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("issuer") != token_info.get("iss", ""):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         # Get the user's groups
         groups = self.get_groups(access_token)
         if not groups:
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
-        policy = self.generate_policy(token_info.get("sub"), "Allow", resource_arn, token_info=token_info, groups=groups)
+        policy = self.generate_policy(
+            token_info.get("sub"),
+            "Allow",
+            resource_arn,
+            token_info=token_info,
+            groups=groups,
+        )
         request.state.authorizer = policy  # This is awesome by the way :)
         return await call_next(request)
 
@@ -72,7 +94,9 @@ class Authorizer(BaseHTTPMiddleware):
         and if the a new request with the same bearer token
         """
 
-        tokens = confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
+        tokens = confidential_client.oauth2_get_dependent_tokens(
+            token, scope=GroupsScopes.view_my_groups_and_memberships
+        )
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
         authorizer = AccessTokenAuthorizer(groups_token["access_token"])
         groups_client = GroupsClient(authorizer=authorizer)
@@ -117,3 +141,60 @@ class Authorizer(BaseHTTPMiddleware):
         # print(auth_response)
 
         return auth_response
+
+
+class EGIAuthorizer(BaseHTTPMiddleware):
+    """
+    EGI Authorization middleware.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        # Need to bypass authorization for this endpoint
+        if request.url.path == "/healthcheck":
+            return await call_next(request)
+
+        settings.logger.info("Request Headers %s", request.headers)
+
+        auth = OAuth2ClientCredentials(
+            settings.stac_api.get("token_url"),
+            client_id=settings.stac_api.get("client_id"),
+            client_secret=settings.stac_api.get("client_secret"),
+        )
+
+        async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
+            response = await client.get(
+                settings.stac_api.get("userinfo_endpoint"),
+                headers={
+                    "Content-type": "application/json",
+                    "Authorization": request.headers.get("authorization"),
+                },
+                timeout=5,
+                auth=auth,
+            )
+            response.raise_for_status()
+
+        token_info = response.json()
+
+        authorizer = Authorizer(
+            client_id=settings.event_stream.get("client_id"),
+            requester_data=RequesterData(
+                sub=token_info["sub"],
+                iss="egi_chicken",
+            ),
+        )
+
+        for entitlement in token_info["eduperson_entitlement"]:
+            match = re.search(settings.stac_api.get("regex"), entitlement)
+
+            if match.group("type") == "project":
+                authorizer.projects.add(
+                    Project(id=match.group("id"), role=match.group("role"))
+                )
+
+            elif match.group("type") == "node":
+                authorizer.nodes.add(
+                    Node(id=match.group("id"), role=match.group("role"))
+                )
+
+        request.state.authorizer = authorizer
+        return await call_next(request)

@@ -1,29 +1,31 @@
 import json
 import uuid
-
 from datetime import datetime
-from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
-from fastapi import HTTPException, Request, Response, status
-from pydantic import HttpUrl, ValidationError
-from stac_fastapi.types.core import BaseTransactionsClient
-from stac_fastapi.types.core import Collection, Item
-from settings.transaction import event_stream
 from typing import Optional, Union
 
+from esgf_playground_utils.models.item import CMIP6Item
+from esgf_playground_utils.models.kafka import (
+    Auth,
+    CreatePayload,
+    Data,
+    KafkaEvent,
+    Metadata,
+    Publisher,
+    RequesterData,
+    RevokePayload,
+    UpdatePayload,
+)
+from fastapi import HTTPException, Request, Response, status
+from stac_fastapi.types.core import BaseTransactionsClient, Collection
 
-class ESGFItemPropertiesEdited(ESGFItemProperties):
-    citation_url: Optional[HttpUrl] = None
-
-
-class CMIP6ItemEdited(CMIP6Item):
-    properties: ESGFItemPropertiesEdited
+from models import Authorizer
+from settings.transaction import access_control_policy, event_stream
 
 
 class TransactionClient(BaseTransactionsClient):
 
-    def __init__(self, producer, acl):
+    def __init__(self, producer):
         self.producer = producer
-        self.acl = acl
 
     def allowed_groups(self, properties, acp) -> list:
         if isinstance(acp, list):
@@ -40,14 +42,14 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def authorize(self, item: Item, request: Request, collection_id: str) -> dict:
+    def authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
         properties = item.properties
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
             raise ValueError("Item project must match path collection_id")
 
-        allowed_groups = self.allowed_groups(properties, self.acl)
+        allowed_groups = self.allowed_groups(properties, access_control_policy)
         # print("allowed groups", json.dumps(allowed_groups))
 
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
@@ -84,83 +86,86 @@ class TransactionClient(BaseTransactionsClient):
                         "name": identity.get("name"),
                         "email": identity.get("email"),
                         "identity_provider": identity.get("identity_provider"),
-                        "identity_provider_display_name": identity.get("identity_provider_display_name"),
+                        "identity_provider_display_name": identity.get(
+                            "identity_provider_display_name"
+                        ),
                         "last_authentication": identity.get("last_authentication"),
                     }
         print("authorized_identities", json.dumps(authorized_identities))
 
-        auth = {
-            "requester_data": {
-                "client_id": token_info.get("client_id"),
-                "iss": token_info.get("iss"),
-                "sub": token_info.get("sub")
-            },
-            "auth_basis_data": {
-                "authorization_basis_type": "group",
-                "authorization_basis_service": "groups.globus.org",
-                "authorization_basis": authorized_identities,
-            },
-        }
+        requester_data = RequesterData(
+            sub=token_info.get("sub"),
+            user_id=token_info.get("username"),
+            identity_provider=identity.get("identity_provider"),
+            identity_provider_display_name=identity.get(
+                "identity_provider_display_name"
+            ),
+        )
+
+        auth = Auth(
+            auth_policy_id="ESGF-Publish-00012",
+            client_id=token_info.get("client_id"),
+            requester_data=requester_data,
+        )
 
         return auth
 
+    def egi_authorize(self, item: CMIP6Item, role: str, request: Request) -> Auth:
+        """_summary_
+
+        Args:
+            item (CMIP6Item): item to check authorization for
+            role (str): role to check authorization for
+            request (Request): current request
+
+        Returns:
+            Auth: Auth object if successful
+        """
+        authorizer: Authorizer = request.state.authorizer
+        authorizer.authorize(item, role)
+
+        return Auth(
+            client_id=authorizer.client_id,
+            requester_data=authorizer.requester_data,
+        )
+
     async def create_item(
         self,
-        item: Item,
+        item: CMIP6Item,
         request: Request,
         collection_id: str,
-    ) -> Optional[Union[Item, Response, None]]:
-        # Get the item from the database to verify that it does not exist
-        # item = await self.get_item(item.id, collection_id)
-        # if item:
-        #     raise HTTPException(status_code=409, detail="Item already exists")
+    ) -> Optional[Union[CMIP6Item, Response, None]]:
 
-        auth = self.authorize(item, request, collection_id)
-        user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
+        auth = self.egi_authorize(item=item, role="CREATE", request=request)
 
-        stac_item = await request.json()
-        try:
-            CMIP6ItemEdited(**stac_item)
-        except ValidationError as e:
-            print(e.errors())
-            raise HTTPException(status_code=400, detail=str(e.errors()))
+        headers = request.headers.get("headers", {})
+        user_agent = headers.get("User-Agent", "/").split("/")
 
-        message = {
-            "metadata": {
-                "auth": auth,
-                "event_id": uuid.uuid4(),
-                "publisher": {
-                    "package": user_agent[0],
-                    "version": user_agent[1] if len(user_agent) > 1 else "",
-                },
-                "request_id": uuid.uuid4(),
-                "time": datetime.now().isoformat(),
-                "schema_version": "1.0.0",
-            },
-            "data": {
-                "type": "STAC",
-                "payload": {
-                    "method": "POST",
-                    "collection_id": collection_id,
-                    "item": stac_item,
-                },
-            },
-        }
+        payload = CreatePayload(method="POST", collection_id=collection_id, item=item)
+        data = Data(type="STAC", payload=payload)
+
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
+
+        metadata = Metadata(
+            auth=auth,
+            publisher=publisher,
+            schema_version="1.0.0",
+            event_id=uuid.uuid4(),
+            request_id=headers.get("X-Request-ID", uuid.uuid4()),
+        )
+        event = KafkaEvent(metadata=metadata, data=data)
 
         try:
             self.producer.produce(
-                topic=event_stream.get("topic", "esgf-local"),
+                topic=event_stream.get("topic"),
                 key=item.id.encode("utf-8"),
-                value=json.dumps(message, default=str).encode("utf-8"),
+                value=event.model_dump_json().encode("utf8"),
             )
+
         except Exception as e:
-            print(f"Error producing message: {e}")
-            self.producer.produce(
-                topic="esgf-errors",
-                key=item.id.encode("utf-8"),
-                value=json.dumps(message, default=str).encode("utf-8")
-            )
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
@@ -169,49 +174,41 @@ class TransactionClient(BaseTransactionsClient):
 
     async def update_item(
         self,
-        item: Item,
+        item: CMIP6Item,
         request: Request,
         collection_id: str,
         item_id: str,
-    ) -> Optional[Union[Item, Response]]:
-        event = request.scope.get("aws.event")
-        # Get the item from the database to verify that it exists
-        # item = await self.get_item(item_id, collection_id)
-        # if not item:
-        #     raise HTTPException(status_code=404, detail="Item not found")
-        auth = self.authorize(item, event, collection_id)
-        user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
+    ) -> Optional[Union[CMIP6Item, Response]]:
 
-        message = {
-            "metadata": {
-                "auth": auth,
-                "publisher": {
-                    "package": user_agent[0],
-                    "version": user_agent[1] if len(user_agent) > 1 else "",
-                },
-                "time": datetime.now().isoformat(),
-                "schema_version": "1.0.0",
-            },
-            "data": {
-                "type": "STAC",
-                "version": "1.0.0",
-                "payload": {
-                    "method": "PUT",
-                    "collection_id": collection_id,
-                    "item": await request.json(),
-                },
-            },
-        }
+        auth = self.egi_authorize(item=item, role="UPDATE", request=request)
+        headers = request.headers.get("headers", {})
+        user_agent = headers.get("User-Agent", "/").split("/")
+
+        payload = UpdatePayload(
+            method="PUT", collection_id=collection_id, item_id=item_id, item=item
+        )
+        data = Data(type="STAC", version="1.0.0", payload=payload)
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
+        metadata = Metadata(
+            auth=auth,
+            publisher=publisher,
+            time=datetime.now().isoformat(),
+            schema_version="1.0.0",
+            event_id=uuid.uuid4(),
+            request_id=headers.get("X-Request-ID", uuid.uuid4()),
+        )
+        event = KafkaEvent(metadata=metadata, data=data)
 
         try:
             self.producer.produce(
-                topic="esgfng",
-                key=item.id.encode("utf-8"),
-                value=json.dumps(message, default=str).encode("utf-8"),
+                topic=event_stream.get("topic"),
+                key=item_id.encode("utf-8"),
+                value=event.model_dump_json().encode("utf8"),
             )
         except Exception as e:
-            print(f"Error producing message: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
@@ -223,7 +220,7 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         collection_id: str,
         item_id: str,
-    ) -> Optional[Union[Item, Response]]:
+    ) -> Optional[Union[CMIP6Item, Response]]:
         event = request.scope.get("aws.event")
         # Get the item from the database
         # item = await self.get_item(collection_id, item_id)
@@ -231,34 +228,35 @@ class TransactionClient(BaseTransactionsClient):
 
         user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
 
-        message = {
-            "metadata": {
-                "auth": None,  # auth,
-                "publisher": {
-                    "package": user_agent[0],
-                    "version": user_agent[1] if len(user_agent) > 1 else "",
-                },
-                "time": datetime.now().isoformat(),
-                "schema_version": "1.0.0",
-            },
-            "data": {
-                "type": "STAC",
-                "version": "1.0.0",
-                "payload": {
-                    "method": "DELETE",
-                    "collection_id": collection_id,
-                    "item_id": item_id,
-                },
-            },
-        }
-
-        self.producer.produce(
-            None,
-            json.dumps(message, default=str).encode("utf-8"),
+        payload = RevokePayload(
+            method="DELETE", collection_id=collection_id, item_id=item_id
         )
+        data = Data(type="STAC", version="1.0.0", payload=payload)
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
+        metadata = Metadata(
+            auth=Auth(),
+            publisher=publisher,
+            time=datetime.now().isoformat(),
+            schema_version="1.0.0",
+            event_id="dummy",
+            request_id="dummy",
+        )
+        event = KafkaEvent(metadata=metadata, data=data)
+
+        try:
+            self.producer.produce(
+                topic=event_stream.get("topic"),
+                key=item_id.encode("utf-8"),
+                value=event.model_dump_json().encode("utf8"),
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
+
         return Response(
-            content="Item queued for deletion",
             status_code=status.HTTP_202_ACCEPTED,
+            content="Item queued for deletion",
         )
 
     async def create_collection(self, collection: Collection, **kwargs) -> Collection:
