@@ -3,6 +3,7 @@ Models relating to Authorisation for the ESGF Next Gen Core Architecture.
 """
 
 from typing import Literal
+from urllib.parse import urlparse
 
 from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import HTTPException
@@ -70,7 +71,9 @@ class Nodes(BaseModel):
             HTTPException: Raised if either node or role permission is missing
         """
         for asset in item.assets:
-            node_permission = self.nodes.get(asset.href, None)
+            asset_url = urlparse(asset.href)
+            node_permission = self.nodes.get(asset_url.hostname, None)
+
             if not node_permission:
                 raise HTTPException(
                     status_code=401,
