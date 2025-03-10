@@ -153,9 +153,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         if request.url.path == "/healthcheck":
             return await call_next(request)
 
-        authorization_header = request.headers.get("authorization")
-
-        access_token = authorization_header[7:]
+        settings.logger.info("Request Headers %s", request.headers)
 
         auth = OAuth2ClientCredentials(
             settings.stac_api.get("token_url"),
@@ -168,11 +166,12 @@ class EGIAuthorizer(BaseHTTPMiddleware):
                 settings.stac_api.get("userinfo_endpoint"),
                 headers={
                     "Content-type": "application/json",
-                    "Authorization": f"Bearer ${access_token}",
+                    "Authorization": request.headers.get("authorization"),
                 },
                 timeout=5,
                 auth=auth,
             )
+            response.raise_for_status()
 
         token_info = response.json()
 
