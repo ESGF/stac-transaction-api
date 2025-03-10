@@ -73,7 +73,6 @@ class TransactionClient(BaseTransactionsClient):
                 )
         if not authorized_identities:
             raise HTTPException(status_code=403, detail="Forbidden")
-        print("authorized_identities", json.dumps(authorized_identities))
 
         identity_set_detail = token_info.get("identity_set_detail", [])
         for identity in identity_set_detail:
