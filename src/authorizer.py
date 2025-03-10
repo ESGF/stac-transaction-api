@@ -164,7 +164,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         )
 
         async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
-            response = await client.post(
+            response = await client.get(
                 settings.stac_api.get("userinfo_endpoint"),
                 headers={
                     "Content-type": "application/json",
@@ -174,7 +174,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
                 auth=auth,
             )
 
-        token_info = response.data
+        token_info = response.json()
 
         authorizer = Authorizer(
             client_id=settings.event_stream.get("client_id"),
