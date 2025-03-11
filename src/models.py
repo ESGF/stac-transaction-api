@@ -6,11 +6,11 @@ import re
 from typing import Literal
 from urllib.parse import urlparse
 
+from esgf_playground_utils.models.item import CMIP6Item
 from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import HTTPException
 from pydantic import BaseModel
 from pydantic_core import ValidationError
-from stac_pydantic.item import Item
 
 import settings.transaction as settings
 
@@ -64,11 +64,11 @@ class Nodes(BaseModel):
         else:
             self.nodes[node.id] = node
 
-    def authorize(self, item: Item, role: Role):
+    def authorize(self, item: CMIP6Item, role: Role):
         """Check for appropriate authorisation.
 
         Args:
-            assets (Item): item to be authorised
+            assets (CMIP6Item): item to be authorised
             role (Role): required role for auhroisation
 
         Raises:
@@ -114,7 +114,7 @@ class Projects(BaseModel):
         else:
             self.projects[project.id] = project
 
-    def authorize(self, item: Item, role: Role):
+    def authorize(self, item: CMIP6Item, role: Role):
         """Check for appropriate authorisation.
 
         Args:
@@ -149,7 +149,7 @@ class Authorizer(BaseModel):
     nodes: Nodes = Nodes()
     projects: Projects = Projects()
 
-    def authorize(self, item: Item, role: Role):
+    def authorize(self, item: CMIP6Item, role: Role):
         """Check for appropriate authorisation.
 
         Args:
@@ -188,5 +188,5 @@ class Authorizer(BaseModel):
                             )
                         )
 
-                except ValidationError as e:
+                except ValidationError:
                     settings.logger.info("Entitlement skipped: %s", entitlement)
