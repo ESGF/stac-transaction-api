@@ -140,7 +140,11 @@ class TransactionClient(BaseTransactionsClient):
         headers = request.headers.get("headers", {})
         user_agent = headers.get("User-Agent", "/").split("/")
 
-        payload = CreatePayload(method="POST", collection_id=collection_id, item=item)
+        payload = CreatePayload(
+            method="POST",
+            collection_id=collection_id,
+            item=item.model_dump(),
+        )
         data = Data(type="STAC", payload=payload)
 
         publisher = Publisher(
@@ -149,10 +153,11 @@ class TransactionClient(BaseTransactionsClient):
 
         metadata = Metadata(
             auth=auth,
+            event_id=uuid.uuid4().hex,
             publisher=publisher,
+            request_id=headers.get("X-Request-ID", uuid.uuid4().hex),
+            time=datetime.now(),
             schema_version="1.0.0",
-            event_id=uuid.uuid4(),
-            request_id=headers.get("X-Request-ID", uuid.uuid4()),
         )
         event = KafkaEvent(metadata=metadata, data=data)
 
