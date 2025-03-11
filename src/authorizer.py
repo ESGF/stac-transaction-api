@@ -1,5 +1,4 @@
 import json
-import re
 
 import httpx
 from esgf_playground_utils.models.kafka import RequesterData
@@ -9,7 +8,7 @@ from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import settings.transaction as settings
-from models import Authorizer, Node, Project
+from models import Authorizer
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),
