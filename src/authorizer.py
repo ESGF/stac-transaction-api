@@ -6,7 +6,6 @@ from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import Request
 from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsClient
 from globus_sdk.scopes import GroupsScopes
-from httpx_auth import OAuth2ClientCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import settings.transaction as settings
@@ -155,46 +154,37 @@ class EGIAuthorizer(BaseHTTPMiddleware):
 
         settings.logger.info("Request Headers %s", request.headers)
 
-        auth = OAuth2ClientCredentials(
-            settings.stac_api.get("token_url"),
-            client_id=settings.stac_api.get("client_id"),
-            client_secret=settings.stac_api.get("client_secret"),
+        auth = httpx.BasicAuth(
+            username=settings.stac_api.get("client_id"),
+            password=settings.stac_api.get("client_secret"),
         )
 
         async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
-            response = await client.get(
-                settings.stac_api.get("userinfo_endpoint"),
-                headers={
-                    "Content-type": "application/json",
-                    "Authorization": request.headers.get("authorization"),
-                },
-                timeout=5,
+            settings.logger.info(
+                "Post request to %s",
+                settings.stac_api.get("introspection_endpoint"),
+            )
+            response = await client.post(
+                settings.stac_api.get("introspection_endpoint"),
+                headers={"Content-type": "application/x-www-form-urlencoded"},
+                data=f"token={request.headers.get('authorization')[7:]}",
                 auth=auth,
+                timeout=5,
             )
             response.raise_for_status()
 
         token_info = response.json()
 
         authorizer = Authorizer(
-            client_id=settings.event_stream.get("client_id"),
             requester_data=RequesterData(
+                client_id=settings.event_stream["config"].get("client.id"),
                 sub=token_info["sub"],
-                iss="egi_chicken",
+                iss=token_info["iss"],
             ),
         )
 
-        for entitlement in token_info["eduperson_entitlement"]:
-            match = re.search(settings.stac_api.get("regex"), entitlement)
-
-            if match.group("type") == "project":
-                authorizer.projects.add(
-                    Project(id=match.group("id"), role=match.group("role"))
-                )
-
-            elif match.group("type") == "node":
-                authorizer.nodes.add(
-                    Node(id=match.group("id"), role=match.group("role"))
-                )
+        authorizer.add(token_info["eduperson_entitlement"])
 
         request.state.authorizer = authorizer
+
         return await call_next(request)

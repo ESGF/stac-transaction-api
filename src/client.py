@@ -125,7 +125,6 @@ class TransactionClient(BaseTransactionsClient):
         authorizer.authorize(item, role)
 
         return Auth(
-            client_id=authorizer.client_id,
             requester_data=authorizer.requester_data,
         )
 
