@@ -145,6 +145,7 @@ class TransactionClient(BaseTransactionsClient):
             collection_id=collection_id,
             item=item.model_dump(),
         )
+
         data = Data(type="STAC", payload=payload)
 
         publisher = Publisher(
@@ -156,7 +157,7 @@ class TransactionClient(BaseTransactionsClient):
             event_id=uuid.uuid4().hex,
             publisher=publisher,
             request_id=headers.get("X-Request-ID", uuid.uuid4().hex),
-            time=datetime.now(),
+            time=datetime.now().isoformat(),
             schema_version="1.0.0",
         )
         event = KafkaEvent(metadata=metadata, data=data)
@@ -185,23 +186,29 @@ class TransactionClient(BaseTransactionsClient):
     ) -> Optional[Union[CMIP6Item, Response]]:
 
         auth = self.egi_authorize(item=item, role="UPDATE", request=request)
+
         headers = request.headers.get("headers", {})
         user_agent = headers.get("User-Agent", "/").split("/")
 
         payload = UpdatePayload(
-            method="PUT", collection_id=collection_id, item_id=item_id, item=item
+            method="PUT",
+            collection_id=collection_id,
+            item_id=item_id,
+            item=item.model_dump(),
         )
-        data = Data(type="STAC", version="1.0.0", payload=payload)
+
+        data = Data(type="STAC", payload=payload)
+
         publisher = Publisher(
             package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
         )
         metadata = Metadata(
             auth=auth,
+            event_id=uuid.uuid4().hex,
             publisher=publisher,
+            request_id=headers.get("X-Request-ID", uuid.uuid4().hex),
             time=datetime.now().isoformat(),
             schema_version="1.0.0",
-            event_id=uuid.uuid4(),
-            request_id=headers.get("X-Request-ID", uuid.uuid4()),
         )
         event = KafkaEvent(metadata=metadata, data=data)
 
@@ -230,22 +237,28 @@ class TransactionClient(BaseTransactionsClient):
         # item = await self.get_item(collection_id, item_id)
         # auth = self.authorize(item, event, collection_id)
 
-        user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
+        headers = request.headers.get("headers", {})
+        user_agent = headers.get("User-Agent", "/").split("/")
 
         payload = RevokePayload(
-            method="DELETE", collection_id=collection_id, item_id=item_id
+            method="DELETE",
+            collection_id=collection_id,
+            item_id=item_id,
         )
-        data = Data(type="STAC", version="1.0.0", payload=payload)
+
+        data = Data(type="STAC", payload=payload)
+
         publisher = Publisher(
             package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
         )
+
         metadata = Metadata(
             auth=Auth(),
+            event_id=uuid.uuid4().hex,
             publisher=publisher,
+            request_id=headers.get("X-Request-ID", uuid.uuid4().hex),
             time=datetime.now().isoformat(),
             schema_version="1.0.0",
-            event_id="dummy",
-            request_id="dummy",
         )
         event = KafkaEvent(metadata=metadata, data=data)
 
