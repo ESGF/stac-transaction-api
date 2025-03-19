@@ -1,0 +1,7 @@
+FROM python:3.12
+
+RUN python3 -m venv /esgvoc
+RUN pip install esgvoc
+RUN esgvoc install
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

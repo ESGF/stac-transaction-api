@@ -12,11 +12,11 @@ click==8.1.7
 confluent-kafka==2.6.0
 cryptography==42.0.8
 esgf-playground-utils==1.0.0
+esgvoc
 fastapi==0.114.0
 geojson-pydantic==1.1.2
 globus-sdk==3.41.0
 h11==0.14.0
-idna==3.7
 iso8601==2.1.0
 jmespath==1.0.1
 mangum==0.17.0

@@ -1,3 +1,7 @@
+[project]
+name = "stac-transaction-api"
+dynamic = ["version"]
+
 [tool.poetry]
 name = "stac-transaction-api"
 version = "0.1.0"
@@ -17,6 +21,7 @@ charset-normalizer = "3.3.2"
 confluent-kafka = "2.6.0"
 cryptography = "42.0.8"
 esgf-playground-utils = "1.0.0"
+esgvoc = "0.2.1"
 fastapi = "0.114.0"
 globus-sdk = "3.41.0"
 idna = "3.7"
