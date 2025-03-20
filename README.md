@@ -13,7 +13,7 @@ Getting up and running
     ```
     docker build -t stac-transaction-fastapi .
     docker run --name stac-transaction-fastapi \
-        -p 8001:8001 \ 
+        -p 8000:8000 \ 
         -it stac-transaction-fastapi
     ```
 - For ECS deployments, there are basic scripts in the scripts directory for building and deploying
