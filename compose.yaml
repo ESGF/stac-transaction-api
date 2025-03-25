@@ -4,13 +4,13 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - cache:/var/task/.cache
+      - cache:/root/.local/share/esgvoc
   esgvoc:
     build:
       context: .
       dockerfile: ./Dockerfile-esgvoc
     volumes:
-      - cache:/cache
+      - cache:/root/.local/share/esgvoc
 
 volumes:
   cache:
