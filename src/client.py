@@ -1,14 +1,23 @@
 import json
+import logging
 import uuid
 
 from datetime import datetime
 from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
+from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException, Request, Response, status
 from pydantic import HttpUrl, ValidationError
 from stac_fastapi.types.core import BaseTransactionsClient
 from stac_fastapi.types.core import Collection, Item
 from settings.transaction import event_stream
 from typing import Optional, Union
+
+
+# Setup logger
+logger = logging.getLogger(__name__)
+
+# esgvoc CV validator
+validator = DrsValidator(project_id="cmip6")
 
 
 class ESGFItemPropertiesEdited(ESGFItemProperties):
@@ -86,7 +95,7 @@ class TransactionClient(BaseTransactionsClient):
                         "identity_provider_display_name": identity.get("identity_provider_display_name"),
                         "last_authentication": identity.get("last_authentication"),
                     }
-        print("authorized_identities", json.dumps(authorized_identities))
+        # print("authorized_identities", json.dumps(authorized_identities))
 
         auth = {
             "requester_data": {
@@ -109,30 +118,43 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         collection_id: str,
     ) -> Optional[Union[Item, Response, None]]:
-        # Get the item from the database to verify that it does not exist
-        # item = await self.get_item(item.id, collection_id)
-        # if item:
-        #     raise HTTPException(status_code=409, detail="Item already exists")
-
         auth = self.authorize(item, request, collection_id)
+        event_id = uuid.uuid4()
+        request_id = uuid.uuid4()
         user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
 
         stac_item = await request.json()
+        report = json.loads(
+            validator.validate_dataset_id(stac_item.get("id", None)).model_dump_json()
+        )
+        if len(report["errors"]) > 0:
+            error_detail = {
+                "event_id": event_id,
+                "item_id": stac_item.get("id"),
+                "report": report["errors"],
+                "request_id": request_id,
+                "status_code": 400,
+                "type": "validation_error",
+            }
+
+            logger.error(error_detail)
+            raise HTTPException(status_code=400, detail=str(error_detail))
+
         try:
             CMIP6ItemEdited(**stac_item)
         except ValidationError as e:
-            print(e.errors())
+            logger.error(e.errors())
             raise HTTPException(status_code=400, detail=str(e.errors()))
 
         message = {
             "metadata": {
                 "auth": auth,
-                "event_id": uuid.uuid4(),
+                "event_id": event_id,
                 "publisher": {
                     "package": user_agent[0],
                     "version": user_agent[1] if len(user_agent) > 1 else "",
                 },
-                "request_id": uuid.uuid4(),
+                "request_id": request_id,
                 "time": datetime.now().isoformat(),
                 "schema_version": "1.0.0",
             },
@@ -153,12 +175,7 @@ class TransactionClient(BaseTransactionsClient):
                 value=json.dumps(message, default=str).encode("utf-8"),
             )
         except Exception as e:
-            print(f"Error producing message: {e}")
-            self.producer.produce(
-                topic="esgf-errors",
-                key=item.id.encode("utf-8"),
-                value=json.dumps(message, default=str).encode("utf-8")
-            )
+            logger.error(f"Error producing message: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
         return Response(
@@ -209,7 +226,7 @@ class TransactionClient(BaseTransactionsClient):
                 value=json.dumps(message, default=str).encode("utf-8"),
             )
         except Exception as e:
-            print(f"Error producing message: {e}")
+            logger.error(f"Error producing message: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
         return Response(
