@@ -60,7 +60,7 @@ class Authorizer(BaseHTTPMiddleware):
             policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         policy = self.generate_policy(token_info.get("sub"), "Allow", resource_arn, token_info=token_info, groups=groups)
-        request.state.authorizer = policy  # This is awesome by the way :)
+        request.state.authorizer = policy
         return await call_next(request)
 
     def get_groups(self, token):
@@ -112,8 +112,5 @@ class Authorizer(BaseHTTPMiddleware):
                 }
                 if groups:
                     auth_response["context"]["groups"] = json.dumps(groups)
-
-        # Write the auth_response to the authorizer's CloudWatch log
-        # print(auth_response)
 
         return auth_response

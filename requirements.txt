@@ -17,6 +17,7 @@ fastapi==0.114.0
 geojson-pydantic==1.1.2
 globus-sdk==3.41.0
 h11==0.14.0
+httpx==0.28.1
 iso8601==2.1.0
 jmespath==1.0.1
 pycparser==2.22
@@ -24,6 +25,8 @@ pydantic==2.10.6
 pydantic-settings==2.8.1
 pydantic_core==2.27.2
 PyJWT==2.8.0
+pytest==8.3.5
+pytest-mock==3.14.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 requests==2.32.3

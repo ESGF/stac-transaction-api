@@ -51,22 +51,18 @@ class TransactionClient(BaseTransactionsClient):
 
     def authorize(self, item: Item, request: Request, collection_id: str) -> dict:
         properties = item.properties
+
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
             raise ValueError("Item project must match path collection_id")
 
         allowed_groups = self.allowed_groups(properties, self.acl)
-        # print("allowed groups", json.dumps(allowed_groups))
-
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
-        # print("allowed groups uuid", json.dumps(allowed_groups_uuid))
 
         authorizer = request.state.authorizer
         access_token_json = authorizer["context"].get("access_token")
         user_groups_json = authorizer["context"].get("groups")
-        # print("access token json", access_token_json)
-        # print("user groups json", user_groups_json)
 
         token_info = json.loads(access_token_json)
         user_groups = json.loads(user_groups_json)
@@ -95,7 +91,6 @@ class TransactionClient(BaseTransactionsClient):
                         "identity_provider_display_name": identity.get("identity_provider_display_name"),
                         "last_authentication": identity.get("last_authentication"),
                     }
-        # print("authorized_identities", json.dumps(authorized_identities))
 
         auth = {
             "requester_data": {
@@ -143,8 +138,17 @@ class TransactionClient(BaseTransactionsClient):
         try:
             CMIP6ItemEdited(**stac_item)
         except ValidationError as e:
-            logger.error(e.errors())
-            raise HTTPException(status_code=400, detail=str(e.errors()))
+            error_detail = {
+                "error": e.errors(),
+                "event_id": event_id,
+                "item_id": stac_item.get("id"),
+                "report": report["errors"],
+                "request_id": request_id,
+                "status_code": 400,
+                "type": "validation_error",
+            }
+            logger.error(error_detail)
+            raise HTTPException(status_code=400, detail=str(error_detail))
 
         message = {
             "metadata": {
