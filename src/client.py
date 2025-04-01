@@ -126,9 +126,9 @@ class TransactionClient(BaseTransactionsClient):
         )
         if len(report["errors"]) > 0:
             error_detail = {
+                "errors": report["errors"],
                 "event_id": event_id,
                 "item_id": stac_item.get("id"),
-                "report": report["errors"],
                 "request_id": request_id,
                 "status_code": 400,
                 "type": "validation_error",
@@ -142,10 +142,9 @@ class TransactionClient(BaseTransactionsClient):
             CMIP6ItemEdited(**stac_item)
         except ValidationError as e:
             error_detail = {
-                "error": e.errors(),
+                "errors": e.errors(),
                 "event_id": event_id,
                 "item_id": stac_item.get("id"),
-                "report": report["errors"],
                 "request_id": request_id,
                 "status_code": 400,
                 "type": "validation_error",
