@@ -8,7 +8,7 @@ Prerequisites
 Getting up and running
 - Create a `.env` file under `src/settings`
 -- Add the `CLIENT_ID` and `CLIENT_SECRET` and set `RUN_ENVIRONMENT=local` in the `.env` file
-- To build the local Confluent kafka environment as well as the transaction API, run `docker compose -f compose-kafka.yaml up` This can take a minute or two to complete.
+- To build the local Confluent kafka environment, run `docker compose -f compose-kafka.yaml up` This can take a minute or two to complete.
 - To build the FastAPI and esgvoc container, run
     ```
     docker volume create esgvoc
