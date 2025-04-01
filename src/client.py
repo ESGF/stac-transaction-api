@@ -119,6 +119,8 @@ class TransactionClient(BaseTransactionsClient):
         user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
 
         stac_item = await request.json()
+
+        # CV Validation
         report = json.loads(
             validator.validate_dataset_id(stac_item.get("id", None)).model_dump_json()
         )
@@ -135,6 +137,7 @@ class TransactionClient(BaseTransactionsClient):
             logger.error(error_detail)
             raise HTTPException(status_code=400, detail=str(error_detail))
 
+        # Schema level validation
         try:
             CMIP6ItemEdited(**stac_item)
         except ValidationError as e:
