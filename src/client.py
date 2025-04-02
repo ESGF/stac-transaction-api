@@ -1,31 +1,17 @@
 import json
 import logging
 import uuid
-
 from datetime import datetime
-from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
-from esgvoc.apps.drs.validator import DrsValidator
-from fastapi import HTTPException, Request, Response, status
-from pydantic import HttpUrl, ValidationError
-from stac_fastapi.types.core import BaseTransactionsClient
-from stac_fastapi.types.core import Collection, Item
-from settings.transaction import event_stream
 from typing import Optional, Union
 
+from fastapi import HTTPException, Request, Response, status
+from stac_fastapi.types.core import BaseTransactionsClient, Collection, Item
+
+from settings.transaction import event_stream
+from utils import validate_item
 
 # Setup logger
 logger = logging.getLogger(__name__)
-
-# esgvoc CV validator
-validator = DrsValidator(project_id="cmip6")
-
-
-class ESGFItemPropertiesEdited(ESGFItemProperties):
-    citation_url: Optional[HttpUrl] = None
-
-
-class CMIP6ItemEdited(CMIP6Item):
-    properties: ESGFItemPropertiesEdited
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -88,7 +74,9 @@ class TransactionClient(BaseTransactionsClient):
                         "name": identity.get("name"),
                         "email": identity.get("email"),
                         "identity_provider": identity.get("identity_provider"),
-                        "identity_provider_display_name": identity.get("identity_provider_display_name"),
+                        "identity_provider_display_name": identity.get(
+                            "identity_provider_display_name"
+                        ),
                         "last_authentication": identity.get("last_authentication"),
                     }
 
@@ -96,7 +84,7 @@ class TransactionClient(BaseTransactionsClient):
             "requester_data": {
                 "client_id": token_info.get("client_id"),
                 "iss": token_info.get("iss"),
-                "sub": token_info.get("sub")
+                "sub": token_info.get("sub"),
             },
             "auth_basis_data": {
                 "authorization_basis_type": "group",
@@ -113,44 +101,19 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         collection_id: str,
     ) -> Optional[Union[Item, Response, None]]:
+        # Authz/Authn
         auth = self.authorize(item, request, collection_id)
+
+        # Make sure the item passes validation
         event_id = uuid.uuid4()
         request_id = uuid.uuid4()
-        user_agent = request.headers.get("headers", {}).get("User-Agent", "/").split("/")
-
         stac_item = await request.json()
+        validate_item(event_id, request_id, stac_item)
 
-        # CV Validation
-        report = json.loads(
-            validator.validate_dataset_id(stac_item.get("id", None)).model_dump_json()
+        # Move on if auth and validation pass
+        user_agent = (
+            request.headers.get("headers", {}).get("User-Agent", "/").split("/")
         )
-        if len(report["errors"]) > 0:
-            error_detail = {
-                "errors": report["errors"],
-                "event_id": event_id,
-                "item_id": stac_item.get("id"),
-                "request_id": request_id,
-                "status_code": 400,
-                "type": "validation_error",
-            }
-
-            logger.error(error_detail)
-            raise HTTPException(status_code=400, detail=str(error_detail))
-
-        # Schema level validation
-        try:
-            CMIP6ItemEdited(**stac_item)
-        except ValidationError as e:
-            error_detail = {
-                "errors": e.errors(),
-                "event_id": event_id,
-                "item_id": stac_item.get("id"),
-                "request_id": request_id,
-                "status_code": 400,
-                "type": "validation_error",
-            }
-            logger.error(error_detail)
-            raise HTTPException(status_code=400, detail=str(error_detail))
 
         message = {
             "metadata": {
@@ -193,24 +156,31 @@ class TransactionClient(BaseTransactionsClient):
         self,
         item: Item,
         request: Request,
-        collection_id: str,
-        item_id: str,
+        collection_id: str
     ) -> Optional[Union[Item, Response]]:
-        event = request.scope.get("aws.event")
-        # Get the item from the database to verify that it exists
-        # item = await self.get_item(item_id, collection_id)
-        # if not item:
-        #     raise HTTPException(status_code=404, detail="Item not found")
-        auth = self.authorize(item, event, collection_id)
-        user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
+        # Authz/Authn
+        auth = self.authorize(item, request, collection_id)
+
+        # Make sure the item passes validation
+        event_id = uuid.uuid4()
+        request_id = uuid.uuid4()
+        stac_item = await request.json()
+        validate_item(event_id, request_id, stac_item)
+
+        # Move on if auth and validation pass
+        user_agent = (
+            request.headers.get("headers", {}).get("User-Agent", "/").split("/")
+        )
 
         message = {
             "metadata": {
                 "auth": auth,
+                "event_id": event_id,
                 "publisher": {
                     "package": user_agent[0],
                     "version": user_agent[1] if len(user_agent) > 1 else "",
                 },
+                "request_id": request_id,
                 "time": datetime.now().isoformat(),
                 "schema_version": "1.0.0",
             },
@@ -220,14 +190,14 @@ class TransactionClient(BaseTransactionsClient):
                 "payload": {
                     "method": "PUT",
                     "collection_id": collection_id,
-                    "item": await request.json(),
+                    "item": stac_item,
                 },
             },
         }
 
         try:
             self.producer.produce(
-                topic="esgfng",
+                topic=event_stream.get("topic", "esgf-local"),
                 key=item.id.encode("utf-8"),
                 value=json.dumps(message, default=str).encode("utf-8"),
             )
@@ -244,22 +214,29 @@ class TransactionClient(BaseTransactionsClient):
         self,
         request: Request,
         collection_id: str,
-        item_id: str,
+        item: str,
     ) -> Optional[Union[Item, Response]]:
-        event = request.scope.get("aws.event")
-        # Get the item from the database
-        # item = await self.get_item(collection_id, item_id)
-        # auth = self.authorize(item, event, collection_id)
+        # Authz/Authn
+        self.authorize(item, request, collection_id)
 
-        user_agent = event.get("headers", {}).get("User-Agent", "/").split("/")
+        # Make sure the item passes validation
+        event_id = uuid.uuid4()
+        request_id = uuid.uuid4()
+
+        # Move on if auth and validation pass
+        user_agent = (
+            request.headers.get("headers", {}).get("User-Agent", "/").split("/")
+        )
 
         message = {
             "metadata": {
                 "auth": None,  # auth,
+                "event_id": event_id,
                 "publisher": {
                     "package": user_agent[0],
                     "version": user_agent[1] if len(user_agent) > 1 else "",
                 },
+                "request_id": request_id,
                 "time": datetime.now().isoformat(),
                 "schema_version": "1.0.0",
             },
@@ -269,7 +246,7 @@ class TransactionClient(BaseTransactionsClient):
                 "payload": {
                     "method": "DELETE",
                     "collection_id": collection_id,
-                    "item_id": item_id,
+                    "item_id": item.id,
                 },
             },
         }

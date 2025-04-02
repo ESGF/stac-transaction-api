@@ -1,7 +1,7 @@
-import attr
 import logging
-
 from abc import ABC, abstractmethod
+
+import attr
 from confluent_kafka import Producer
 
 # Setup logger
@@ -32,9 +32,13 @@ class KafkaProducer(BaseProducer):
             if err is not None:
                 logger.error(f"Delivery failed for message {msg.key()}: {err}")
             else:
-                logger.info(f"Message {msg.key()} successfully delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}")
+                logger.info(
+                    f"Message {msg.key()} successfully delivered to {msg.topic()} [{msg.partition()}] at offset {msg.offset()}"
+                )
             delivery_reports.append((err, msg))
 
-        self.producer.produce(topic=topic, key=key, value=value, callback=delivery_report)
+        self.producer.produce(
+            topic=topic, key=key, value=value, callback=delivery_report
+        )
         self.producer.flush()
         return delivery_reports

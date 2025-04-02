@@ -1,9 +1,9 @@
+import json
+import unittest
+
 from fastapi.testclient import TestClient
 
 from api import app
-
-import json
-import unittest
 
 
 class TestAPI(unittest.TestCase):

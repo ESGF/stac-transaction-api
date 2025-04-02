@@ -1,6 +1,7 @@
 import logging
 import os
 import socket
+
 from dotenv import load_dotenv
 
 # Load the .env file
@@ -15,11 +16,7 @@ run_environment = os.environ.get("RUN_ENVIRONMENT", None)
 # Path to the local authorization policy file
 if run_environment == "local":
     file_path = os.path.dirname(__file__)
-    policy_path = os.path.join(
-        file_path,
-        "config",
-        "access_control_policy.json"
-    )
+    policy_path = os.path.join(file_path, "config", "access_control_policy.json")
     policy_path = "file://" + policy_path
 else:
     policy_path = "https://esgf2.s3.amazonaws.com/access_control_policy.json"
@@ -38,7 +35,7 @@ if run_environment == "local":
     event_stream = {
         "config": {
             "bootstrap.servers": "host.docker.internal:9092",
-            "client.id": socket.gethostname()
+            "client.id": socket.gethostname(),
         },
         "topic": "esgf-local",
     }
@@ -49,7 +46,7 @@ else:
             "security.protocol": "SASL_SSL",
             "sasl.mechanisms": "PLAIN",
             "sasl.username": os.environ.get("CONFLUENT_CLOUD_USERNAME"),
-            "sasl.password": os.environ.get("CONFLUENT_CLOUD_PASSWORD")
+            "sasl.password": os.environ.get("CONFLUENT_CLOUD_PASSWORD"),
         },
-        "topic": os.environ.get("TOPIC", "esgf.ng")
+        "topic": os.environ.get("TOPIC", "esgf.ng"),
     }
