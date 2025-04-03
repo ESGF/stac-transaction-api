@@ -59,9 +59,11 @@ def load_access_control_policy(url):
 
 def validate_item(event_id, request_id, stac_item):
     # CV Validation
+    stac_item_dir = stac_item.get("id", None).replace(".", "/")
     report = json.loads(
-        validator.validate_dataset_id(stac_item.get("id", None)).model_dump_json()
+        validator.validate_directory(stac_item_dir).model_dump_json()
     )
+
     if len(report["errors"]) > 0:
         error_detail = {
             "errors": report["errors"],
