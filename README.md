@@ -1,8 +1,41 @@
-# New Document
-
 # STAC Transaction API
 
+### Running Locally
+Prerequisites
+- [Docker](https://www.docker.com/) installed
+- `CLIENT_ID` and `CLIENT_SECRET` created from [Globus Developers Setting](https://app.globus.org/settings/developers)
 
+Getting up and running
+- Create a `.env` file under `src/settings`
+  - For an example, please see `src/settings/example.env`
+  - Add the `CLIENT_ID` and `CLIENT_SECRET` and set `RUN_ENVIRONMENT=local` in the `.env` file
+- To build the local Confluent kafka environment, run `docker compose -f compose-kafka.yaml up` This can take a minute or two to complete.
+- To build the FastAPI and esgvoc container, run
+    ```
+    docker volume create esgvoc
+    
+    docker build -f ./Dockerfile-esgvoc -t esgvoc .
+    docker run --name esgvoc \
+      --detach \
+      -v esgvoc:/root/.local/share/esgvoc \
+      -it esgvoc
+
+    docker build -t stac-transaction-fastapi .
+    docker run --name stac-transaction-fastapi \
+      --detach \
+      -v esgvoc:/root/.local/share/esgvoc \
+      -v ./src:/var/task \
+      -p 8000:8000 \
+      -it stac-transaction-api
+    ```
+- For ECS deployments, there are basic scripts in the scripts directory for building and deploying
+
+## To-do
+- Basic instructions for deployment to AWS ECS
+- Add Consumer support
+- Add Discovery support
+
+# DEPRECATED
 ### Amazon API Gateway (API with Authorizer)
 
 Authorizer:

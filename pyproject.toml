@@ -1,8 +1,12 @@
+[project]
+name = "stac-transaction-api"
+dynamic = ["version"]
+
 [tool.poetry]
 name = "stac-transaction-api"
 version = "0.1.0"
 description = "West ESGF STAC Transaction API"
-authors = ["Lukasz Lacinski <lukasz@uchicago.edu>"]
+authors = ["Lukasz Lacinski <lukasz@uchicago.edu>", "Steve Turoscy <sturoscy@uchicago.edu>"]
 readme = "README.md"
 packages = [
     { include = "src" }
@@ -10,21 +14,27 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
+boto3 = "1.35.60"
 certifi = "2024.6.2"
 cffi = "1.16.0"
 charset-normalizer = "3.3.2"
+confluent-kafka = "2.6.0"
 cryptography = "42.0.8"
+esgf-playground-utils = "1.0.0"
+esgvoc = "0.3.0"
+fastapi = "0.114.0"
 globus-sdk = "3.41.0"
+httpx = "0.28.1"
 idna = "3.7"
 pyjwt = "2.8.0"
+pytest = "8.3.5"
+pytest-cov = "6.0.0"
+pytest-mock = "3.14.0"
+python-dotenv = "1.0.1"
 requests = "2.32.3"
-fastapi = "0.114.0"
-mangum = "0.17.0"
 stac-fastapi-types = "3.0.1"
 stac-fastapi-extensions = "3.0.1"
 stac-fastapi-api = "3.0.1"
-confluent-kafka = "2.3.0"
-
 
 [build-system]
 requires = ["poetry-core"]

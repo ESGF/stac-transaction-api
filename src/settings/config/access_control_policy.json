@@ -1,0 +1,64 @@
+{
+  "project": {
+    "CMIP6": {
+      "institution_id": {
+        "ALCF": [
+          {
+            "name": "ESGF2 ALCF",
+            "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
+            "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
+          }
+        ],
+        "AS-RCEC": [
+          {
+            "name": "ESGF2 AS-RCEC",
+            "uuid": "e201cd30-81ba-11ef-880c-09715fb135c2",
+            "url": "https://app.globus.org/groups/e201cd30-81ba-11ef-880c-09715fb135c2"
+          }
+        ],
+        "EC-Earth-Consortium": [
+          {
+            "name": "ESGF2 EC-Earth-Consortium",
+            "uuid": "e734b32a-6cd0-11ef-b5b7-adf309915047",
+            "url": "https://app.globus.org/groups/e734b32a-6cd0-11ef-b5b7-adf309915047"
+          }
+        ],
+        "LLNL": [
+          {
+            "name": "ESGF2 LLNL",
+            "uuid": "987dfd88-33cb-11ef-ad7d-c5e0bfb8d54a",
+            "url": "https://app.globus.org/groups/987dfd88-33cb-11ef-ad7d-c5e0bfb8d54a"
+          }
+        ],
+        "UCI": [
+          {
+            "name": "UCI",
+            "uuid": "b1e1d2b8-33cb-11ef-8ec5-1df34dfa5fb6",
+            "url": "https://app.globus.org/groups/b1e1d2b8-33cb-11ef-8ec5-1df34dfa5fb6"
+          }
+        ],
+        "E3SM-Project": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "RUBISCO": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "UCSB": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ]
+      }
+    }
+  }
+}

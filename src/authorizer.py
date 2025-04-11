@@ -1,18 +1,21 @@
 import json
-from globus_sdk import ConfidentialAppAuthClient, AccessTokenAuthorizer, GroupsClient
-from globus_sdk.scopes import GroupsScopes
-import settings
 
+from fastapi import Request
+from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsClient
+from globus_sdk.scopes import GroupsScopes
+from starlette.middleware.base import BaseHTTPMiddleware
+
+import settings.transaction as settings
 
 confidential_client = ConfidentialAppAuthClient(
-    client_id=settings.api.get("client_id"),
-    client_secret=settings.api.get("client_secret"),
+    client_id=settings.stac_api.get("client_id"),
+    client_secret=settings.stac_api.get("client_secret"),
 )
 
 """
-API Gateway Authorizer
-    Authorizer type: Lambda
-    Lambda event payload: Token
+FastAPI Middleware Authorizer
+    Authorizer type: FastAPI Middleware
+    Event payload: Token
     Token source: Authorization
     Token validation: ^Bearer\s[^\s]+$                                                    # noqa: W605
                       ^Bearer\s[0-9A-Za-z]+$ for access tokens issued by Globus Auth (?)  # noqa: W605
@@ -20,37 +23,62 @@ API Gateway Authorizer
 """
 
 
-class Authorizer:
-    def __init__(self):
-        pass
+class Authorizer(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Health check endpoint for AWS ALB target group
+        # Need to bypass authorization for this endpoint
+        if request.url.path == "/healthcheck":
+            return await call_next(request)
 
-    def __call__(self, event, context):
-        authorization_header = event.get("authorizationToken")
+        authorization_header = request.headers.get("authorization")
+
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header[7:]
-        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
+        response = confidential_client.oauth2_token_introspect(
+            access_token, include="identity_set_detail"
+        )
         token_info = response.data
-        resource_arn = event["methodArn"].split("/", 1)[0] + "/*"
+
+        # resource_arn = event["methodArn"].split("/", 1)[0] + "/*"
+        resource_arn = request.headers.get("resource-arn", "*")
 
         # Verify the access token
         if not token_info.get("active", False):
-            return self.generate_policy("unknown", "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                "unknown", "Deny", resource_arn, token_info=token_info
+            )
 
-        if settings.api.get("client_id") not in token_info.get("aud", []):
-            return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+        if settings.stac_api.get("client_id") not in token_info.get("aud", []):
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
-        if settings.api.get("scope_string") != token_info.get("scope", ""):
-            return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+        if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
-        if settings.api.get("issuer") != token_info.get("iss", ""):
-            return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+        if settings.stac_api.get("issuer") != token_info.get("iss", ""):
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         # Get the user's groups
         groups = self.get_groups(access_token)
         if not groups:
-            return self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
-        return self.generate_policy(token_info.get("sub"), "Allow", resource_arn, token_info=token_info, groups=groups)
+        policy = self.generate_policy(
+            token_info.get("sub"),
+            "Allow",
+            resource_arn,
+            token_info=token_info,
+            groups=groups,
+        )
+        request.state.authorizer = policy
+        return await call_next(request)
 
     def get_groups(self, token):
         """
@@ -61,7 +89,9 @@ class Authorizer:
         and if the a new request with the same bearer token
         """
 
-        tokens = confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
+        tokens = confidential_client.oauth2_get_dependent_tokens(
+            token, scope=GroupsScopes.view_my_groups_and_memberships
+        )
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
         authorizer = AccessTokenAuthorizer(groups_token["access_token"])
         groups_client = GroupsClient(authorizer=authorizer)
@@ -102,10 +132,4 @@ class Authorizer:
                 if groups:
                     auth_response["context"]["groups"] = json.dumps(groups)
 
-        # Write the auth_response to the authorizer's CloudWatch log
-        print(auth_response)
-
         return auth_response
-
-
-authorizer = Authorizer()
