@@ -46,11 +46,11 @@ if run_environment == "local":
 else:
     event_stream = {
         "config": {
-            "bootstrap.servers": "pkc-p11xm.us-east-1.aws.confluent.cloud:9092",
+            "bootstrap.servers": os.environ.get("BOOTSTRAP_SERVERS"),
             "security.protocol": "SASL_SSL",
             "sasl.mechanisms": "PLAIN",
             "sasl.username": os.environ.get("CONFLUENT_CLOUD_USERNAME"),
             "sasl.password": os.environ.get("CONFLUENT_CLOUD_PASSWORD"),
         },
-        "topic": "esgfng",
+        "topic": os.environ.get("TOPIC", "ESGF-NG"),
     }
