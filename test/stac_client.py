@@ -94,7 +94,7 @@ class TransactionClient:
         collection = entry.get("collection")
         item_id = entry.get("id")
         headers = {
-            "User-Agent": f"esgf_publisher/{__version__}",
+            "User-Agent": f"test_client/{__version__}",
         }
         resp = self.transaction_client.put(f"/collections/{collection}/items/{item_id}", headers=headers, data=entry)
         if resp.http_status == 201:
