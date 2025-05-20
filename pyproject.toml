@@ -2,7 +2,7 @@
 name = "stac-transaction-api"
 version = "0.1.0"
 description = "West ESGF STAC Transaction API"
-authors = ["Lukasz Lacinski <lukasz@uchicago.edu>", "Steve Turoscy <sturoscy@uchicago.edu"]
+authors = ["Lukasz Lacinski <lukasz@uchicago.edu>", "Steve Turoscy <sturoscy@uchicago.edu>"]
 readme = "README.md"
 packages = [
     { include = "src" }

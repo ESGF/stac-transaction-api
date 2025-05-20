@@ -19,7 +19,7 @@ from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient, Collection
 
 from models import Authorizer
-from settings.transaction import access_control_policy, event_stream
+from settings.transaction import access_control_policy, event_stream, stac_api
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -42,12 +42,13 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
-        properties = item.properties
+    def globus_authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
             raise ValueError("Item project must match path collection_id")
+
+        properties = item.properties
 
         allowed_groups = self.allowed_groups(properties, access_control_policy)
         # print("allowed groups", json.dumps(allowed_groups))
@@ -85,9 +86,7 @@ class TransactionClient(BaseTransactionsClient):
                         "name": identity.get("name"),
                         "email": identity.get("email"),
                         "identity_provider": identity.get("identity_provider"),
-                        "identity_provider_display_name": identity.get(
-                            "identity_provider_display_name"
-                        ),
+                        "identity_provider_display_name": identity.get("identity_provider_display_name"),
                         "last_authentication": identity.get("last_authentication"),
                     }
         print("authorized_identities", json.dumps(authorized_identities))
@@ -96,9 +95,7 @@ class TransactionClient(BaseTransactionsClient):
             sub=token_info.get("sub"),
             user_id=token_info.get("username"),
             identity_provider=identity.get("identity_provider"),
-            identity_provider_display_name=identity.get(
-                "identity_provider_display_name"
-            ),
+            identity_provider_display_name=identity.get("identity_provider_display_name"),
         )
 
         auth = Auth(
@@ -127,6 +124,12 @@ class TransactionClient(BaseTransactionsClient):
             requester_data=authorizer.requester_data,
         )
 
+    def authorize(self, item: CMIP6Item, role: str, request: Request, collection_id: str) -> Auth:
+        if stac_api.get("authorizer", "globus") == "globus":
+            return self.globus_authorize(item=item, request=request, collection_id=collection_id)
+        else:
+            return self.egi_authorize(item=item, role=role, request=request)
+
     async def create_item(
         self,
         item: CMIP6Item,
@@ -134,7 +137,7 @@ class TransactionClient(BaseTransactionsClient):
         collection_id: str,
     ) -> Optional[Union[CMIP6Item, Response, None]]:
 
-        auth = self.egi_authorize(item=item, role="CREATE", request=request)
+        auth = self.authorize(item=item, role="CREATE", request=request, collection_id=collection_id)
 
         headers = request.headers.get("headers", {})
         user_agent = headers.get("User-Agent", "/").split("/")
@@ -147,9 +150,7 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(
-            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
-        )
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
 
         metadata = Metadata(
             auth=auth,
@@ -198,9 +199,7 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(
-            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
-        )
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
         metadata = Metadata(
             auth=auth,
             event_id=uuid.uuid4().hex,
@@ -247,9 +246,7 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(
-            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
-        )
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
 
         metadata = Metadata(
             auth=Auth(),
