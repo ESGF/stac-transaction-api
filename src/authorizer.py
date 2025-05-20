@@ -37,9 +37,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header[7:]
-        response = confidential_client.oauth2_token_introspect(
-            access_token, include="identity_set_detail"
-        )
+        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
 
         # resource_arn = event["methodArn"].split("/", 1)[0] + "/*"
@@ -47,31 +45,21 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         # Verify the access token
         if not token_info.get("active", False):
-            policy = self.generate_policy(
-                "unknown", "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy("unknown", "Deny", resource_arn, token_info=token_info)
 
         if settings.stac_api.get("client_id") not in token_info.get("aud", []):
-            policy = self.generate_policy(
-                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
-            policy = self.generate_policy(
-                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         if settings.stac_api.get("issuer") != token_info.get("iss", ""):
-            policy = self.generate_policy(
-                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         # Get the user's groups
         groups = self.get_groups(access_token)
         if not groups:
-            policy = self.generate_policy(
-                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         policy = self.generate_policy(
             token_info.get("sub"),
@@ -80,7 +68,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
             token_info=token_info,
             groups=groups,
         )
-        request.state.authorizer = policy  # This is awesome by the way :)
+        request.state.authorizer = policy
         return await call_next(request)
 
     def get_groups(self, token):
@@ -134,9 +122,6 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
                 }
                 if groups:
                     auth_response["context"]["groups"] = json.dumps(groups)
-
-        # Write the auth_response to the authorizer's CloudWatch log
-        # print(auth_response)
 
         return auth_response
 

@@ -52,5 +52,5 @@ else:
             "sasl.username": os.environ.get("CONFLUENT_CLOUD_USERNAME"),
             "sasl.password": os.environ.get("CONFLUENT_CLOUD_PASSWORD"),
         },
-        "topic": os.environ.get("TOPIC", "ESGF-NG"),
+        "topic": os.environ.get("TOPIC", "esgf.ng"),
     }

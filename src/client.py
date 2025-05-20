@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 from datetime import datetime
 from typing import Optional, Union
@@ -20,6 +21,10 @@ from stac_fastapi.types.core import BaseTransactionsClient, Collection
 
 from models import Authorizer
 from settings.transaction import access_control_policy, event_stream, stac_api
+from utils import validate_item
+
+# Setup logger
+logger = logging.getLogger(__name__)
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -43,24 +48,19 @@ class TransactionClient(BaseTransactionsClient):
         return []
 
     def globus_authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
+        properties = item.properties
+
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
         if getattr(properties, "project", None) != collection_id:
             raise ValueError("Item project must match path collection_id")
 
-        properties = item.properties
-
         allowed_groups = self.allowed_groups(properties, access_control_policy)
-        # print("allowed groups", json.dumps(allowed_groups))
-
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
-        # print("allowed groups uuid", json.dumps(allowed_groups_uuid))
 
         authorizer = request.state.authorizer
         access_token_json = authorizer["context"].get("access_token")
         user_groups_json = authorizer["context"].get("groups")
-        # print("access token json", access_token_json)
-        # print("user groups json", user_groups_json)
 
         token_info = json.loads(access_token_json)
         user_groups = json.loads(user_groups_json)
@@ -89,20 +89,21 @@ class TransactionClient(BaseTransactionsClient):
                         "identity_provider_display_name": identity.get("identity_provider_display_name"),
                         "last_authentication": identity.get("last_authentication"),
                     }
-        print("authorized_identities", json.dumps(authorized_identities))
 
         requester_data = RequesterData(
+            client_id=token_info.get("client_id"),
             sub=token_info.get("sub"),
-            user_id=token_info.get("username"),
-            identity_provider=identity.get("identity_provider"),
-            identity_provider_display_name=identity.get("identity_provider_display_name"),
+            iss=token_info.get("username"),
         )
 
         auth = Auth(
-            auth_policy_id="ESGF-Publish-00012",
-            client_id=token_info.get("client_id"),
             requester_data=requester_data,
         )
+        # "auth_basis_data": {
+        #     "authorization_basis_type": "group",
+        #     "authorization_basis_service": "groups.globus.org",
+        #     "authorization_basis": authorized_identities,
+        # },
 
         return auth
 
@@ -140,6 +141,11 @@ class TransactionClient(BaseTransactionsClient):
         auth = self.authorize(item=item, role="CREATE", request=request, collection_id=collection_id)
 
         headers = request.headers.get("headers", {})
+
+        event_id = uuid.uuid4().hex
+        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        validate_item(event_id, request_id, item)
+
         user_agent = headers.get("User-Agent", "/").split("/")
 
         payload = CreatePayload(
@@ -154,9 +160,9 @@ class TransactionClient(BaseTransactionsClient):
 
         metadata = Metadata(
             auth=auth,
-            event_id=uuid.uuid4().hex,
+            event_id=event_id,
             publisher=publisher,
-            request_id=headers.get("X-Request-ID", uuid.uuid4().hex),
+            request_id=request_id,
             time=datetime.now().isoformat(),
             schema_version="1.0.0",
         )
@@ -170,6 +176,7 @@ class TransactionClient(BaseTransactionsClient):
             )
 
         except Exception as e:
+            logger.error(f"Error producing message: {e}")
             raise HTTPException(status_code=500, detail=str(e)) from e
 
         return Response(
@@ -185,9 +192,14 @@ class TransactionClient(BaseTransactionsClient):
         item_id: str,
     ) -> Optional[Union[CMIP6Item, Response]]:
 
-        auth = self.egi_authorize(item=item, role="UPDATE", request=request)
+        auth = self.authorize(item=item, role="UPDATE", request=request)
 
         headers = request.headers.get("headers", {})
+
+        event_id = uuid.uuid4().hex
+        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        validate_item(event_id, request_id, item)
+
         user_agent = headers.get("User-Agent", "/").split("/")
 
         payload = UpdatePayload(
@@ -202,9 +214,9 @@ class TransactionClient(BaseTransactionsClient):
         publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
         metadata = Metadata(
             auth=auth,
-            event_id=uuid.uuid4().hex,
+            event_id=event_id,
             publisher=publisher,
-            request_id=headers.get("X-Request-ID", uuid.uuid4().hex),
+            request_id=request_id,
             time=datetime.now().isoformat(),
             schema_version="1.0.0",
         )
@@ -217,6 +229,7 @@ class TransactionClient(BaseTransactionsClient):
                 value=event.model_dump_json().encode("utf8"),
             )
         except Exception as e:
+            logger.error(f"Error producing message: {e}")
             raise HTTPException(status_code=500, detail=str(e)) from e
 
         return Response(
@@ -230,12 +243,13 @@ class TransactionClient(BaseTransactionsClient):
         collection_id: str,
         item_id: str,
     ) -> Optional[Union[CMIP6Item, Response]]:
-        event = request.scope.get("aws.event")
-        # Get the item from the database
-        # item = await self.get_item(collection_id, item_id)
-        # auth = self.authorize(item, event, collection_id)
+        auth = self.authorize(item=item_id, role="UPDATE", request=request)
 
         headers = request.headers.get("headers", {})
+
+        event_id = uuid.uuid4().hex
+        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+
         user_agent = headers.get("User-Agent", "/").split("/")
 
         payload = RevokePayload(
@@ -249,10 +263,10 @@ class TransactionClient(BaseTransactionsClient):
         publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
 
         metadata = Metadata(
-            auth=Auth(),
-            event_id=uuid.uuid4().hex,
+            auth=auth,
+            event_id=event_id,
             publisher=publisher,
-            request_id=headers.get("X-Request-ID", uuid.uuid4().hex),
+            request_id=request_id,
             time=datetime.now().isoformat(),
             schema_version="1.0.0",
         )
