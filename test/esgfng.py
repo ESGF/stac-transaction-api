@@ -69,6 +69,13 @@ item_properties = {
     ]
 }
 
+list_properties = [
+    "access",
+    "activity_id",
+    "realm",
+    "source_type",
+]
+
 
 def convert2stac(json_data):
     dataset_doc = {}
@@ -91,7 +98,14 @@ def convert2stac(json_data):
     }
     property_keys = item_properties.get(collection)
     for k in property_keys:
-        properties[k] = dataset_doc.get(k)
+        v = dataset_doc.get(k)
+        if isinstance(v, list):
+            if k in list_properties:
+                properties[k] = v
+            else:
+                properties[k] = v[0]
+        else:
+            properties[k] = v
 
     item = {
         "type": "Feature",
