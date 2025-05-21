@@ -64,7 +64,7 @@ class Nodes(BaseModel):
         else:
             self.nodes[node.id] = node
 
-    def authorize(self, item: CMIP6Item, role: Role):
+    def authorize(self, assets: dict, role: Role):
         """Check for appropriate authorisation.
 
         Args:
@@ -74,7 +74,7 @@ class Nodes(BaseModel):
         Raises:
             HTTPException: Raised if either node or role permission is missing
         """
-        for asset in item.assets.values():
+        for asset in assets.values():
             asset_url = urlparse(asset.href)
             node_permission = self.nodes.get(asset_url.hostname, None)
 
@@ -114,7 +114,7 @@ class Projects(BaseModel):
         else:
             self.projects[project.id] = project
 
-    def authorize(self, item: CMIP6Item, role: Role):
+    def authorize(self, project: str, role: Role):
         """Check for appropriate authorisation.
 
         Args:
@@ -124,7 +124,6 @@ class Projects(BaseModel):
         Raises:
             HTTPException: Raised if either node or role permission is missing
         """
-        project = item.properties.project
         project_permission = self.projects.get(project, None)
 
         if not project_permission:
@@ -149,7 +148,7 @@ class Authorizer(BaseModel):
     nodes: Nodes = Nodes()
     projects: Projects = Projects()
 
-    def authorize(self, item: CMIP6Item, role: Role):
+    def authorize(self, collection_id: str, item: CMIP6Item, role: Role):
         """Check for appropriate authorisation.
 
         Args:
@@ -159,8 +158,9 @@ class Authorizer(BaseModel):
         Raises:
             HTTPException: Raised if either node or role permission is missing
         """
-        self.projects.authorize(item, role)
-        self.nodes.authorize(item, role)
+        self.projects.authorize(collection_id, role)
+        self.projects.authorize(item.properties.product, role)
+        self.nodes.authorize(item.assets, role)
 
     def add(self, entitlements: list[str]):
         """add entitlements to Authorizer.

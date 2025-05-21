@@ -47,7 +47,7 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def globus_authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
+    def globus_authorize(self, collection_id: str, item: CMIP6Item, request: Request) -> dict:
         properties = item.properties
 
         if item.collection != collection_id:
@@ -107,7 +107,7 @@ class TransactionClient(BaseTransactionsClient):
 
         return auth
 
-    def egi_authorize(self, item: CMIP6Item, role: str, request: Request) -> Auth:
+    def egi_authorize(self, collection_id: str, item: CMIP6Item, role: str, request: Request) -> Auth:
         """_summary_
 
         Args:
@@ -119,26 +119,26 @@ class TransactionClient(BaseTransactionsClient):
             Auth: Auth object if successful
         """
         authorizer: Authorizer = request.state.authorizer
-        authorizer.authorize(item, role)
+        authorizer.authorize(collection_id=collection_id, item=item, role=role)
 
         return Auth(
             requester_data=authorizer.requester_data,
         )
 
-    def authorize(self, item: CMIP6Item, role: str, request: Request, collection_id: str) -> Auth:
+    def authorize(self, collection_id: str, item: CMIP6Item, role: str, request: Request) -> Auth:
         if stac_api.get("authorizer", "globus") == "globus":
             return self.globus_authorize(item=item, request=request, collection_id=collection_id)
         else:
-            return self.egi_authorize(item=item, role=role, request=request)
+            return self.egi_authorize(collection_id=collection_id, item=item, role=role, request=request)
 
     async def create_item(
         self,
+        collection_id: str,
         item: CMIP6Item,
         request: Request,
-        collection_id: str,
     ) -> Optional[Union[CMIP6Item, Response, None]]:
 
-        auth = self.authorize(item=item, role="CREATE", request=request, collection_id=collection_id)
+        auth = self.authorize(collection_id=collection_id, item=item, role="CREATE", request=request)
 
         headers = request.headers.get("headers", {})
 
@@ -186,13 +186,13 @@ class TransactionClient(BaseTransactionsClient):
 
     async def update_item(
         self,
+        collection_id: str,
         item: CMIP6Item,
         request: Request,
-        collection_id: str,
         item_id: str,
     ) -> Optional[Union[CMIP6Item, Response]]:
 
-        auth = self.authorize(item=item, role="UPDATE", request=request)
+        auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
 
         headers = request.headers.get("headers", {})
 
@@ -239,11 +239,11 @@ class TransactionClient(BaseTransactionsClient):
 
     async def delete_item(
         self,
-        request: Request,
         collection_id: str,
         item_id: str,
+        request: Request,
     ) -> Optional[Union[CMIP6Item, Response]]:
-        auth = self.authorize(item=item_id, role="UPDATE", request=request)
+        auth = self.authorize(collection_id=collection_id, item=item_id, role="UPDATE", request=request)
 
         headers = request.headers.get("headers", {})
 
