@@ -19,6 +19,6 @@ options:
 for example
 
 ```
-python generate_payloads.py --datasets West-CMIP6-paths-1-500.txt
+python generate_payloads.py --datasets West-CMIP6-paths-0001-0500.txt
 ```
-The ESGF1 metadata will be downloaded to the `esgf/` default directory, converted to STAC Items and stored as STAC Item metadata payloads in `esgfng/`.
+The ESGF1 metadata will be downloaded to the `esgf1-payloads/` default directory, converted to STAC Items and stored as STAC Item metadata payloads in `esgfng-payloads/`.

@@ -38,7 +38,7 @@ def main(datasets, documents_dir, payloads_dir):
     print("Loading paths from", datasets)
     print("Found", len(paths), "paths")
 
-    #download(paths, documents_dir)
+    download(paths, documents_dir)
     convert(paths, documents_dir, payloads_dir)
 
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
         "--payloads-dir",
         type=str,
         default="esgfng-payloads",
-        help="A directory where files with payloads will be stored.",
+        help="A directory where files with ESGF-NG payloads will be stored.",
     )
     args = parser.parse_args()
 
