@@ -4,6 +4,7 @@ from globus_sdk.scopes import GroupsScopes
 from globus_sdk.tokenstorage import SimpleJSONFileAdapter
 from settings import STAC_CLIENT, TOKEN_STORAGE_FILE, STAC_TRANSACTION_API
 
+
 __version__ = "0.1.0"
 
 
@@ -13,9 +14,6 @@ class TransactionClient:
             self.stac_api = stac_api
         else:
             self.stac_api = STAC_TRANSACTION_API.get("base_url")
-        self.verbose = verbose
-        self.silent = silent
-        self.publog = log.return_logger('STAC Client', silent, verbose)
         self.scopes = [
             GroupsScopes.view_my_groups_and_memberships,
             STAC_TRANSACTION_API.get("scope_string")
@@ -75,20 +73,23 @@ class TransactionClient:
         groups = self.groups_client.get_my_groups()
         return groups
 
-    def publish(self, entry):
+    def post(self, entry):
         collection = entry.get('collection')
         headers = {
             "User-Agent": f"test_client/{__version__}",
         }
         resp = self.transaction_client.post(f"/collections/{collection}/items", headers=headers, data=entry)
         if resp.http_status == 201:
-            self.publog.info(resp.http_status)
-            self.publog.info("Published")
+            print(resp.http_status)
+            print("Published (POST)")
+            return True
         elif resp.http_status == 202:
-            self.publog.info(resp.http_status)
-            self.publog.info("Queued for publication")
+            print(resp.http_status)
+            print("Queued for publication (POST)")
+            return True
         else:
-            self.publog.error(f"Failed to publish: Error {resp.http_status}")
+            print(f"Failed to publish (POST): Error {resp.http_status}")
+            return False
 
     def put(self, entry):
         collection = entry.get("collection")
@@ -98,13 +99,32 @@ class TransactionClient:
         }
         resp = self.transaction_client.put(f"/collections/{collection}/items/{item_id}", headers=headers, data=entry)
         if resp.http_status == 201:
-            self.publog.info(resp.http_status)
-            self.publog.info("Updated")
+            print(resp.http_status)
+            print("Updated (PUT)")
             return True
         elif resp.http_status == 202:
-            self.publog.info(resp.http_status)
-            self.publog.info("Queued for update")
+            print(resp.http_status)
+            print("Queued for update (PUT)")
             return True
         else:
-            self.publog.error(f"Failed to publish: Error {resp.http_status}")
+            print(f"Failed to update (PUT): Error {resp.http_status}")
+            return False
+
+    def patch(self, entry):
+        collection = entry.get("collection")
+        item_id = entry.get("id")
+        headers = {
+            "User-Agent": f"test_client/{__version__}",
+        }
+        resp = self.transaction_client.patch(f"/collections/{collection}/items/{item_id}", headers=headers, data=entry)
+        if resp.http_status == 201:
+            print(resp.http_status)
+            print("Updated (PATCH)")
+            return True
+        elif resp.http_status == 202:
+            print(resp.http_status)
+            print("Queued for update (PATCH)")
+            return True
+        else:
+            print(f"Failed to update (PATCH): Error {resp.http_status}")
             return False
