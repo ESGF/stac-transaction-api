@@ -11,6 +11,7 @@ from esgf_playground_utils.models.kafka import (
     Data,
     KafkaEvent,
     Metadata,
+    PatchPayload,
     Publisher,
     RequesterData,
     RevokePayload,
@@ -18,10 +19,11 @@ from esgf_playground_utils.models.kafka import (
 )
 from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.types.core import BaseTransactionsClient, Collection
+from stac_fastapi.types.stac import Collection, PartialItem, PatchOperation
 
 from models import Authorizer
 from settings.transaction import access_control_policy, event_stream, stac_api
-from utils import validate_item
+from utils import operation_to_partial_item, validate_item, validate_patch
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -107,7 +109,7 @@ class TransactionClient(BaseTransactionsClient):
 
         return auth
 
-    def egi_authorize(self, item: CMIP6Item, role: str, request: Request) -> Auth:
+    def egi_authorize(self, collection_id: str, item: CMIP6Item, role: str, request: Request) -> Auth:
         """_summary_
 
         Args:
@@ -119,17 +121,18 @@ class TransactionClient(BaseTransactionsClient):
             Auth: Auth object if successful
         """
         authorizer: Authorizer = request.state.authorizer
-        authorizer.authorize(item, role)
+        authorizer.authorize(collection_id, item, role)
 
         return Auth(
             requester_data=authorizer.requester_data,
         )
 
-    def authorize(self, item: CMIP6Item, role: str, request: Request, collection_id: str) -> Auth:
+    def authorize(self, item: CMIP6Item | PartialItem, role: str, request: Request, collection_id: str) -> Auth:
+
         if stac_api.get("authorizer", "globus") == "globus":
-            return self.globus_authorize(item=item, request=request, collection_id=collection_id)
+            return self.globus_authorize(collection_id=collection_id, item=item, request=request)
         else:
-            return self.egi_authorize(item=item, role=role, request=request)
+            return self.egi_authorize(collection_id=collection_id, item=item, role=role, request=request)
 
     async def create_item(
         self,
@@ -192,7 +195,7 @@ class TransactionClient(BaseTransactionsClient):
         item_id: str,
     ) -> Optional[Union[CMIP6Item, Response]]:
 
-        auth = self.authorize(item=item, role="UPDATE", request=request)
+        auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
 
         headers = request.headers.get("headers", {})
 
@@ -237,13 +240,67 @@ class TransactionClient(BaseTransactionsClient):
             content="Item queued for update",
         )
 
+    async def patch_item(
+        self,
+        collection_id: str,
+        item_id: str,
+        patch: Union[PartialItem, list[PatchOperation]],
+        request: Request,
+    ) -> Optional[Union[CMIP6Item, Response]]:
+
+        item = operation_to_partial_item(patch) if isinstance(patch, list) else patch
+        auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
+
+        headers = request.headers.get("headers", {})
+
+        event_id = uuid.uuid4().hex
+        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        validate_patch(event_id, request_id, patch)
+
+        user_agent = headers.get("User-Agent", "/").split("/")
+
+        payload = PatchPayload(
+            method="PATCH",
+            collection_id=collection_id,
+            item_id=item_id,
+            patch=json.dumps(patch),
+        )
+
+        data = Data(type="STAC", payload=payload)
+
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        metadata = Metadata(
+            auth=auth,
+            event_id=event_id,
+            publisher=publisher,
+            request_id=request_id,
+            time=datetime.now().isoformat(),
+            schema_version="1.0.0",
+        )
+        event = KafkaEvent(metadata=metadata, data=data)
+
+        try:
+            self.producer.produce(
+                topic=event_stream.get("topic"),
+                key=item_id.encode("utf-8"),
+                value=event.model_dump_json().encode("utf8"),
+            )
+        except Exception as e:
+            logger.error(f"Error producing message: {e}")
+            raise HTTPException(status_code=500, detail=str(e)) from e
+
+        return Response(
+            status_code=status.HTTP_202_ACCEPTED,
+            content="Item queued for update",
+        )
+
     async def delete_item(
         self,
         request: Request,
         collection_id: str,
         item_id: str,
     ) -> Optional[Union[CMIP6Item, Response]]:
-        auth = self.authorize(item=item_id, role="UPDATE", request=request)
+        auth = self.authorize(collection_id=collection_id, item=item_id, role="UPDATE", request=request)
 
         headers = request.headers.get("headers", {})
 
