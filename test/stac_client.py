@@ -110,21 +110,50 @@ class TransactionClient:
             print(f"Failed to update (PUT): Error {resp.http_status}")
             return False
 
-    def patch(self, entry):
-        collection = entry.get("collection")
-        item_id = entry.get("id")
+    def json_patch(self, collection, item_id, entry):
+        """
+        RFC 6902 https://tools.ietf.org/html/rfc6902
+        JSON Patch is a format for describing changes to a JSON document 
+        in a way that is similar to a diff
+        It consists of a sequence of operations to be applied to the target JSON document
+        """
         headers = {
+            "Content-Type": "application/json-patch+json",
             "User-Agent": f"test_client/{__version__}",
         }
         resp = self.transaction_client.patch(f"/collections/{collection}/items/{item_id}", headers=headers, data=entry)
         if resp.http_status == 201:
             print(resp.http_status)
-            print("Updated (PATCH)")
+            print("Updated (JSON PATCH)")
             return True
         elif resp.http_status == 202:
             print(resp.http_status)
-            print("Queued for update (PATCH)")
+            print("Queued for update (JSON PATCH)")
             return True
         else:
-            print(f"Failed to update (PATCH): Error {resp.http_status}")
+            print(f"Failed to update (JSON PATCH): Error {resp.http_status}")
             return False
+
+    def merge_patch(self, collection, item_id, entry):
+        """
+        RFC 7396 https://tools.ietf.org/html/rfc7396
+        Merge Patch is a format for describing changes to a JSON document
+        that is intended to be applied in a way that is similar to a merge
+        """
+        headers = {
+            "Content-Type": "application/merge-patch+json",
+            "User-Agent": f"test_client/{__version__}",
+        }
+        resp = self.transaction_client.patch(f"/collections/{collection}/items/{item_id}", headers=headers, data=entry)
+        if resp.http_status == 201:
+            print(resp.http_status)
+            print("Updated (MERGE PATCH)")
+            return True
+        elif resp.http_status == 202:
+            print(resp.http_status)
+            print("Queued for update (MERGE PATCH)")
+            return True
+        else:
+            print(f"Failed to update (MERGE PATCH): Error {resp.http_status}")
+            return False
+
