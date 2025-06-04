@@ -9,6 +9,7 @@ from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
 from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
 from pydantic import HttpUrl, ValidationError
+from stac_fastapi.types.stac import PartialItem, PatchOperation
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -60,9 +61,7 @@ def load_access_control_policy(url):
 def validate_item(event_id, request_id, stac_item):
     # CV Validation
     stac_item_dir = stac_item.get("id", None).replace(".", "/")
-    report = json.loads(
-        validator.validate_directory(stac_item_dir).model_dump_json()
-    )
+    report = json.loads(validator.validate_directory(stac_item_dir).model_dump_json())
 
     if len(report["errors"]) > 0:
         error_detail = {
@@ -91,3 +90,22 @@ def validate_item(event_id, request_id, stac_item):
         }
         logger.error(error_detail)
         raise HTTPException(status_code=400, detail=str(error_detail))
+
+
+def operation_to_partial_item(operations):
+    item = {}
+
+    for operation in operations:
+        if operation.op in ["add", "replace"]:
+            path_parts = operation.path.split("/")
+
+            nest = [operation.value] if isinstance(int, path_parts[-1]) else operation.value
+            for path_part in reversed(path_parts[1:-1]):
+                nest = {path_part: nest}
+
+            item[path_parts[0]] = nest
+
+    return item
+
+
+def validate_patch(event_id, request_id, patch): ...

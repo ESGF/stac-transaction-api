@@ -1,11 +1,14 @@
 import json
 
+import httpx
+from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import Request
 from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsClient
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import settings.transaction as settings
+from models import Authorizer
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),
@@ -23,7 +26,7 @@ FastAPI Middleware Authorizer
 """
 
 
-class Authorizer(BaseHTTPMiddleware):
+class GlobusAuthorizer(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Health check endpoint for AWS ALB target group
         # Need to bypass authorization for this endpoint
@@ -34,9 +37,7 @@ class Authorizer(BaseHTTPMiddleware):
 
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header[7:]
-        response = confidential_client.oauth2_token_introspect(
-            access_token, include="identity_set_detail"
-        )
+        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
 
         # resource_arn = event["methodArn"].split("/", 1)[0] + "/*"
@@ -44,31 +45,21 @@ class Authorizer(BaseHTTPMiddleware):
 
         # Verify the access token
         if not token_info.get("active", False):
-            policy = self.generate_policy(
-                "unknown", "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy("unknown", "Deny", resource_arn, token_info=token_info)
 
         if settings.stac_api.get("client_id") not in token_info.get("aud", []):
-            policy = self.generate_policy(
-                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
-            policy = self.generate_policy(
-                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         if settings.stac_api.get("issuer") != token_info.get("iss", ""):
-            policy = self.generate_policy(
-                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         # Get the user's groups
         groups = self.get_groups(access_token)
         if not groups:
-            policy = self.generate_policy(
-                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
-            )
+            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
 
         policy = self.generate_policy(
             token_info.get("sub"),
@@ -133,3 +124,51 @@ class Authorizer(BaseHTTPMiddleware):
                     auth_response["context"]["groups"] = json.dumps(groups)
 
         return auth_response
+
+
+class EGIAuthorizer(BaseHTTPMiddleware):
+    """
+    EGI Authorization middleware.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        # Need to bypass authorization for this endpoint
+        if request.url.path == "/healthcheck":
+            return await call_next(request)
+
+        settings.logger.info("Request Headers %s", request.headers)
+
+        auth = httpx.BasicAuth(
+            username=settings.stac_api.get("client_id"),
+            password=settings.stac_api.get("client_secret"),
+        )
+
+        async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
+            settings.logger.info(
+                "Post request to %s",
+                settings.stac_api.get("introspection_endpoint"),
+            )
+            response = await client.post(
+                settings.stac_api.get("introspection_endpoint"),
+                headers={"Content-type": "application/x-www-form-urlencoded"},
+                data=f"token={request.headers.get('authorization')[7:]}",
+                auth=auth,
+                timeout=5,
+            )
+            response.raise_for_status()
+
+        token_info = response.json()
+
+        authorizer = Authorizer(
+            requester_data=RequesterData(
+                client_id=settings.event_stream["config"].get("client.id"),
+                sub=token_info["sub"],
+                iss=token_info["iss"],
+            ),
+        )
+
+        authorizer.add(token_info["eduperson_entitlement"])
+
+        request.state.authorizer = authorizer
+
+        return await call_next(request)

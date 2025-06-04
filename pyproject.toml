@@ -1,40 +1,41 @@
 [project]
 name = "stac-transaction-api"
-dynamic = ["version"]
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "boto3 == 1.35.60",
+    "certifi == 2024.6.2",
+    "cffi == 1.16.0",
+    "charset-normalizer == 3.3.2",
+    "confluent-kafka == 2.6.0",
+    "cryptography == 42.0.8",
+    "esgf-playground-utils == 1.0.1",
+    "fastapi == 0.114.0",
+    "globus-sdk == 3.41.0",
+    "httpx == 0.28.1",
+    "httpx-auth == 0.23.1",
+    "idna == 3.7",
+    "pyjwt == 2.8.0",
+    "pytest == 8.3.5",
+    "pytest-cov == 6.0.0",
+    "pytest-mock == 3.14.0",
+    "python-dotenv == 1.0.1",
+    "requests == 2.32.3",
+    "stac-fastapi.types @ git+https://github.com/stac-utils/stac-fastapi.git@refs/pull/744/head#subdirectory=stac_fastapi/types",
+    "stac-fastapi.extensions @ git+https://github.com/stac-utils/stac-fastapi.git@refs/pull/744/head#subdirectory=stac_fastapi/extensions",
+    "stac-fastapi.api @ git+https://github.com/stac-utils/stac-fastapi.git@refs/pull/744/head#subdirectory=stac_fastapi/api",
+]
+description = "West ESGF STAC Transaction API"
+version = "0.1.0"
+authors = [
+    {"name" = "Lukasz Lacinski", "email" = "lukasz@uchicago.edu"},
+    {"name" = "Steve Turoscy", "email" = "sturoscy@uchicago.edu"},
+    ]
+readme = "README.md"
 
 [tool.poetry]
-name = "stac-transaction-api"
-version = "0.1.0"
-description = "West ESGF STAC Transaction API"
-authors = ["Lukasz Lacinski <lukasz@uchicago.edu>", "Steve Turoscy <sturoscy@uchicago.edu>"]
-readme = "README.md"
 packages = [
     { include = "src" }
 ]
-
-[tool.poetry.dependencies]
-python = "^3.10"
-boto3 = "1.35.60"
-certifi = "2024.6.2"
-cffi = "1.16.0"
-charset-normalizer = "3.3.2"
-confluent-kafka = "2.6.0"
-cryptography = "42.0.8"
-esgf-playground-utils = "1.0.0"
-esgvoc = "0.3.0"
-fastapi = "0.114.0"
-globus-sdk = "3.41.0"
-httpx = "0.28.1"
-idna = "3.7"
-pyjwt = "2.8.0"
-pytest = "8.3.5"
-pytest-cov = "6.0.0"
-pytest-mock = "3.14.0"
-python-dotenv = "1.0.1"
-requests = "2.32.3"
-stac-fastapi-types = "3.0.1"
-stac-fastapi-extensions = "3.0.1"
-stac-fastapi-api = "3.0.1"
 
 [build-system]
 requires = ["poetry-core"]
