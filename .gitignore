@@ -10,3 +10,5 @@ build
 .coverage
 htmlcov/
 __pycache__/
+esgf1-payloads/
+esgfng-payloads/
