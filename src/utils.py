@@ -3,13 +3,18 @@ import logging
 from typing import Optional
 
 import boto3
+import jsonschema
+import pystac
 import urllib3
 import urllib3.util
 from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
 from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
 from pydantic import HttpUrl, ValidationError
-from stac_fastapi.types.stac import PartialItem, PatchOperation
+from pystac.validation import stac_validator
+from stac_fastapi.types.stac import AddRelaceOperation, PartialItem
+
+from settings.transaction import default_extensions
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -96,6 +101,9 @@ def operation_to_partial_item(operations):
     item = {}
 
     for operation in operations:
+        if operation.op == "remove":
+            operation = AddRelaceOperation(op="add", path=operation.path, value=None)
+
         if operation.op in ["add", "replace"]:
             path_parts = operation.path.split("/")
 
@@ -105,7 +113,55 @@ def operation_to_partial_item(operations):
 
             item[path_parts[0]] = nest
 
+        if operation.op in ["move", "copy"]:
+            # May need to update this for alternat asset updates
+            raise HTTPException(status_code=400, detail=f"Operation {operation.op} not permitted")
+
     return item
 
 
-def validate_patch(event_id, request_id, patch): ...
+def validate_extensions(collection_id: str, item_extensions: list[str] = []) -> list[str]:
+    expected_extensions = default_extensions[collection_id]
+
+    for item_extesion in item_extensions:
+
+        for expected_extension_name, expected_extension in expected_extensions.items():
+
+            if any(regex.match(item_extesion) for regex in expected_extension["regex"]):
+                expected_extensions.pop(expected_extension_name)
+
+        raise HTTPException(status_code=400, detail=f"Unexpected extensions: {item_extesion}")
+
+    item_extensions.extend([expected_extension["default"] for expected_extension in expected_extension])
+
+    return item_extensions
+
+
+def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialItem, entensions: list[str]):
+
+    for extension in entensions:
+        try:
+            schema = json.loads(pystac.StacIO.default().read_text(extension))
+            # This block is cribbed (w/ change in error handling) from
+            # jsonschema.validate
+            cls = jsonschema.validators.validator_for(schema)
+            cls.check_schema(schema)
+            extension_validator = cls(schema)
+            errors = [error for error in extension_validator.iter_errors(item) if error.validator != "required"]
+
+        except Exception as e:
+            logger.exception(e)
+            raise HTTPException(status_code=400, detail=str(e))
+
+        if errors:
+            error_detail = {
+                "errors": errors,
+                "event_id": event_id,
+                "item_id": item_id,
+                "request_id": request_id,
+                "status_code": 400,
+                "type": "validation_error",
+            }
+
+            logger.error(error_detail)
+            raise HTTPException(status_code=400, detail=str(error_detail))
