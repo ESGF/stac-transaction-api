@@ -1,10 +1,27 @@
+import json
 import logging
 import os
 import socket
 
+import urllib3
 from dotenv import load_dotenv
 
-from src.utils import load_access_control_policy
+
+def load_access_control_policy(url):
+    parsed = urllib3.util.parse_url(url)
+    if parsed.scheme == "file":
+        with open(parsed.path) as file:
+            print("Access Control Policy loaded")
+            return json.load(file)
+
+    http = urllib3.PoolManager()
+    response = http.request("GET", url)
+    if response.status == 200:
+        print("Access Control Policy loaded")
+        return json.loads(response.data.decode("utf-8"))
+    else:
+        return {}
+
 
 # Load the .env file
 load_dotenv()
