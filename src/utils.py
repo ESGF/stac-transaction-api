@@ -137,7 +137,26 @@ def validate_extensions(collection_id: str, item_extensions: list[str] = []) -> 
     return item_extensions
 
 
+def get_null_keys(item: dict) -> tuple[dict, list[str]]:
+
+    null_keys = []
+    for k, v in item.model_dump().items():
+
+        if v is None:
+            del item[k]
+            null_keys.append(k)
+
+        if isinstance(v, dict):
+            sub_dict, sub_null_keys = get_null_keys(v)
+            null_keys.extend(sub_null_keys)
+            item[k] = sub_dict
+
+    return item, null_keys
+
+
 def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialItem, entensions: list[str]):
+    item_dict, null_keys = get_null_keys(item.model_dump())
+    item = PartialItem.model_validate(item_dict)
 
     for extension in entensions:
         try:
@@ -147,15 +166,28 @@ def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialIt
             cls = jsonschema.validators.validator_for(schema)
             cls.check_schema(schema)
             extension_validator = cls(schema)
-            errors = [error for error in extension_validator.iter_errors(item) if error.validator != "required"]
+
+            required_errors = []
+            other_errors = []
+            for error in extension_validator.iter_errors(item):
+                if error.validator != "required":
+                    required_errors.append(error)
+
+                else:
+                    other_errors.append(error)
 
         except Exception as e:
             logger.exception(e)
             raise HTTPException(status_code=400, detail=str(e))
 
-        if errors:
+        null_key_errors = []
+        for required_error in required_errors:
+            if required_error.validator_value in null_keys:
+                null_key_errors.append(f"Variable {required_error.validator_value} is required and cannot be removed")
+
+        if other_errors or null_key_errors:
             error_detail = {
-                "errors": errors,
+                "errors": other_errors + null_key_errors,
                 "event_id": event_id,
                 "item_id": item_id,
                 "request_id": request_id,
