@@ -12,7 +12,7 @@ from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
 from pydantic import HttpUrl, ValidationError
 from pystac.validation import stac_validator
-from stac_fastapi.types.stac import AddRelaceOperation, PartialItem
+from stac_fastapi.types.stac import PartialItem, PatchAddReplaceTest
 
 from settings.transaction import default_extensions
 
@@ -102,7 +102,7 @@ def operation_to_partial_item(operations):
 
     for operation in operations:
         if operation.op == "remove":
-            operation = AddRelaceOperation(op="add", path=operation.path, value=None)
+            operation = PatchAddReplaceTest(op="add", path=operation.path, value=None)
 
         if operation.op in ["add", "replace"]:
             path_parts = operation.path.split("/")
@@ -120,7 +120,7 @@ def operation_to_partial_item(operations):
     return item
 
 
-def validate_extensions(collection_id: str, item_extensions: list[str] = []) -> list[str]:
+def validate_extensions(collection_id: str, item_extensions: list[str]) -> list[str]:
     expected_extensions = default_extensions[collection_id]
 
     for item_extesion in item_extensions:
