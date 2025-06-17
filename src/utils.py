@@ -1,17 +1,15 @@
 import json
 import logging
+import re
 from typing import Optional
 
 import boto3
 import jsonschema
 import pystac
-import urllib3
-import urllib3.util
 from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
 from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
 from pydantic import HttpUrl, ValidationError
-from pystac.validation import stac_validator
 from stac_fastapi.types.stac import PartialItem, PatchAddReplaceTest
 
 from settings.transaction import default_extensions
@@ -45,22 +43,6 @@ def get_secret(region_name, secret_name):
     except Exception as e:
         print(f"Error retrieving secret: {e}")
         raise e
-
-
-def load_access_control_policy(url):
-    parsed = urllib3.util.parse_url(url)
-    if parsed.scheme == "file":
-        with open(parsed.path) as file:
-            print("Access Control Policy loaded")
-            return json.load(file)
-
-    http = urllib3.PoolManager()
-    response = http.request("GET", url)
-    if response.status == 200:
-        print("Access Control Policy loaded")
-        return json.loads(response.data.decode("utf-8"))
-    else:
-        return {}
 
 
 def validate_item(event_id, request_id, stac_item):
@@ -123,14 +105,12 @@ def operation_to_partial_item(operations):
 def validate_extensions(collection_id: str, item_extensions: list[str]) -> list[str]:
     expected_extensions = default_extensions[collection_id]
 
-    for item_extesion in item_extensions:
-
-        for expected_extension_name, expected_extension in expected_extensions.items():
-
-            if any(regex.match(item_extesion) for regex in expected_extension["regex"]):
+    for item_extension in item_extensions:
+        for expected_extension_name, expected_extension in expected_extensions.copy().items():
+            if any(re.compile(regex).match(item_extension) for regex in expected_extension["regex"]):
                 expected_extensions.pop(expected_extension_name)
 
-        raise HTTPException(status_code=400, detail=f"Unexpected extensions: {item_extesion}")
+        raise HTTPException(status_code=400, detail=f"Unexpected extensions: {item_extension}")
 
     item_extensions.extend([expected_extension["default"] for expected_extension in expected_extension])
 
