@@ -112,7 +112,7 @@ def validate_extensions(collection_id: str, item_extensions: list[str]) -> list[
 
         raise HTTPException(status_code=400, detail=f"Unexpected extensions: {item_extension}")
 
-    item_extensions.extend([expected_extension["default"] for expected_extension in expected_extension])
+    item_extensions.extend([expected_extension["default"] for expected_extension in expected_extensions])
 
     return item_extensions
 
