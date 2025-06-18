@@ -256,11 +256,11 @@ class TransactionClient(BaseTransactionsClient):
         event_id = uuid.uuid4().hex
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
 
-        item_extesions = item.stac_extensions if item.stac_extensions else []
+        item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        item_extesions = validate_extensions(collection_id=collection_id, item_extesions=item_extesions)
+        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
 
-        validate_patch(event_id=event_id, request_id=request_id, item_id=item_id, item=item, extension=item_extesions)
+        validate_patch(event_id=event_id, request_id=request_id, item_id=item_id, item=item, extensions=item_extensions)
 
         user_agent = headers.get("User-Agent", "/").split("/")
 

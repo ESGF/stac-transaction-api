@@ -610,20 +610,27 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "esgf-playground-utils"
-version = "1.0.1"
+version = "1.0.2"
 description = "Common library and models for the ESGF-Playground"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10,<4.0"
 groups = ["main"]
-files = [
-    {file = "esgf_playground_utils-1.0.1-py3-none-any.whl", hash = "sha256:af4c5253e2e8df9840eb56e9ea77ff5e3cfb4435a4f8425146a07580906ecb9c"},
-    {file = "esgf_playground_utils-1.0.1.tar.gz", hash = "sha256:5b11270017b42c34452318bae00e1d1d9953f47b53439d6a31161609fd515a0c"},
-]
+files = []
+develop = false
 
 [package.dependencies]
-jinja2 = ">=3.1.5,<4.0.0"
-pydantic-settings = ">=2.3.4,<3.0.0"
+jinja2 = ">=3.1.6,<4.0.0"
+pydantic-settings = "<=2.6.1"
+stac-fastapi-api = {git = "https://github.com/stac-utils/stac-fastapi.git", rev = "refs/pull/744/head", subdirectory = "stac_fastapi/api"}
+stac-fastapi-extensions = {git = "https://github.com/stac-utils/stac-fastapi.git", rev = "refs/pull/744/head", subdirectory = "stac_fastapi/extensions"}
+stac-fastapi-types = {git = "https://github.com/stac-utils/stac-fastapi.git", rev = "refs/pull/744/head", subdirectory = "stac_fastapi/types"}
 stac-pydantic = ">=3.1.1,<4.0.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/ESGF/esgf-playground-utils.git"
+reference = "1.0.2"
+resolved_reference = "7470cf78c7b7a299898973ee0341f20065b64cb5"
 
 [[package]]
 name = "exceptiongroup"
@@ -814,14 +821,14 @@ files = [
 
 [[package]]
 name = "jinja2"
-version = "3.1.5"
+version = "3.1.6"
 description = "A very fast and expressive template engine."
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "jinja2-3.1.5-py3-none-any.whl", hash = "sha256:aba0f4dc9ed8013c424088f68a5c226f7d6097ed89b246d7749c2ec4175c6adb"},
-    {file = "jinja2-3.1.5.tar.gz", hash = "sha256:8fefff8dc3034e27bb80d67c671eb8a9bc424c0ef4c0826edbff304cceff43bb"},
+    {file = "jinja2-3.1.6-py3-none-any.whl", hash = "sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"},
+    {file = "jinja2-3.1.6.tar.gz", hash = "sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d"},
 ]
 
 [package.dependencies]
@@ -1089,14 +1096,14 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
 name = "pydantic-settings"
-version = "2.8.1"
+version = "2.6.1"
 description = "Settings management using Pydantic"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "pydantic_settings-2.8.1-py3-none-any.whl", hash = "sha256:81942d5ac3d905f7f3ee1a70df5dfb62d5569c12f51a5a647defc1c3d9ee2e9c"},
-    {file = "pydantic_settings-2.8.1.tar.gz", hash = "sha256:d5c663dfbe9db9d5e1c646b2e161da12f0d734d422ee56f567d0ea2cee4e8585"},
+    {file = "pydantic_settings-2.6.1-py3-none-any.whl", hash = "sha256:7fb0637c786a558d3103436278a7c4f1cfd29ba8973238a50c5bb9a55387da87"},
+    {file = "pydantic_settings-2.6.1.tar.gz", hash = "sha256:e0f92546d8a9923cb8941689abf85d6601a8c19a23e97a34b2964a2e3f813ca0"},
 ]
 
 [package.dependencies]
@@ -1478,4 +1485,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "160aecfa8d8c1b7cc996242333b89e80ebd7bf8d1921fb2c8dc0bed9f243feef"
+content-hash = "5009b07f94798024ec066f26d17c279c9220990bf75a58cad9a08c0726e9d730"

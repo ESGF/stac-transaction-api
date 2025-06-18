@@ -10,7 +10,7 @@ from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
 from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
 from pydantic import HttpUrl, ValidationError
-from stac_fastapi.types.stac import PartialItem, PatchAddReplaceTest
+from stac_fastapi.types.stac import PartialItem, PatchAddReplaceTest, PatchOperation
 
 from settings.transaction import default_extensions
 
@@ -76,10 +76,22 @@ def validate_item(event_id, request_id, stac_item):
             "type": "validation_error",
         }
         logger.error(error_detail)
-        raise HTTPException(status_code=400, detail=str(error_detail))
+        raise HTTPException(status_code=400, detail=str(error_detail)) from e
 
 
-def operation_to_partial_item(operations):
+def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
+    """Convert operations to partial item
+
+    Args:
+        collection_id (str): ID of Item's Collection.
+        operations (list[PatchOperation]): List of operations to be converted to PartialItem
+
+    Raises:
+        HTTPException: Move & Copy operatations not permitted
+
+    Returns:
+        PartialItem: Partial item equivalent to operations
+    """
     item = {}
 
     for operation in operations:
@@ -87,9 +99,12 @@ def operation_to_partial_item(operations):
             operation = PatchAddReplaceTest(op="add", path=operation.path, value=None)
 
         if operation.op in ["add", "replace"]:
-            path_parts = operation.path.split("/")
+            if operation.path.lstrip("/") == "stac_extensions":
+                validate_extensions(collection_id=collection_id, item_extensions=operation.value, strict=True)
 
+            path_parts = operation.path.split("/")
             nest = [operation.value] if isinstance(int, path_parts[-1]) else operation.value
+
             for path_part in reversed(path_parts[1:-1]):
                 nest = {path_part: nest}
 
@@ -102,23 +117,50 @@ def operation_to_partial_item(operations):
     return item
 
 
-def validate_extensions(collection_id: str, item_extensions: list[str]) -> list[str]:
-    expected_extensions = default_extensions[collection_id]
+def validate_extensions(collection_id: str, item_extensions: list[str], strict: bool = False) -> list[str]:
+    """Validate expected default extensions are present.
+
+    Args:
+        collection_id (str): ID of Item's Collection.
+        item_extensions (list[str]): Given list of extensions.
+        strict (bool): if True Exception is raised if expected extensions are missing.
+
+    Raises:
+        HTTPException: Unexpected extensions
+        HTTPException: Expected extension missing
+
+    Returns:
+        list[str]: list of extensions including defaults
+    """
+
+    expected_extensions = default_extensions[collection_id].copy()
 
     for item_extension in item_extensions:
-        for expected_extension_name, expected_extension in expected_extensions.copy().items():
+        for expected_extension_key, expected_extension in expected_extensions.copy().items():
             if any(re.compile(regex).match(item_extension) for regex in expected_extension["regex"]):
-                expected_extensions.pop(expected_extension_name)
+                expected_extensions.pop(expected_extension_key)
 
         raise HTTPException(status_code=400, detail=f"Unexpected extensions: {item_extension}")
 
-    item_extensions.extend([expected_extension["default"] for expected_extension in expected_extensions])
+    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions]
+
+    if strict & missing_extensions:
+        raise HTTPException(status_code=400, detail=f"Expected extensions missing: {missing_extensions}")
+
+    item_extensions.extend(missing_extensions)
 
     return item_extensions
 
 
 def get_null_keys(item: dict) -> tuple[dict, list[str]]:
+    """Remove and list null value keys from PatialItem.
 
+    Args:
+        item (dict): Item dictionary to be updated
+
+    Returns:
+        tuple[dict, list[str]]: The PartialItem with nulls removed and list of null keys
+    """
     null_keys = []
     for k, v in item.model_dump().items():
 
@@ -134,11 +176,24 @@ def get_null_keys(item: dict) -> tuple[dict, list[str]]:
     return item, null_keys
 
 
-def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialItem, entensions: list[str]):
+def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialItem, extensions: list[str]):
+    """Validate a PartialItem patch request
+
+    Args:
+        event_id (str): ID of the Kafka event
+        request_id (str): ID of the request
+        item_id (str): ID of the item to validate
+        item (PartialItem): Partial Item to be validated to validate
+        extensions (list[str]): List of STAC extensions to be validated against
+
+    Raises:
+        HTTPException: Validation error
+        HTTPException: Unexpect exception with validation
+    """
     item_dict, null_keys = get_null_keys(item.model_dump())
     item = PartialItem.model_validate(item_dict)
 
-    for extension in entensions:
+    for extension in extensions:
         try:
             schema = json.loads(pystac.StacIO.default().read_text(extension))
             # This block is cribbed (w/ change in error handling) from
@@ -158,7 +213,7 @@ def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialIt
 
         except Exception as e:
             logger.exception(e)
-            raise HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=400, detail=str(e)) from e
 
         null_key_errors = []
         for required_error in required_errors:
