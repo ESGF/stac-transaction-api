@@ -1,14 +1,14 @@
 import json
 import logging
 import re
-from typing import Optional
 
 import boto3
 import httpx
 import jsonschema
-from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
+from esgf_playground_utils.models.item import CMIP6Item
 from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
+from jsonschema.protocols import Validator
 from pydantic import HttpUrl, ValidationError
 from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchAddReplaceTest, PatchOperation
 
@@ -19,14 +19,6 @@ logger = logging.getLogger(__name__)
 
 # esgvoc CV validator
 validator = DrsValidator(project_id="cmip6")
-
-
-class ESGFItemPropertiesEdited(ESGFItemProperties):
-    citation_url: Optional[HttpUrl] = None
-
-
-class CMIP6ItemEdited(CMIP6Item):
-    properties: ESGFItemPropertiesEdited
 
 
 def get_secret(region_name, secret_name):
@@ -65,7 +57,7 @@ def validate_item(event_id, request_id, stac_item):
 
     # Schema level validation
     try:
-        CMIP6ItemEdited(**stac_item)
+        CMIP6Item(**stac_item)
     except ValidationError as e:
         error_detail = {
             "errors": e.errors(),
@@ -152,7 +144,7 @@ def validate_extensions(collection_id: str, item_extensions: list[str], strict: 
     return item_extensions
 
 
-def get_null_keys(item: dict) -> tuple[dict, list[str]]:
+def get_null_keys(item: PartialItem) -> tuple[PartialItem, set[str]]:
     """Remove and list null value keys from PatialItem.
 
     Args:
@@ -161,22 +153,52 @@ def get_null_keys(item: dict) -> tuple[dict, list[str]]:
     Returns:
         tuple[dict, list[str]]: The PartialItem with nulls removed and list of null keys
     """
-    null_keys = []
-    for k, v in item.model_dump().items():
 
-        if v is None:
-            del item[k]
-            null_keys.append(k)
+    def nested_null_keys(d: dict) -> tuple[dict, set[str]]:
+        null_keys = set()
+        for k, v in d.items():
 
-        if isinstance(v, dict):
-            sub_dict, sub_null_keys = get_null_keys(v)
-            null_keys.extend(sub_null_keys)
-            item[k] = sub_dict
+            if v is None:
+                del d[k]
+                null_keys.add(k)
+
+            if isinstance(v, dict):
+                sub_dict, sub_null_keys = get_null_keys(v)
+                null_keys.update(sub_null_keys)
+                d[k] = sub_dict
+
+        return d, null_keys
+
+    item_dict, null_keys = nested_null_keys(item.model_dump())
+    item = PartialItem.model_validate(item_dict)
 
     return item, null_keys
 
 
-def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialItem, extensions: list[str]):
+def get_extension_validator(extension: str) -> Validator:
+    """Get JSON schema validator for an extension.
+
+    Args:
+        extension (str): Extension URI
+
+    Returns:
+        Validator: Validator for extension
+    """
+    schema = httpx.get(extension).json()
+    # This block is cribbed (w/ change in error handling) from
+    # jsonschema.validate
+    cls = jsonschema.validators.validator_for(schema)
+    cls.check_schema(schema)
+    return cls(schema)
+
+
+def validate_patch(
+    event_id: str,
+    request_id: str,
+    item_id: str,
+    item: PartialItem,
+    extensions: list[str],
+) -> None:
     """Validate a PartialItem patch request
 
     Args:
@@ -190,39 +212,31 @@ def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialIt
         HTTPException: Validation error
         HTTPException: Unexpect exception with validation
     """
-    item_dict, null_keys = get_null_keys(item.model_dump())
-    item = PartialItem.model_validate(item_dict)
+    item, null_keys = get_null_keys(item)
 
     for extension in extensions:
         try:
-            schema = httpx.get(extension).json()
-            # This block is cribbed (w/ change in error handling) from
-            # jsonschema.validate
-            cls = jsonschema.validators.validator_for(schema)
-            cls.check_schema(schema)
-            extension_validator = cls(schema)
+            extension_validator = get_extension_validator(extension)
 
-            required_errors = []
-            other_errors = []
+            required_keys = set()
+            raise_errors = []
             for error in extension_validator.iter_errors(item):
                 if error.validator != "required":
-                    required_errors.append(error)
+                    required_keys.add(error.validator_value)
 
                 else:
-                    other_errors.append(error)
+                    raise_errors.append(error)
 
         except Exception as e:
             logger.exception(e)
             raise HTTPException(status_code=400, detail=str(e)) from e
 
-        null_key_errors = []
-        for required_error in required_errors:
-            if required_error.validator_value in null_keys:
-                null_key_errors.append(f"Variable {required_error.validator_value} is required and cannot be removed")
+        for null_key_error in required_keys & null_keys:
+            raise_errors.append(f"Variable {null_key_error} is required and cannot be removed")
 
-        if other_errors or null_key_errors:
+        if raise_errors:
             error_detail = {
-                "errors": other_errors + null_key_errors,
+                "errors": raise_errors,
                 "event_id": event_id,
                 "item_id": item_id,
                 "request_id": request_id,
