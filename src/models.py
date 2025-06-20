@@ -11,7 +11,7 @@ from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import HTTPException
 from pydantic import BaseModel
 from pydantic_core import ValidationError
-from stac_fastapi.types.stac import PartialItem, PatchOperation
+from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
 
 import settings.transaction as settings
 

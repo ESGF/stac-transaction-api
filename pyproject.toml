@@ -8,7 +8,7 @@ dependencies = [
     "charset-normalizer == 3.3.2",
     "confluent-kafka == 2.6.0",
     "cryptography == 42.0.8",
-    "esgf-playground-utils @ git+https://github.com/ESGF/esgf-playground-utils.git@1.0.2",
+    "esgf-playground-utils==1.0.3",
     "fastapi == 0.114.0",
     "globus-sdk == 3.41.0",
     "httpx == 0.28.1",
@@ -20,9 +20,8 @@ dependencies = [
     "pytest-mock == 3.14.0",
     "python-dotenv == 1.0.1",
     "requests == 2.32.3",
-    "stac-fastapi.types @ git+https://github.com/stac-utils/stac-fastapi.git@refs/pull/744/head#subdirectory=stac_fastapi/types",
-    "stac-fastapi.extensions @ git+https://github.com/stac-utils/stac-fastapi.git@refs/pull/744/head#subdirectory=stac_fastapi/extensions",
-    "stac-fastapi.api @ git+https://github.com/stac-utils/stac-fastapi.git@refs/pull/744/head#subdirectory=stac_fastapi/api",
+    "stac-fastapi.types == 6.0.0",
+    "stac-fastapi.extensions == 6.0.0",
 ]
 description = "West ESGF STAC Transaction API"
 version = "0.1.0"

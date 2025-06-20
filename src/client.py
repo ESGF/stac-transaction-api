@@ -18,8 +18,9 @@ from esgf_playground_utils.models.kafka import (
     UpdatePayload,
 )
 from fastapi import HTTPException, Request, Response, status
-from stac_fastapi.types.core import BaseTransactionsClient, Collection
-from stac_fastapi.types.stac import Collection, PartialItem, PatchOperation
+from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
+from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
+from stac_fastapi.types.stac import Collection
 
 from models import Authorizer
 from settings.transaction import access_control_policy, event_stream, stac_api
