@@ -4,8 +4,8 @@ import re
 from typing import Optional
 
 import boto3
+import httpx
 import jsonschema
-import pystac
 from esgf_playground_utils.models.item import CMIP6Item, ESGFItemProperties
 from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
@@ -195,8 +195,7 @@ def validate_patch(event_id: str, request_id: str, item_id: str, item: PartialIt
 
     for extension in extensions:
         try:
-            with 
-            schema = json.loads(pystac.StacIO.default().read_text(extension))
+            schema = httpx.get(extension).json()
             # This block is cribbed (w/ change in error handling) from
             # jsonschema.validate
             cls = jsonschema.validators.validator_for(schema)
