@@ -7,7 +7,6 @@ from authorizer import EGIAuthorizer, GlobusAuthorizer
 from client import TransactionClient
 from producer import KafkaProducer
 from settings.transaction import event_stream, stac_api
-from utils import load_access_control_policy
 
 app = FastAPI(debug=True)
 

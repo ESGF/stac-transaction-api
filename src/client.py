@@ -18,12 +18,13 @@ from esgf_playground_utils.models.kafka import (
     UpdatePayload,
 )
 from fastapi import HTTPException, Request, Response, status
-from stac_fastapi.types.core import BaseTransactionsClient, Collection
-from stac_fastapi.types.stac import Collection, PartialItem, PatchOperation
+from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
+from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
+from stac_fastapi.types.stac import Collection
 
 from models import Authorizer
 from settings.transaction import access_control_policy, event_stream, stac_api
-from utils import operation_to_partial_item, validate_item, validate_patch
+from utils import operation_to_partial_item, validate_extensions, validate_item, validate_patch
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -255,7 +256,12 @@ class TransactionClient(BaseTransactionsClient):
 
         event_id = uuid.uuid4().hex
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
-        validate_patch(event_id, request_id, patch)
+
+        item_extensions = item.stac_extensions if item.stac_extensions else []
+
+        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+
+        validate_patch(event_id=event_id, request_id=request_id, item_id=item_id, item=item, extensions=item_extensions)
 
         user_agent = headers.get("User-Agent", "/").split("/")
 
