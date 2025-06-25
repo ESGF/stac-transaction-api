@@ -15,6 +15,5 @@ docker run \
 docker run \
     --detach \
     -v esgvoc:/root/.local/share/esgvoc \
-    -v ./src:/var/task \
     -p 8000:8000 \
     -it stac-transaction-api

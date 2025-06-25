@@ -351,6 +351,9 @@ class TransactionClient(BaseTransactionsClient):
 
     async def create_collection(self, collection: Collection, **kwargs) -> Collection:
         raise NotImplementedError("create_collection is not implemented")
+    
+    async def patch_collection(self, collection: Collection, **kwargs) -> Collection:
+        raise NotImplementedError("patch_collection is not implemented")
 
     async def update_collection(self, collection: Collection, **kwargs) -> Collection:
         raise NotImplementedError("update_collection is not implemented")
