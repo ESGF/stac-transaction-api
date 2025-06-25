@@ -1,10 +1,27 @@
+import json
 import logging
 import os
 import socket
 
+import urllib3
 from dotenv import load_dotenv
 
-from src.utils import load_access_control_policy
+
+def load_access_control_policy(url):
+    parsed = urllib3.util.parse_url(url)
+    if parsed.scheme == "file":
+        with open(parsed.path) as file:
+            print("Access Control Policy loaded")
+            return json.load(file)
+
+    http = urllib3.PoolManager()
+    response = http.request("GET", url)
+    if response.status == 200:
+        print("Access Control Policy loaded")
+        return json.loads(response.data.decode("utf-8"))
+    else:
+        return {}
+
 
 # Load the .env file
 load_dotenv()
@@ -54,3 +71,34 @@ else:
         },
         "topic": os.environ.get("TOPIC", "esgf.ng"),
     }
+
+default_extensions = {
+    "CMIP6": {
+        "CMIP6": {
+            "regex": ["https://stac-extensions\.github\.io/cmip6/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://stac-extensions.github.io/cmip6/v1.0.0/schema.json",
+        },
+        "alternate_assets": {
+            "regex": ["https://stac-extensions\.github\.io/alternate-assets/v[0-9]\.[0-9]\.[0-9]\/schema\.json"],
+            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+        },
+        "file": {
+            "regex": ["https://stac-extensions\.github\.io/file/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+        },
+    },
+    "CMIP7": {
+        "CMIP7": {
+            "regex": ["https://stac-extensions.github.io/cmip7/v[0-9].[0-9].[0-9]/schema.json"],
+            "default": "https://stac-extensions.github.io/cmip7/v1.0.0/schema.json",
+        },
+        "alternate_assets": {
+            "regex": ["https://stac-extensions.github.io/alternate-assets/v[0-9].[0-9].[0-9]/schema.json"],
+            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+        },
+        "file": {
+            "regex": ["https://stac-extensions.github.io/file/v[0-9].[0-9].[0-9]/schema.json"],
+            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+        },
+    },
+}

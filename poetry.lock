@@ -610,19 +610,20 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "esgf-playground-utils"
-version = "1.0.1"
+version = "1.0.4"
 description = "Common library and models for the ESGF-Playground"
 optional = false
-python-versions = ">=3.9"
+python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "esgf_playground_utils-1.0.1-py3-none-any.whl", hash = "sha256:af4c5253e2e8df9840eb56e9ea77ff5e3cfb4435a4f8425146a07580906ecb9c"},
-    {file = "esgf_playground_utils-1.0.1.tar.gz", hash = "sha256:5b11270017b42c34452318bae00e1d1d9953f47b53439d6a31161609fd515a0c"},
+    {file = "esgf_playground_utils-1.0.4-py3-none-any.whl", hash = "sha256:882a13f0ec067393bdddca2ab2797782bea3374d0edf9e3268803cf0499453fd"},
+    {file = "esgf_playground_utils-1.0.4.tar.gz", hash = "sha256:7117f1bb4d345ba2b253dde6aca28e2cb8ccae0d0d7cae0c11365bda898afb39"},
 ]
 
 [package.dependencies]
-jinja2 = ">=3.1.5,<4.0.0"
-pydantic-settings = ">=2.3.4,<3.0.0"
+jinja2 = ">=3.1.6,<4.0.0"
+pydantic-settings = ">=2.6.1,<3.0.0"
+"stac-fastapi.extensions" = "6.0.0"
 stac-pydantic = ">=3.1.1,<4.0.0"
 
 [[package]]
@@ -814,14 +815,14 @@ files = [
 
 [[package]]
 name = "jinja2"
-version = "3.1.5"
+version = "3.1.6"
 description = "A very fast and expressive template engine."
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "jinja2-3.1.5-py3-none-any.whl", hash = "sha256:aba0f4dc9ed8013c424088f68a5c226f7d6097ed89b246d7749c2ec4175c6adb"},
-    {file = "jinja2-3.1.5.tar.gz", hash = "sha256:8fefff8dc3034e27bb80d67c671eb8a9bc424c0ef4c0826edbff304cceff43bb"},
+    {file = "jinja2-3.1.6-py3-none-any.whl", hash = "sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"},
+    {file = "jinja2-3.1.6.tar.gz", hash = "sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d"},
 ]
 
 [package.dependencies]
@@ -1089,14 +1090,14 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
 name = "pydantic-settings"
-version = "2.8.1"
+version = "2.6.1"
 description = "Settings management using Pydantic"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "pydantic_settings-2.8.1-py3-none-any.whl", hash = "sha256:81942d5ac3d905f7f3ee1a70df5dfb62d5569c12f51a5a647defc1c3d9ee2e9c"},
-    {file = "pydantic_settings-2.8.1.tar.gz", hash = "sha256:d5c663dfbe9db9d5e1c646b2e161da12f0d734d422ee56f567d0ea2cee4e8585"},
+    {file = "pydantic_settings-2.6.1-py3-none-any.whl", hash = "sha256:7fb0637c786a558d3103436278a7c4f1cfd29ba8973238a50c5bb9a55387da87"},
+    {file = "pydantic_settings-2.6.1.tar.gz", hash = "sha256:e0f92546d8a9923cb8941689abf85d6601a8c19a23e97a34b2964a2e3f813ca0"},
 ]
 
 [package.dependencies]
@@ -1284,94 +1285,79 @@ files = [
 ]
 
 [[package]]
-name = "stac-fastapi.api"
-version = "5.2.0"
+name = "stac-fastapi-api"
+version = "6.0.0"
 description = "An implementation of STAC API based on the FastAPI framework."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "stac_fastapi_api-6.0.0-py3-none-any.whl", hash = "sha256:8cb99869d886d806a098d0d0caf46a75bd39ff64a8dfdf491bded065ed4d53b6"},
+    {file = "stac_fastapi_api-6.0.0.tar.gz", hash = "sha256:ab6241df62847c3b012f5bb6dfca5c7cd6a3c097afd8e5881b0e213a3d6dcdb2"},
+]
 
 [package.dependencies]
 brotli_asgi = "*"
-"stac-fastapi.types" = ">=5.2,<6.0"
+"stac-fastapi.types" = ">=6.0,<7.0"
 
 [package.extras]
 benchmark = ["pytest-benchmark"]
 dev = ["httpx", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "requests"]
 docs = ["black (>=23.10.1)", "griffe-inherited-docstrings (>=1.0.0)", "mkdocs (>=1.4.3)", "mkdocs-jupyter (>=0.24.5)", "mkdocs-material[imaging] (>=9.5)", "mkdocstrings[python] (>=0.25.1)"]
 
-[package.source]
-type = "git"
-url = "https://github.com/stac-utils/stac-fastapi.git"
-reference = "refs/pull/744/head"
-resolved_reference = "ea8ef04bb749f1ad84801dbeca4ae4423981e97a"
-subdirectory = "stac_fastapi/api"
-
 [[package]]
-name = "stac-fastapi.extensions"
-version = "5.2.0"
+name = "stac-fastapi-extensions"
+version = "6.0.0"
 description = "An implementation of STAC API based on the FastAPI framework."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "stac_fastapi_extensions-6.0.0-py3-none-any.whl", hash = "sha256:c158a63c5ca7e83d95817956385c58606ab92b0c733ab3a62a42e3d65b108274"},
+    {file = "stac_fastapi_extensions-6.0.0.tar.gz", hash = "sha256:3829982d07299bb82605774d311675795fbc6972c920b6aa48ef6853cc187f7b"},
+]
 
 [package.dependencies]
-"stac-fastapi.api" = ">=5.2,<6.0"
-"stac-fastapi.types" = ">=5.2,<6.0"
+"stac-fastapi.api" = ">=6.0,<7.0"
+"stac-fastapi.types" = ">=6.0,<7.0"
 
 [package.extras]
 dev = ["pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "requests"]
 docs = ["black (>=23.10.1)", "griffe-inherited-docstrings (>=1.0.0)", "mkdocs (>=1.4.3)", "mkdocs-jupyter (>=0.24.5)", "mkdocs-material[imaging] (>=9.5)", "mkdocstrings[python] (>=0.25.1)"]
 
-[package.source]
-type = "git"
-url = "https://github.com/stac-utils/stac-fastapi.git"
-reference = "refs/pull/744/head"
-resolved_reference = "ea8ef04bb749f1ad84801dbeca4ae4423981e97a"
-subdirectory = "stac_fastapi/extensions"
-
 [[package]]
-name = "stac-fastapi.types"
-version = "5.2.0"
+name = "stac-fastapi-types"
+version = "6.0.0"
 description = "An implementation of STAC API based on the FastAPI framework."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "stac_fastapi_types-6.0.0-py3-none-any.whl", hash = "sha256:127db34c036223359c6a4a4a7d0a16d5f41d9b841a5dd109978b9dc1c0cfbf61"},
+    {file = "stac_fastapi_types-6.0.0.tar.gz", hash = "sha256:ce058af7813e009b4ec1f7ccd1187c5d661b9505099b7b208c814c278ecd68a7"},
+]
 
 [package.dependencies]
 attrs = ">=23.2.0"
 fastapi = ">=0.109.0"
 iso8601 = ">=1.0.2,<2.2.0"
 pydantic-settings = ">=2"
-stac_pydantic = ">=3.1.3,<4.0"
+stac_pydantic = ">=3.3.0,<4.0"
 
 [package.extras]
 dev = ["pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "requests"]
 docs = ["black (>=23.10.1)", "griffe-inherited-docstrings (>=1.0.0)", "mkdocs (>=1.4.3)", "mkdocs-jupyter (>=0.24.5)", "mkdocs-material[imaging] (>=9.5)", "mkdocstrings[python] (>=0.25.1)"]
 
-[package.source]
-type = "git"
-url = "https://github.com/stac-utils/stac-fastapi.git"
-reference = "refs/pull/744/head"
-resolved_reference = "ea8ef04bb749f1ad84801dbeca4ae4423981e97a"
-subdirectory = "stac_fastapi/types"
-
 [[package]]
 name = "stac-pydantic"
-version = "3.1.5"
+version = "3.3.2"
 description = "Pydantic data models for the STAC spec"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "stac_pydantic-3.1.5-py3-none-any.whl", hash = "sha256:17f70e65ba8bd76e24eb51b1dac27d7396e1a1aaf47b4fd7743457770d5ac802"},
-    {file = "stac_pydantic-3.1.5.tar.gz", hash = "sha256:0fe8f16235476fdc97ff0003863cecd9248b32095cab3d8301c5bdad020b32d5"},
+    {file = "stac_pydantic-3.3.2-py3-none-any.whl", hash = "sha256:c3089e1e9bac475c9bf54bb19bab248692c85a397beb9b1538e72a750175249d"},
+    {file = "stac_pydantic-3.3.2.tar.gz", hash = "sha256:394e30f18cc22233e65db5da527be1ec1a415e8423706c757500ede026b96414"},
 ]
 
 [package.dependencies]
@@ -1478,4 +1464,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "160aecfa8d8c1b7cc996242333b89e80ebd7bf8d1921fb2c8dc0bed9f243feef"
+content-hash = "e8f14632a176406080111ed415d7fa7eedc056ae4af715fb7c0c1e93e16ab424"
