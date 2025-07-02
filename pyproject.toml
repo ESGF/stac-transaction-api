@@ -9,11 +9,13 @@ dependencies = [
     "confluent-kafka == 2.6.0",
     "cryptography == 42.0.8",
     "esgf-playground-utils==1.0.4",
+    "esgvoc == 1.0.0",
     "fastapi == 0.114.0",
     "globus-sdk == 3.41.0",
     "httpx == 0.28.1",
     "httpx-auth == 0.23.1",
-    "idna == 3.7",
+    "idna == 3.10",
+    "jsonschema == 4.24.0",
     "pyjwt == 2.8.0",
     "pytest == 8.3.5",
     "pytest-cov == 6.0.0",
@@ -22,6 +24,7 @@ dependencies = [
     "requests == 2.32.3",
     "stac-fastapi.types == 6.0.0",
     "stac-fastapi.extensions == 6.0.0",
+    "uvicorn == 0.34.0",
 ]
 description = "West ESGF STAC Transaction API"
 version = "0.1.0"
