@@ -246,3 +246,49 @@ def validate_patch(
 
             logger.error(error_detail)
             raise HTTPException(status_code=400, detail=str(error_detail))
+
+
+def validate_post(
+    event_id: str,
+    request_id: str,
+    item_id: str,
+    item: CMIP6Item,
+    extensions: list[str],
+) -> None:
+    """Validate a CMIP6Item post request
+
+    Args:
+        event_id (str): ID of the Kafka event
+        request_id (str): ID of the request
+        item_id (str): ID of the item to validate
+        item (CMIP6Item): Partial Item to be validated to validate
+        extensions (list[str]): List of STAC extensions to be validated against
+
+    Raises:
+        HTTPException: Validation error
+        HTTPException: Unexpect exception with validation
+    """
+    for extension in extensions:
+        try:
+            extension_validator = get_extension_validator(extension)
+
+            raise_errors = []
+            for error in extension_validator.iter_errors(item):
+                raise_errors.append(error)
+
+        except Exception as e:
+            logger.exception(e)
+            raise HTTPException(status_code=400, detail=str(e)) from e
+
+        if raise_errors:
+            error_detail = {
+                "errors": raise_errors,
+                "event_id": event_id,
+                "item_id": item_id,
+                "request_id": request_id,
+                "status_code": 400,
+                "type": "validation_error",
+            }
+
+            logger.error(error_detail)
+            raise HTTPException(status_code=400, detail=str(error_detail))

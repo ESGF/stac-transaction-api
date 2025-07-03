@@ -24,7 +24,13 @@ from stac_fastapi.types.stac import Collection
 
 from models import Authorizer
 from settings.transaction import access_control_policy, event_stream, stac_api
-from utils import operation_to_partial_item, validate_extensions, validate_item, validate_patch
+from utils import (
+    operation_to_partial_item, 
+    validate_extensions, 
+    validate_item, 
+    validate_patch, 
+    validate_post
+)
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -148,7 +154,12 @@ class TransactionClient(BaseTransactionsClient):
 
         event_id = uuid.uuid4().hex
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
-        validate_item(event_id, request_id, item)
+
+        item_extensions = item.stac_extensions if item.stac_extensions else []
+
+        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+
+        validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
 
         user_agent = headers.get("User-Agent", "/").split("/")
 
