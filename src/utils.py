@@ -6,7 +6,6 @@ import boto3
 import httpx
 import jsonschema
 from esgf_playground_utils.models.item import CMIP6Item
-from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
 from jsonschema.protocols import Validator
 from pydantic import HttpUrl, ValidationError
@@ -16,9 +15,6 @@ from settings.transaction import default_extensions
 
 # Setup logger
 logger = logging.getLogger(__name__)
-
-# esgvoc CV validator
-validator = DrsValidator(project_id="cmip6")
 
 
 def get_secret(region_name, secret_name):
@@ -35,40 +31,6 @@ def get_secret(region_name, secret_name):
     except Exception as e:
         print(f"Error retrieving secret: {e}")
         raise e
-
-
-def validate_item(event_id, request_id, stac_item):
-    # CV Validation
-    stac_item_dir = stac_item.get("id", None).replace(".", "/")
-    report = json.loads(validator.validate_directory(stac_item_dir).model_dump_json())
-
-    if len(report["errors"]) > 0:
-        error_detail = {
-            "errors": report["errors"],
-            "event_id": event_id,
-            "item_id": stac_item.get("id"),
-            "request_id": request_id,
-            "status_code": 400,
-            "type": "validation_error",
-        }
-
-        logger.error(error_detail)
-        raise HTTPException(status_code=400, detail=str(error_detail))
-
-    # Schema level validation
-    try:
-        CMIP6Item(**stac_item)
-    except ValidationError as e:
-        error_detail = {
-            "errors": e.errors(),
-            "event_id": event_id,
-            "item_id": stac_item.get("id"),
-            "request_id": request_id,
-            "status_code": 400,
-            "type": "validation_error",
-        }
-        logger.error(error_detail)
-        raise HTTPException(status_code=400, detail=str(error_detail)) from e
 
 
 def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
