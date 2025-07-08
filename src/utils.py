@@ -6,7 +6,6 @@ import boto3
 import httpx
 import jsonschema
 from esgf_playground_utils.models.item import CMIP6Item
-from esgvoc.apps.drs.validator import DrsValidator
 from fastapi import HTTPException
 from jsonschema.protocols import Validator
 from pydantic import HttpUrl, ValidationError
@@ -16,9 +15,6 @@ from settings.transaction import default_extensions
 
 # Setup logger
 logger = logging.getLogger(__name__)
-
-# esgvoc CV validator
-validator = DrsValidator(project_id="cmip6")
 
 
 def get_secret(region_name, secret_name):
@@ -35,40 +31,6 @@ def get_secret(region_name, secret_name):
     except Exception as e:
         print(f"Error retrieving secret: {e}")
         raise e
-
-
-def validate_item(event_id, request_id, stac_item):
-    # CV Validation
-    stac_item_dir = stac_item.get("id", None).replace(".", "/")
-    report = json.loads(validator.validate_directory(stac_item_dir).model_dump_json())
-
-    if len(report["errors"]) > 0:
-        error_detail = {
-            "errors": report["errors"],
-            "event_id": event_id,
-            "item_id": stac_item.get("id"),
-            "request_id": request_id,
-            "status_code": 400,
-            "type": "validation_error",
-        }
-
-        logger.error(error_detail)
-        raise HTTPException(status_code=400, detail=str(error_detail))
-
-    # Schema level validation
-    try:
-        CMIP6Item(**stac_item)
-    except ValidationError as e:
-        error_detail = {
-            "errors": e.errors(),
-            "event_id": event_id,
-            "item_id": stac_item.get("id"),
-            "request_id": request_id,
-            "status_code": 400,
-            "type": "validation_error",
-        }
-        logger.error(error_detail)
-        raise HTTPException(status_code=400, detail=str(error_detail)) from e
 
 
 def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
@@ -125,18 +87,23 @@ def validate_extensions(collection_id: str, item_extensions: list[str], strict: 
         list[str]: list of extensions including defaults
     """
 
-    expected_extensions = default_extensions[collection_id].copy()
+    expected_extensions = default_extensions.get(collection_id, {}).copy()
 
     for item_extension in item_extensions:
+        expected = False
         for expected_extension_key, expected_extension in expected_extensions.copy().items():
-            if any(re.compile(regex).match(item_extension) for regex in expected_extension["regex"]):
+            if any(re.compile(regex).match(str(item_extension)) for regex in expected_extension["regex"]):
                 expected_extensions.pop(expected_extension_key)
+                expected = True
 
-        raise HTTPException(status_code=400, detail=f"Unexpected extensions: {item_extension}")
+        if not expected:
+            raise HTTPException(
+                status_code=400, detail=f"Unexpected extensions: {item_extension} {expected_extensions}"
+            )
 
-    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions]
+    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions.values()]
 
-    if strict & missing_extensions:
+    if strict & len(missing_extensions) > 0:
         raise HTTPException(status_code=400, detail=f"Expected extensions missing: {missing_extensions}")
 
     item_extensions.extend(missing_extensions)
@@ -216,11 +183,12 @@ def validate_patch(
 
     for extension in extensions:
         try:
-            extension_validator = get_extension_validator(extension)
+            extension_validator = get_extension_validator(str(extension))
 
             required_keys = set()
             raise_errors = []
-            for error in extension_validator.iter_errors(item):
+            for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+
                 if error.validator != "required":
                     required_keys.add(error.validator_value)
 
@@ -233,6 +201,52 @@ def validate_patch(
 
         for null_key_error in required_keys & null_keys:
             raise_errors.append(f"Variable {null_key_error} is required and cannot be removed")
+
+        if raise_errors:
+            error_detail = {
+                "errors": raise_errors,
+                "event_id": event_id,
+                "item_id": item_id,
+                "request_id": request_id,
+                "status_code": 400,
+                "type": "validation_error",
+            }
+
+            logger.error(error_detail)
+            raise HTTPException(status_code=400, detail=str(error_detail))
+
+
+def validate_post(
+    event_id: str,
+    request_id: str,
+    item_id: str,
+    item: CMIP6Item,
+    extensions: list[str],
+) -> None:
+    """Validate a CMIP6Item post request
+
+    Args:
+        event_id (str): ID of the Kafka event
+        request_id (str): ID of the request
+        item_id (str): ID of the item to validate
+        item (CMIP6Item): Partial Item to be validated to validate
+        extensions (list[str]): List of STAC extensions to be validated against
+
+    Raises:
+        HTTPException: Validation error
+        HTTPException: Unexpect exception with validation
+    """
+    for extension in extensions:
+        try:
+            extension_validator = get_extension_validator(str(extension))
+
+            raise_errors = []
+            for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+                raise_errors.append(error)
+
+        except Exception as e:
+            logger.exception(e)
+            raise HTTPException(status_code=400, detail=str(e)) from e
 
         if raise_errors:
             error_detail = {
