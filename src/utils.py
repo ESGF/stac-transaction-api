@@ -87,18 +87,23 @@ def validate_extensions(collection_id: str, item_extensions: list[str], strict: 
         list[str]: list of extensions including defaults
     """
 
-    expected_extensions = default_extensions[collection_id].copy()
+    expected_extensions = default_extensions.get(collection_id, {}).copy()
 
     for item_extension in item_extensions:
+        expected = False
         for expected_extension_key, expected_extension in expected_extensions.copy().items():
-            if any(re.compile(regex).match(item_extension) for regex in expected_extension["regex"]):
+            if any(re.compile(regex).match(str(item_extension)) for regex in expected_extension["regex"]):
                 expected_extensions.pop(expected_extension_key)
+                expected = True
 
-        raise HTTPException(status_code=400, detail=f"Unexpected extensions: {item_extension}")
+        if not expected:
+            raise HTTPException(
+                status_code=400, detail=f"Unexpected extensions: {item_extension} {expected_extensions}"
+            )
 
-    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions]
+    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions.values()]
 
-    if strict & missing_extensions:
+    if strict & len(missing_extensions) > 0:
         raise HTTPException(status_code=400, detail=f"Expected extensions missing: {missing_extensions}")
 
     item_extensions.extend(missing_extensions)
@@ -178,11 +183,12 @@ def validate_patch(
 
     for extension in extensions:
         try:
-            extension_validator = get_extension_validator(extension)
+            extension_validator = get_extension_validator(str(extension))
 
             required_keys = set()
             raise_errors = []
-            for error in extension_validator.iter_errors(item):
+            for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+
                 if error.validator != "required":
                     required_keys.add(error.validator_value)
 
@@ -232,10 +238,10 @@ def validate_post(
     """
     for extension in extensions:
         try:
-            extension_validator = get_extension_validator(extension)
+            extension_validator = get_extension_validator(str(extension))
 
             raise_errors = []
-            for error in extension_validator.iter_errors(item):
+            for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
                 raise_errors.append(error)
 
         except Exception as e:
