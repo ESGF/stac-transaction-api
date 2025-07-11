@@ -22,10 +22,9 @@ from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchO
 from stac_fastapi.types.stac import Collection
 from stac_pydantic.item import Item
 
+from models import Authorizer
 from src.settings.transaction import access_control_policy, event_stream, stac_api
 from utils import operation_to_partial_item, validate_extensions, validate_patch, validate_post
-
-from .models import Authorizer
 
 # Setup logger
 logger = logging.getLogger(__name__)
