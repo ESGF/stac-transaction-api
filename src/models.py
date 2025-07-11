@@ -6,14 +6,14 @@ import re
 from typing import Literal
 from urllib.parse import urlparse
 
-from esgf_playground_utils.models.item import CMIP6Item
 from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import HTTPException
 from pydantic import BaseModel
 from pydantic_core import ValidationError
-from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
+from stac_fastapi.extensions.core.transaction.request import PartialItem
+from stac_pydantic.item import Item
 
-import settings.transaction as settings
+import src.settings.transaction as settings
 
 Role = Literal[
     "CREATE",
@@ -69,7 +69,7 @@ class Nodes(BaseModel):
         """Check for appropriate authorisation.
 
         Args:
-            assets (CMIP6Item): item to be authorised
+            assets (dict): item to be authorised
             role (Role): required role for auhroisation
 
         Raises:
@@ -149,7 +149,7 @@ class Authorizer(BaseModel):
     nodes: Nodes = Nodes()
     projects: Projects = Projects()
 
-    def authorize(self, collection_id: str, item: CMIP6Item | PartialItem, role: Role):
+    def authorize(self, collection_id: str, item: Item | PartialItem, role: Role):
         """Check for appropriate authorisation.
 
         Args:

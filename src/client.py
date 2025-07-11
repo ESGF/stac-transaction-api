@@ -4,7 +4,6 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-from esgf_playground_utils.models.item import CMIP6Item
 from esgf_playground_utils.models.kafka import (
     Auth,
     CreatePayload,
@@ -21,10 +20,12 @@ from fastapi import HTTPException, Request, Response, status
 from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
 from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
 from stac_fastapi.types.stac import Collection
+from stac_pydantic.item import Item
 
-from models import Authorizer
-from settings.transaction import access_control_policy, event_stream, stac_api
+from src.settings.transaction import access_control_policy, event_stream, stac_api
 from utils import operation_to_partial_item, validate_extensions, validate_patch, validate_post
+
+from .models import Authorizer
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def globus_authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
+    def globus_authorize(self, item: Item, request: Request, collection_id: str) -> dict:
         properties = item.properties
 
         if item.collection != collection_id:
@@ -110,11 +111,11 @@ class TransactionClient(BaseTransactionsClient):
 
         return auth
 
-    def egi_authorize(self, collection_id: str, item: CMIP6Item, role: str, request: Request) -> Auth:
+    def egi_authorize(self, collection_id: str, item: Item, role: str, request: Request) -> Auth:
         """_summary_
 
         Args:
-            item (CMIP6Item): item to check authorization for
+            item (Item): item to check authorization for
             role (str): role to check authorization for
             request (Request): current request
 
@@ -128,7 +129,7 @@ class TransactionClient(BaseTransactionsClient):
             requester_data=authorizer.requester_data,
         )
 
-    def authorize(self, item: CMIP6Item | PartialItem, role: str, request: Request, collection_id: str) -> Auth:
+    def authorize(self, item: Item | PartialItem, role: str, request: Request, collection_id: str) -> Auth:
 
         if stac_api.get("authorizer", "globus") == "globus":
             return self.globus_authorize(collection_id=collection_id, item=item, request=request)
@@ -137,10 +138,10 @@ class TransactionClient(BaseTransactionsClient):
 
     async def create_item(
         self,
-        item: CMIP6Item,
+        item: Item,
         request: Request,
         collection_id: str,
-    ) -> Optional[Union[CMIP6Item, Response, None]]:
+    ) -> Optional[Union[Item, Response, None]]:
 
         auth = self.authorize(item=item, role="CREATE", request=request, collection_id=collection_id)
 
@@ -195,11 +196,11 @@ class TransactionClient(BaseTransactionsClient):
 
     async def update_item(
         self,
-        item: CMIP6Item,
+        item: Item,
         request: Request,
         collection_id: str,
         item_id: str,
-    ) -> Optional[Union[CMIP6Item, Response]]:
+    ) -> Optional[Union[Item, Response]]:
 
         auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
 
@@ -256,7 +257,7 @@ class TransactionClient(BaseTransactionsClient):
         item_id: str,
         patch: Union[PartialItem, list[PatchOperation]],
         request: Request,
-    ) -> Optional[Union[CMIP6Item, Response]]:
+    ) -> Optional[Union[Item, Response]]:
 
         item = operation_to_partial_item(patch) if isinstance(patch, list) else patch
         auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
@@ -314,7 +315,7 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         collection_id: str,
         item_id: str,
-    ) -> Optional[Union[CMIP6Item, Response]]:
+    ) -> Optional[Union[Item, Response]]:
         auth = self.authorize(collection_id=collection_id, item=item_id, role="UPDATE", request=request)
 
         headers = request.headers.get("headers", {})

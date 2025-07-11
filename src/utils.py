@@ -5,13 +5,12 @@ import re
 import boto3
 import httpx
 import jsonschema
-from esgf_playground_utils.models.item import CMIP6Item
 from fastapi import HTTPException
 from jsonschema.protocols import Validator
-from pydantic import HttpUrl, ValidationError
 from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchAddReplaceTest, PatchOperation
+from stac_pydantic.item import Item
 
-from settings.transaction import default_extensions
+from src.settings.transaction import default_extensions
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -220,16 +219,16 @@ def validate_post(
     event_id: str,
     request_id: str,
     item_id: str,
-    item: CMIP6Item,
+    item: Item,
     extensions: list[str],
 ) -> None:
-    """Validate a CMIP6Item post request
+    """Validate a Item post request
 
     Args:
         event_id (str): ID of the Kafka event
         request_id (str): ID of the request
         item_id (str): ID of the item to validate
-        item (CMIP6Item): Partial Item to be validated to validate
+        item (Item): Partial Item to be validated to validate
         extensions (list[str]): List of STAC extensions to be validated against
 
     Raises:
