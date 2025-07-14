@@ -37,7 +37,238 @@
             "url": "https://app.globus.org/groups/b1e1d2b8-33cb-11ef-8ec5-1df34dfa5fb6"
           }
         ],
+        "AER": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "AWI": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "BCC": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CAMS": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CAS": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CCCma": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CCCR-IITM": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CMCC": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CNRM-CERFACS": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CSIRO": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CSIRO-ARCCSS": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "CSIRO-COSIMA": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "DKRZ": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "DWD": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
         "E3SM-Project": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "FIO-QLNM": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "HAMMOZ-Consortium": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "INM": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "IPSL": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "KIOST": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "MIROC": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "MOHC": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "MPI-M": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "MRI": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NASA-GISS": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NCAR": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NCC": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NERC": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NIMS-KMA": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NIWA": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NOAA-GFDL": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NTU": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "NUIST": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "RTE-RRTMGP-Consortium": [
           {
             "name": "ESGFNG LOCAL",
             "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
@@ -51,7 +282,35 @@
             "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
           }
         ],
+        "SNU": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "THU": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "UA": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
         "UCSB": [
+          {
+            "name": "ESGFNG LOCAL",
+            "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
+            "url": "https://app.globus.org/groups/f13ed40c-a6ca-11ef-ae44-a76e4b120148"
+          }
+        ],
+        "UHH": [
           {
             "name": "ESGFNG LOCAL",
             "uuid": "f13ed40c-a6ca-11ef-ae44-a76e4b120148",
