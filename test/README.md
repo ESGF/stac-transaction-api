@@ -1,4 +1,8 @@
-# Data challenges and tests
+# Data Challenges and Tests
+
+This subdirectory contains tools to generate STAC metadata payloads from ESGF1 metadata and to run data challenges using those payloads.
+
+### Generating Payloads
 
 ```
 generate_payloads.py --help
@@ -16,9 +20,19 @@ options:
                         Directory where generated payload files will be stored.
 ```
 
-for example
+for example, to generate payloads from a list of dataset paths:
 
 ```
 python generate_payloads.py --datasets West-CMIP6-paths-0001-0500.txt
 ```
-The ESGF1 metadata will be downloaded to the `esgf1-payloads/` default directory, converted to STAC Items and stored as STAC Item metadata payloads in `esgfng-payloads/`.
+This will:
+
+ - Download ESGF1 metadata files to the default directory `esgf1-payloads/`
+ - Convert those files into STAC Items
+ - Store the resulting STAC Item payloads in the directory `esgfng-payloads/`
+
+### Running a Data Challenge
+Once the payloads are generated, run a data challenge:
+```
+python data_challenge --west --dc 4
+```
