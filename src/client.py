@@ -55,8 +55,6 @@ class TransactionClient(BaseTransactionsClient):
 
         if item.collection != collection_id:
             raise ValueError("Item collection must match path collection_id")
-        if getattr(properties, "project", None) != collection_id:
-            raise ValueError("Item project must match path collection_id")
 
         allowed_groups = self.allowed_groups(properties, access_control_policy)
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]

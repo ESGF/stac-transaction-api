@@ -11,7 +11,7 @@ item_properties = {
         "cf_standard_name",
         ###"citation_url",
         #"data_node",
-        #"data_specs_version",
+        "data_specs_version",
         #"dataset_id_template_",
         #"datetime_start",
         #"datetime_stop",
@@ -39,7 +39,7 @@ item_properties = {
         #"member_id",
         #"metadata_format",
         "mip_era",
-        "model_cohort",
+        #"model_cohort",
         "nominal_resolution",
         #"number_of_aggregations",
         #"number_of_files",
@@ -53,7 +53,7 @@ item_properties = {
         "source_type",
         "sub_experiment_id",
         "table_id",
-        "title",
+        #"title",
         #"type",
         #"url",
         "variable",
@@ -71,8 +71,6 @@ item_properties = {
 
 list_properties = [
     "access",
-    "activity_id",
-    "realm",
     "source_type",
 ]
 
@@ -97,20 +95,34 @@ def convert2stac(json_data):
         "end_datetime": dataset_doc.get("datetime_end", "1975-01-02T00:00:00Z"),
     }
     property_keys = item_properties.get(collection)
+    namespace = collection.lower()
     for k in property_keys:
         v = dataset_doc.get(k)
+        if k in ["access", "version", "retracted"]:
+            nk = k
+        else:
+            nk = f"{namespace}:{k}"
         if isinstance(v, list):
             if k in list_properties:
-                properties[k] = v
+                properties[nk] = v
             else:
-                properties[k] = v[0]
+                if v[0] is None or v[0] == "none":
+                    continue
+                properties[nk] = v[0]
         else:
-            properties[k] = v
+            if v is None or v == "none":
+                continue
+            properties[nk] = v
 
     item = {
         "type": "Feature",
         "stac_version": "1.0.0",
-        "extensions": ["https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"],
+        "stac_extensions": [
+            #"https://stac-extensions.github.io/cmip6/v2.0.0/schema.json",
+            "http://host.docker.internal/cmip6/v2.0.1/schema.json",
+            "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+            "https://stac-extensions.github.io/file/v2.1.0/schema.json"
+        ],
         "id": item_id,
         "geometry": {
             "type": "Polygon",
