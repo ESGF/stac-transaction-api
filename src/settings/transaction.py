@@ -102,35 +102,3 @@ default_extensions = {
         },
     },
 }
-
-
-{
-    "CMIP6": {
-        "CMIP6": {
-            "regex": ["https://stac-extensions\.github\.io/cmip6/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
-            "default": "https://stac-extensions.github.io/cmip6/v1.0.0/schema.json",
-        },
-        "alternate_assets": {
-            "regex": ["https://stac-extensions\.github\.io/alternate-assets/v[0-9]\.[0-9]\.[0-9]\/schema\.json"],
-            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
-        },
-        "file": {
-            "regex": ["https://stac-extensions\.github\.io/file/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
-            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
-        },
-    },
-    "CMIP7": {
-        "CMIP7": {
-            "regex": ["https://stac-extensions.github.io/cmip7/v[0-9].[0-9].[0-9]/schema.json"],
-            "default": "https://stac-extensions.github.io/cmip7/v1.0.0/schema.json",
-        },
-        "alternate_assets": {
-            "regex": ["https://stac-extensions.github.io/alternate-assets/v[0-9].[0-9].[0-9]/schema.json"],
-            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
-        },
-        "file": {
-            "regex": ["https://stac-extensions.github.io/file/v[0-9].[0-9].[0-9]/schema.json"],
-            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
-        },
-    },
-}

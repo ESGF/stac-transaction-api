@@ -14,7 +14,7 @@ def main(args):
     end_index = start_index % 2000 + 499
     with open(f"{region}-CMIP6-paths-{start_index:04d}-{end_index:04d}.txt", "r") as f:
         paths = f.readlines()
-        print(len(paths), "paths found for Data Challenge 1, Round 1")
+        print(len(paths), f"paths found for Data Challenge {args.dc}")
 
     if args.dc == 4:
         for i, path in enumerate(paths):
