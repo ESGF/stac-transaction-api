@@ -151,37 +151,48 @@ class TransactionClient(BaseTransactionsClient):
 
         item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
 
+        print(f"Item extensions: {item_extensions}")
+
         validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
 
         user_agent = headers.get("User-Agent", "/").split("/")
 
-        payload = CreatePayload(
-            method="POST",
-            collection_id=collection_id,
-            item=item.model_dump(),
-        )
+        payload = {
+            "method": "POST",
+            "collection_id": collection_id,
+            "item": await request.json(),
+        }
 
-        data = Data(type="STAC", payload=payload)
+        data = {
+            "type": "STAC",
+            "payload": payload,
+        }
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = {
+            "package": user_agent[0],
+            "version": user_agent[1] if len(user_agent) > 1 else "",
+        }
 
-        metadata = Metadata(
-            auth=auth,
-            event_id=event_id,
-            publisher=publisher,
-            request_id=request_id,
-            time=datetime.now().isoformat(),
-            schema_version="1.0.0",
-        )
-        event = KafkaEvent(metadata=metadata, data=data)
+        metadata = {
+            "auth": auth,
+            "event_id": event_id,
+            "publisher": publisher,
+            "request_id": request_id,
+            "time": datetime.now().isoformat(),
+            "schema_version": "1.0.0",
+        }
+
+        event = {
+            "metadata": metadata,
+            "data": data,
+        }
 
         try:
             self.producer.produce(
                 topic=event_stream.get("topic"),
                 key=item.id.encode("utf-8"),
-                value=event.model_dump_json().encode("utf8"),
+                value=json.dumps(event, default=str).encode("utf-8"),
             )
-
         except Exception as e:
             logger.error(f"Error producing message: {e}")
             raise HTTPException(status_code=500, detail=str(e)) from e

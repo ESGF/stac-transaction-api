@@ -40,7 +40,7 @@ def main(datasets, documents_dir, payloads_dir):
     print("Loading paths from", datasets)
     print("Found", len(paths), "paths")
 
-    download(paths, documents_dir)
+    #download(paths, documents_dir)
     convert(paths, documents_dir, payloads_dir)
 
 

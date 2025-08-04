@@ -79,6 +79,8 @@ def main(args):
                         type = value.get("type", "")
                         roles = value.get("roles", [])
                         description = value.get("description", "")
+                        size = value.get("file:size", 0)
+                        checksum = value.get("file:checksum", "")
                         entry = {
                             "op": "add",
                             "path": f"/assets/{key}",

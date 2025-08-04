@@ -242,6 +242,7 @@ def validate_post(
 
             raise_errors = []
             for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+                print(f"Validation error: {error.message}")
                 raise_errors.append(error)
 
         except Exception as e:
