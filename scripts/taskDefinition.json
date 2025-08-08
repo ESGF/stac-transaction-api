@@ -74,7 +74,7 @@
     "taskRoleArn": "arn:aws:iam::730335463484:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::730335463484:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "family": "esgvoc",
+    "family": "data-challenge-04-transaction",
     "volumes": [
         {
             "name": "esgvoc",

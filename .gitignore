@@ -8,6 +8,7 @@ build
 *.egg-info
 .env*
 .coverage
+.poetry/
 htmlcov/
 __pycache__/
 esgf1-payloads/
