@@ -10,11 +10,11 @@ def main(args):
     tc = TransactionClient(stac_api=args.stac_transaction_api)
     region = "East" if args.east else "West"
 
-    start_index = args.dc * 500 % 2000 + 1
-    end_index = start_index % 2000 + 499
+    end_index = args.dc * 500
+    start_index = end_index - 499
     with open(f"{region}-CMIP6-paths-{start_index:04d}-{end_index:04d}.txt", "r") as f:
         paths = f.readlines()
-        print(len(paths), f"paths found for Data Challenge {args.dc}")
+        print(f"{len(paths)} paths found for Data Challenge {args.dc}")
 
     if args.dc == 4:
         for i, path in enumerate(paths):
@@ -79,6 +79,8 @@ def main(args):
                         type = value.get("type", "")
                         roles = value.get("roles", [])
                         description = value.get("description", "")
+                        size = value.get("file:size", 0)
+                        checksum = value.get("file:checksum", "")
                         entry = {
                             "op": "add",
                             "path": f"/assets/{key}",
@@ -103,7 +105,7 @@ def main(args):
                         }
                     )
                     print(f"Response: {response}")
-
+                    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="STAC Transaction API Data Challenges")

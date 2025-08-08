@@ -1,7 +1,7 @@
 {
-  "project": {
+  "cmip6:project": {
     "CMIP6": {
-      "institution_id": {
+      "cmip6:institution_id": {
         "ALCF": [
           {
             "name": "ESGF2 ALCF",

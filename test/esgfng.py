@@ -2,76 +2,46 @@ import re
 from settings import STAC_API
 
 
-item_properties = {
+item_properties = [
+    "access",
+    "pid",
+    "project",
+    "version",
+    "retracted",
+]
+
+project_item_properties = {
     "CMIP6": [
-        "version",
-        "access",
-        #"activity_drs",
         "activity_id",
         "cf_standard_name",
-        ###"citation_url",
-        #"data_node",
-        #"data_specs_version",
-        #"dataset_id_template_",
-        #"datetime_start",
-        #"datetime_stop",
-        #"directory_format_template_",
+        "citation_url",
+        "data_specs_version",
         "experiment_id",
         "experiment_title",
         "frequency",
         "further_info_url",
-        #"north_degrees",
-        #"west_degrees",
-        #"south_degrees",
-        #"east_degrees",
-        #"geo",
-        #"geo_units",
         "grid",
         "grid_label",
-        #"height_bottom",
-        #"height_top",
-        #"height_units",
-        #"index_node",
-        #"instance_id",
         "institution_id",
-        #"latest",
-        #"master_id",
-        #"member_id",
-        #"metadata_format",
+        "member_id",
         "mip_era",
-        "model_cohort",
         "nominal_resolution",
-        #"number_of_aggregations",
-        #"number_of_files",
-        ###"pid",
+        "pid",
         "product",
-        "project",
         "realm",
-        #"replica",
-        #"size",
         "source_id",
         "source_type",
         "sub_experiment_id",
         "table_id",
-        "title",
-        #"type",
-        #"url",
         "variable",
-        "variable_id",
         "variable_long_name",
         "variable_units",
         "variant_label",
-        #"xlink",
-        #"_version_",
-        "retracted",
-        #"_timestamp",
-        #"score",
     ]
 }
 
 list_properties = [
     "access",
-    "activity_id",
     "realm",
     "source_type",
 ]
@@ -96,21 +66,38 @@ def convert2stac(json_data):
         "start_datetime": dataset_doc.get("datetime_start", "1975-01-01T00:00:00Z"),
         "end_datetime": dataset_doc.get("datetime_end", "1975-01-02T00:00:00Z"),
     }
-    property_keys = item_properties.get(collection)
+
+    collection_item_properties = project_item_properties.get(collection, [])
+    property_keys = item_properties + collection_item_properties
+    namespace = collection.lower()
+
     for k in property_keys:
         v = dataset_doc.get(k)
+        if k in item_properties:
+            nk = k
+        elif k in collection_item_properties:
+            nk = f"{namespace}:{k}"
         if isinstance(v, list):
             if k in list_properties:
-                properties[k] = v
+                properties[nk] = v
             else:
-                properties[k] = v[0]
+                if v[0] is None or v[0] == "none":
+                    continue
+                properties[nk] = v[0]
         else:
-            properties[k] = v
+            if v is None or v == "none":
+                continue
+            properties[nk] = v
 
     item = {
         "type": "Feature",
         "stac_version": "1.0.0",
-        "extensions": ["https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"],
+        "stac_extensions": [
+            #"https://stac-extensions.github.io/cmip6/v2.0.0/schema.json",
+            "http://host.docker.internal/cmip6/v2.0.1/schema.json",
+            "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+            "https://stac-extensions.github.io/file/v2.1.0/schema.json"
+        ],
         "id": item_id,
         "geometry": {
             "type": "Polygon",
@@ -189,6 +176,8 @@ def convert2stac(json_data):
                             "type": "application/netcdf",
                             "roles": ["data"],
                             "alternate:name": dataset_doc.get("data_node"),
+                            "file:size": doc.get("size", 0),
+                            "file:checksum": "1220" + doc.get("checksum")[0],
                         }
                         counter += 1
                         break
