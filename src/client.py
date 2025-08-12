@@ -258,7 +258,11 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
     ) -> Optional[Union[Item, Response]]:
 
-        item = operation_to_partial_item(patch) if isinstance(patch, list) else patch
+        item = (
+            operation_to_partial_item(collection_id=collection_id, operations=patch)
+            if isinstance(patch, list)
+            else patch
+        )
         auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
 
         headers = request.headers.get("headers", {})
