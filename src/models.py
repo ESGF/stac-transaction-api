@@ -75,21 +75,22 @@ class Nodes(BaseModel):
         Raises:
             HTTPException: Raised if either node or role permission is missing
         """
-        for asset in assets.values():
-            asset_url = urlparse(asset.href)
-            node_permission = self.nodes.get(asset_url.hostname, None)
+        if assets:
+            for asset in assets.values():
+                asset_url = urlparse(asset.href)
+                node_permission = self.nodes.get(asset_url.hostname, None)
 
-            if not node_permission:
-                raise HTTPException(
-                    status_code=401,
-                    detail=f"Node permission missing for {asset.href}",
-                )
+                if not node_permission:
+                    raise HTTPException(
+                        status_code=401,
+                        detail=f"Node permission missing for {asset.href}",
+                    )
 
-            if role not in node_permission.roles:
-                raise HTTPException(
-                    status_code=401,
-                    detail=f"Node role ({role}) permission missing for {asset.href}",
-                )
+                if role not in node_permission.roles:
+                    raise HTTPException(
+                        status_code=401,
+                        detail=f"Node role ({role}) permission missing for {asset.href}",
+                    )
 
 
 class Projects(BaseModel):
