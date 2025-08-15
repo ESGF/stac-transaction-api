@@ -160,7 +160,7 @@ class TransactionClient(BaseTransactionsClient):
         payload = CreatePayload(
             method="POST",
             collection_id=collection_id,
-            item=item.model_dump(),
+            item=item,
         )
 
         data = Data(type="STAC", payload=payload)
@@ -282,7 +282,7 @@ class TransactionClient(BaseTransactionsClient):
             method="PATCH",
             collection_id=collection_id,
             item_id=item_id,
-            patch=json.dumps(patch),
+            patch=patch,
         )
 
         data = Data(type="STAC", payload=payload)
