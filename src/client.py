@@ -53,8 +53,8 @@ class TransactionClient(BaseTransactionsClient):
     def globus_authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
         properties = item.properties
 
-        if item.collection != collection_id:
-            raise ValueError("Item collection must match path collection_id")
+        #if item.collection != collection_id:
+        #    raise ValueError("Item collection must match path collection_id")
 
         allowed_groups = self.allowed_groups(properties, access_control_policy)
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
@@ -94,12 +94,13 @@ class TransactionClient(BaseTransactionsClient):
         requester_data = RequesterData(
             client_id=token_info.get("client_id"),
             sub=token_info.get("sub"),
-            iss=token_info.get("username"),
+            iss=token_info.get("iss"),
         )
 
         auth = Auth(
             requester_data=requester_data,
         )
+
         # "auth_basis_data": {
         #     "authorization_basis_type": "group",
         #     "authorization_basis_service": "groups.globus.org",
@@ -142,20 +143,18 @@ class TransactionClient(BaseTransactionsClient):
 
         auth = self.authorize(item=item, role="CREATE", request=request, collection_id=collection_id)
 
-        headers = request.headers.get("headers", {})
+        headers = request.headers
 
         event_id = uuid.uuid4().hex
-        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        request_id = headers.get("x-request-id", uuid.uuid4().hex)
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
         item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
 
-        print(f"Item extensions: {item_extensions}")
-
         validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
 
-        user_agent = headers.get("User-Agent", "/").split("/")
+        user_agent = headers.get("user-agent", "/").split("/")
 
         payload = {
             "method": "POST",
@@ -174,7 +173,7 @@ class TransactionClient(BaseTransactionsClient):
         }
 
         metadata = {
-            "auth": auth,
+            "auth": auth.model_dump(),
             "event_id": event_id,
             "publisher": publisher,
             "request_id": request_id,
@@ -270,10 +269,10 @@ class TransactionClient(BaseTransactionsClient):
         item = operation_to_partial_item(patch) if isinstance(patch, list) else patch
         auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
 
-        headers = request.headers.get("headers", {})
+        headers = request.headers
 
         event_id = uuid.uuid4().hex
-        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        request_id = headers.get("x-request-id", uuid.uuid4().hex)
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
@@ -281,8 +280,40 @@ class TransactionClient(BaseTransactionsClient):
 
         validate_patch(event_id=event_id, request_id=request_id, item_id=item_id, item=item, extensions=item_extensions)
 
-        user_agent = headers.get("User-Agent", "/").split("/")
+        user_agent = headers.get("user-agent", "/").split("/")
 
+        payload = {
+            "method": "PATCH",
+            "collection_id": collection_id,
+            "patch": await request.json(),
+            "item_id": item_id,
+        }
+
+        data = {
+            "type": "STAC",
+            "payload": payload,
+        }
+
+        publisher = {
+            "package": user_agent[0],
+            "version": user_agent[1] if len(user_agent) > 1 else "",
+        }
+
+        metadata = {
+            "auth": auth.model_dump(),
+            "event_id": event_id,
+            "publisher": publisher,
+            "request_id": request_id,
+            "time": datetime.now().isoformat(),
+            "schema_version": "1.0.0",
+        }
+
+        event = {
+            "metadata": metadata,
+            "data": data,
+        }
+
+        '''
         payload = PatchPayload(
             method="PATCH",
             collection_id=collection_id,
@@ -308,6 +339,14 @@ class TransactionClient(BaseTransactionsClient):
                 topic=event_stream.get("topic"),
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
+            )
+        '''
+
+        try:
+            self.producer.produce(
+                topic=event_stream.get("topic"),
+                key=item_id.encode("utf-8"),
+                value=json.dumps(event, default=str).encode("utf-8"),
             )
         except Exception as e:
             logger.error(f"Error producing message: {e}")
