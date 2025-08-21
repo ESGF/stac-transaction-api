@@ -323,70 +323,70 @@
       "obs4mips6:institute": {
         "CNES": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "ECMWF": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "ESSO": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "MOHC": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "NASA-GSFC": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "NASA-JPL": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "NASA-LaRC": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "NOAA-ESRL-PSD": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "NOAA-NCEI": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
         ],
         "RSS": [
           {
-            "name": "ESGF2 ALCF",
+            "name": "ESGFNG LOCAL",
             "uuid": "de5c6244-c077-11ee-9ccb-efcf15711dbe",
             "url": "https://app.globus.org/groups/de5c6244-c077-11ee-9ccb-efcf15711dbe"
           }
