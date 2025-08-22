@@ -320,7 +320,7 @@
       }
     },
     "obs4MIPs": {
-      "obs4mips6:institute": {
+      "obs4mips:institute": {
         "CNES": [
           {
             "name": "ESGFNG LOCAL",
