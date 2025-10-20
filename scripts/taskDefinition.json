@@ -1,12 +1,12 @@
 {
     "containerDefinitions": [
         {
-            "name": "stac-transaction-api",
-            "image": "730335463484.dkr.ecr.us-east-1.amazonaws.com/stac-transaction-api",
+            "name": "data-challenge-04-transaction",
+            "image": "730335463484.dkr.ecr.us-east-1.amazonaws.com/data-challenge-04-transaction",
             "cpu": 0,
             "portMappings": [
                 {
-                    "name": "stac-transaction-api-8000-tcp",
+                    "name": "data-challenge-04-transaction-8000-tcp",
                     "containerPort": 8000,
                     "hostPort": 8000,
                     "protocol": "tcp",
@@ -16,52 +16,13 @@
             "essential": true,
             "environment": [],
             "environmentFiles": [],
-            "mountPoints": [
-                {
-                    "sourceVolume": "esgvoc",
-                    "containerPath": "/root/.local/share/esgvoc",
-                    "readOnly": false
-                }
-            ],
-            "volumesFrom": [
-                {
-                    "sourceContainer": "esgvoc"
-                }
-            ],
-            "ulimits": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/stac-transaction-api",
-                    "awslogs-create-group": "true",
-                    "awslogs-region": "us-east-1",
-                    "awslogs-stream-prefix": "ecs"
-                },
-                "secretOptions": []
-            },
-            "systemControls": []
-        },
-        {
-            "name": "esgvoc",
-            "image": "730335463484.dkr.ecr.us-east-1.amazonaws.com/esgvoc",
-            "cpu": 0,
-            "portMappings": [],
-            "essential": true,
-            "environment": [],
-            "environmentFiles": [],
-            "mountPoints": [
-                {
-                    "sourceVolume": "esgvoc",
-                    "containerPath": "/root/.local/share/esgvoc",
-                    "readOnly": false
-                }
-            ],
+            "mountPoints": [],
             "volumesFrom": [],
             "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/esgvoc",
+                    "awslogs-group": "/ecs/data-challenge-04-transaction",
                     "awslogs-create-group": "true",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
@@ -74,13 +35,8 @@
     "taskRoleArn": "arn:aws:iam::730335463484:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::730335463484:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "family": "esgvoc",
-    "volumes": [
-        {
-            "name": "esgvoc",
-            "host": {}
-        }
-    ],
+    "family": "stac-transaction-api",
+    "volumes": [],
     "placementConstraints": [],
     "requiresCompatibilities": [
         "FARGATE"
