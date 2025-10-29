@@ -1,38 +1,50 @@
 # Data Challenges and Tests
+This directory contains tools to:
+- fetch ESGF 1.5 metadata and store it as payloads, and
+- generate STAC metadata payloads from that ESGF metadata,
+- run data challenges using those payloads.
 
-This subdirectory contains tools to generate STAC metadata payloads from ESGF1 metadata and to run data challenges using those payloads.
-
-### Generating Payloads
-
+## Fetch ESGF 1.5 Metadata
+To fetch CMIP6 metadata filtered by activity and institution, run:
 ```
-generate_payloads.py --help
+fetch_esgf_cmip6.py --activity-id AerChemMIP --institution-id NCAR
+```
+This will download all CMIP6 metadata with `"activity_id": ["AerChemMIP"]` and `"institution_id": ["NCAR"]`.
 
-usage: generate_payloads.py [-h] --datasets DATASETS [--documents-dir DOCUMENTS_DIR] [--payloads-dir PAYLOADS_DIR]
-
-Generate payloads for testing.
-
-options:
-  -h, --help            Show this help message and exit.
-  --datasets DATASETS   Path to a file containing dataset paths (one per line).
-  --documents-dir DOCUMENTS_DIR
-                        Directory where ESGF1 metadata files will be stored.
-  --payloads-dir PAYLOADS_DIR
-                        Directory where generated payload files will be stored.
+You can also run:
+```
+bash fetch_100k_cmip6.sh
+```
+This script fetches CMIP6 metadata for more than 100,000 datasets/files across different combinations of `activity_id` and `institution_id`.
+## Generate STAC Payloads
+To convert the downloaded ESGF metadata into STAC Items, run:
+```
+generate_payloads.py
 ```
 
-for example, to generate payloads from a list of dataset paths:
+## Validate STAC Items
+To validate an Item, run:
+```
+stac-validator esgfng-payloads/CMIP6.AerChemMIP.NOAA-GFDL.GFDL-ESM4.ssp370SST-lowNTCF.r1i1p1f1.AERmon.mmrnh4.gr1.v20180701_eagle.alcf.anl.gov.json
 
-```
-python generate_payloads.py --datasets West-CMIP6-paths-0001-0500.txt
-```
-This will:
+Thanks for using STAC version 1.1.0!
 
- - Download ESGF1 metadata files to the default directory `esgf1-payloads/`
- - Convert those files into STAC Items
- - Store the resulting STAC Item payloads in the directory `esgfng-payloads/`
+[
+    {
+        "version": "1.1.0",
+        "path": "esgfng-payloads/CMIP6.AerChemMIP.NOAA-GFDL.GFDL-ESM4.ssp370SST-lowNTCF.r1i1p1f1.AERmon.mmrnh4.gr1.v20180701_eagle.alcf.anl.gov.json",
+        "schema": [
+            "https://esgf.github.io/stac-transaction-api/cmip6/v1.0.0/schema.json",
+            "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+            "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+            "https://schemas.stacspec.org/v1.1.0/item-spec/json-schema/item.json"
+        ],
+        "valid_stac": true,
+        "asset_type": "ITEM",
+        "validation_method": "default"
+    }
+]
 
-### Running a Data Challenge
-Once the payloads are generated, run a data challenge:
+Validation completed in 504.94ms
 ```
-python data_challenge --west --dc 4
-```
+

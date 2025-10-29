@@ -1,13 +1,16 @@
+import sys
 import re
 from settings import STAC_API
 
 
 item_properties = [
     "access",
+    "latest",
     "pid",
     "project",
-    "version",
     "retracted",
+    "title",
+    "version",
 ]
 
 project_item_properties = {
@@ -54,6 +57,59 @@ def convert2stac(json_data):
             dataset_doc = doc
             break
 
+    assets = {}
+
+    if "Globus" in dataset_doc.get("access"):
+        for doc in json_data:
+            if doc.get("type") == "File":
+                urls = doc.get("url")
+                for url in urls:
+                    if url.startswith("globus:"):
+                        m = re.search(r"^globus:([^/]*)(.*/)[^/]*$", url)
+                        href = f"https://app.globus.org/file-manager?origin_id={m[1]}&origin_path={m[2]}"
+                        assets = {
+                            "globus": {
+                                "href": href,
+                                "description": "Globus Web App Link",
+                                "type": "text/html",
+                                "roles": ["data"],
+                                "alternate:name": dataset_doc.get("data_node"),
+                            }
+                        }
+                break
+
+    size = 0
+    if "HTTPServer" in dataset_doc.get("access"):
+        counter = 0
+        for doc in json_data:
+            if doc.get("type") == "File":
+                urls = doc.get("url")
+                for url in urls:
+                    if url.endswith("application/netcdf|HTTPServer"):
+                        url_split = url.split("|")
+                        href = url_split[0]
+                        checksum_type = doc.get("checksum_type")[0]
+                        if checksum_type != "SHA256":
+                            print("{checksum_type} not supported")
+                            sys.exit(1)
+                        assets[f"data{counter:04}"] = {
+                            "href": href,
+                            "description": "HTTPServer Link",
+                            "type": "application/netcdf",
+                            "roles": ["data"],
+                            "alternate:name": dataset_doc.get("data_node"),
+                            "file:size": doc.get("size", 0),
+                            "file:checksum": "1220" + doc.get("checksum")[0],
+                            "cmip6:tracking_id": doc.get("tracking_id")[0],
+                        }
+                        size += doc.get("size", 0)
+                        counter += 1
+                        break
+
+    if not assets:
+        return None
+
+
     collection = dataset_doc.get("project")[0]
     item_id = dataset_doc.get("instance_id")
     west_degrees = dataset_doc.get("west_degrees", 0.0)
@@ -65,6 +121,9 @@ def convert2stac(json_data):
         "datetime": None,
         "start_datetime": dataset_doc.get("datetime_start", "1975-01-01T00:00:00Z"),
         "end_datetime": dataset_doc.get("datetime_end", "1975-01-02T00:00:00Z"),
+        "size": size,
+        "created": "2025-01-02T00:00:00Z",
+        "updated": "2025-01-02T00:00:00Z"
     }
 
     collection_item_properties = project_item_properties.get(collection, [])
@@ -91,12 +150,15 @@ def convert2stac(json_data):
 
     item = {
         "type": "Feature",
-        "stac_version": "1.0.0",
+        "stac_version": "1.1.0",
         "stac_extensions": [
-            #"https://stac-extensions.github.io/cmip6/v2.0.0/schema.json",
-            "http://host.docker.internal/cmip6/v2.0.1/schema.json",
+            #"https://stac-extensions.github.io/cmip6/v3.0.0/schema.json",
+            "https://esgf.github.io/stac-transaction-api/cmip6/v1.0.0/schema.json",
+            #"http://host.docker.internal/cmip6/v2.0.2/schema.json",
             "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+            #"http://host.docker.internal/alternate-assets/v1.2.0/schema.json",
             "https://stac-extensions.github.io/file/v2.1.0/schema.json"
+            #"http://host.docker.internal/file/v2.1.0/schema.json"
         ],
         "id": item_id,
         "geometry": {
@@ -138,50 +200,7 @@ def convert2stac(json_data):
             }
         ],
         "properties": properties,
+        "assets": assets
     }
-
-    assets = {}
-
-    if "Globus" in dataset_doc.get("access"):
-        for doc in json_data:
-            if doc.get("type") == "File":
-                urls = doc.get("url")
-                for url in urls:
-                    if url.startswith("globus:"):
-                        m = re.search(r"^globus:([^/]*)(.*/)[^/]*$", url)
-                        href = f"https://app.globus.org/file-manager?origin_id={m[1]}&origin_path={m[2]}"
-                        assets = {
-                            "globus": {
-                                "href": href,
-                                "description": "Globus Web App Link",
-                                "type": "text/html",
-                                "roles": ["data"],
-                                "alternate:name": dataset_doc.get("data_node"),
-                            }
-                        }
-                break
-
-    if "HTTPServer" in dataset_doc.get("access"):
-        counter = 0
-        for doc in json_data:
-            if doc.get("type") == "File":
-                urls = doc.get("url")
-                for url in urls:
-                    if url.endswith("application/netcdf|HTTPServer"):
-                        url_split = url.split("|")
-                        href = url_split[0]
-                        assets[f"data{counter:04}"] = {
-                            "href": href,
-                            "description": "HTTPServer Link",
-                            "type": "application/netcdf",
-                            "roles": ["data"],
-                            "alternate:name": dataset_doc.get("data_node"),
-                            "file:size": doc.get("size", 0),
-                            "file:checksum": "1220" + doc.get("checksum")[0],
-                        }
-                        counter += 1
-                        break
-
-    item["assets"] = assets
 
     return item

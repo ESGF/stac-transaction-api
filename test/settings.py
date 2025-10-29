@@ -3,8 +3,8 @@
 # ESGF_SEARCH_URL = "https://esgf-node.cels.anl.gov/esg-search/search"
 ESGF_SEARCH_URL = "https://esgf-node.ornl.gov/esgf-1-5-bridge"
 
-DATA_NODE = "aims3.llnl.gov,esgf-data1.llnl.gov,esgf-data2.llnl.gov"
-# DATA_NODE = "eagle.alcf.anl.gov"
+#DATA_NODE = "aims3.llnl.gov,esgf-data1.llnl.gov,esgf-data2.llnl.gov"
+DATA_NODE = "eagle.alcf.anl.gov"
 
 STAC_CLIENT = {
     "client_id": "ec5f07c0-7ed8-4f2b-94f2-ddb6f8fc91a3",
