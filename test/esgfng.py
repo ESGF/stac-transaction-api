@@ -2,49 +2,55 @@ import sys
 import re
 from settings import STAC_API
 
+# Key = Solr name
+# Value = STAC name
+# None = unchanged
+item_properties = {
+#    "access": None, # Replaced by "protocol" in asset
+    "latest": None,
+    "master_id": "base_id", # Add and rename
+#    "project": None, # Redundant with "collection", not part of the schema
+    "retracted": None,
+    "title": None,
+}
 
-item_properties = [
-    "access",
-    "latest",
-    "pid",
-    "project",
-    "retracted",
-    "title",
-    "version",
-]
-
+# Key = Solr name
+# Value = STAC name
+# None = unchanged
 project_item_properties = {
-    "CMIP6": [
-        "activity_id",
-        "cf_standard_name",
-        "citation_url",
-        "data_specs_version",
-        "experiment_id",
-        "experiment_title",
-        "frequency",
-        "further_info_url",
-        "grid",
-        "grid_label",
-        "institution_id",
-        "member_id",
-        "mip_era",
-        "nominal_resolution",
-        "pid",
-        "product",
-        "realm",
-        "source_id",
-        "source_type",
-        "sub_experiment_id",
-        "table_id",
-        "variable",
-        "variable_long_name",
-        "variable_units",
-        "variant_label",
-    ]
+    "CMIP6": {
+        "activity_id": None,
+        "cf_standard_name": "variable_cf_standard_name",
+        "citation_url": None,
+        "data_specs_version": None,
+        "experiment_id": None,
+        "experiment_title": "experiment",
+        "frequency": None,
+        "further_info_url": None,
+        "grid": None,
+        "grid_label": None,
+        "institution_id": None,
+        "member_id": None,
+ #       "mip_era": None, # Redundant with "collection", not part of the schema
+        "nominal_resolution": None,
+        "pid": None,
+        "product": None,
+        "realm": None,
+        "source_id": None,
+        "source_type": None,
+        "sub_experiment_id": None,
+        "table_id": None,
+        "variable_id": None,
+        "variable_long_name": None,
+        "variable_units": None,
+        "variant_label": None,
+        "version": None
+    }
 }
 
 list_properties = [
-    "access",
+    "activity_id",
+#    "access",
     "realm",
     "source_type",
 ]
@@ -70,10 +76,13 @@ def convert2stac(json_data):
                         assets = {
                             "globus": {
                                 "href": href,
-                                "description": "Globus Web App Link",
+                                "description": "Dataset Globus Web App Link",
                                 "type": "text/html",
                                 "roles": ["data"],
                                 "alternate:name": dataset_doc.get("data_node"),
+                                "created": doc.get("timestamp", "2025-01-02T00:00:00Z"),
+                                "updated": "2025-01-02T00:00:00Z",
+                                "protocol": "globus",
                             }
                         }
                 break
@@ -101,6 +110,9 @@ def convert2stac(json_data):
                             "file:size": doc.get("size", 0),
                             "file:checksum": "1220" + doc.get("checksum")[0],
                             "cmip6:tracking_id": doc.get("tracking_id")[0],
+                            "created": doc.get("timestamp", "2025-01-02T00:00:00Z"),
+                            "updated": "2025-01-02T00:00:00Z",
+                            "protocol": "http"
                         }
                         size += doc.get("size", 0)
                         counter += 1
@@ -122,29 +134,40 @@ def convert2stac(json_data):
         "start_datetime": dataset_doc.get("datetime_start", "1975-01-01T00:00:00Z"),
         "end_datetime": dataset_doc.get("datetime_end", "1975-01-02T00:00:00Z"),
         "size": size,
-        "created": "2025-01-02T00:00:00Z",
+        "created": dataset_doc.get("timestamp", "2025-01-02T00:00:00Z"),
         "updated": "2025-01-02T00:00:00Z"
     }
 
     collection_item_properties = project_item_properties.get(collection, [])
-    property_keys = item_properties + collection_item_properties
+    property_keys = list(item_properties.keys()) + list(collection_item_properties.keys())
     namespace = collection.lower()
 
     for k in property_keys:
         v = dataset_doc.get(k)
         if k in item_properties:
-            nk = k
+            if item_properties[k] is None:
+                nk = k
+            else:
+                nk = item_properties[k]
         elif k in collection_item_properties:
-            nk = f"{namespace}:{k}"
+            if collection_item_properties[k] is None:
+                nk = f"{namespace}:{k}"
+            else:
+                nk = f"{namespace}:{collection_item_properties[k]}"
+        # Convert version into string for pattern control.
+        if k == "version" and isinstance(v, int):
+            properties[nk] = str(v)
+            continue
         if isinstance(v, list):
             if k in list_properties:
                 properties[nk] = v
             else:
-                if v[0] is None or v[0] == "none":
+                if (v[0] is None or v[0] == "none") and k != "sub_experiment_id":
                     continue
                 properties[nk] = v[0]
         else:
-            if v is None or v == "none":
+            # Skip none value except for sub_experiment_id
+            if (v is None or v == "none") and k != "sub_experiment_id":
                 continue
             properties[nk] = v
 
@@ -152,8 +175,8 @@ def convert2stac(json_data):
         "type": "Feature",
         "stac_version": "1.1.0",
         "stac_extensions": [
-            #"https://stac-extensions.github.io/cmip6/v3.0.0/schema.json",
-            "https://esgf.github.io/stac-transaction-api/cmip6/v1.0.0/schema.json",
+            "https://stac-extensions.github.io/cmip6/v3.0.0/schema.json",
+            #"https://esgf.github.io/stac-transaction-api/cmip6/v1.0.0/schema.json",
             #"http://host.docker.internal/cmip6/v2.0.2/schema.json",
             "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
             #"http://host.docker.internal/alternate-assets/v1.2.0/schema.json",
