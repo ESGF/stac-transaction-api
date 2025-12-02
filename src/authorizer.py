@@ -7,7 +7,7 @@ from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsC
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import settings.transaction as settings
+import src.settings.transaction as settings
 from models import Authorizer
 
 confidential_client = ConfidentialAppAuthClient(
@@ -37,7 +37,9 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header[7:]
-        response = confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
+        response = confidential_client.oauth2_token_introspect(
+            access_token, include="identity_set_detail"
+        )
         token_info = response.data
 
         # resource_arn = event["methodArn"].split("/", 1)[0] + "/*"
@@ -45,21 +47,31 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         # Verify the access token
         if not token_info.get("active", False):
-            policy = self.generate_policy("unknown", "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                "unknown", "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("client_id") not in token_info.get("aud", []):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         if settings.stac_api.get("issuer") != token_info.get("iss", ""):
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         # Get the user's groups
         groups = self.get_groups(access_token)
         if not groups:
-            policy = self.generate_policy(token_info.get("sub"), "Deny", resource_arn, token_info=token_info)
+            policy = self.generate_policy(
+                token_info.get("sub"), "Deny", resource_arn, token_info=token_info
+            )
 
         policy = self.generate_policy(
             token_info.get("sub"),
@@ -167,7 +179,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
             ),
         )
 
-        authorizer.add(token_info["eduperson_entitlement"])
+        authorizer.add(token_info["entitlements"])
 
         request.state.authorizer = authorizer
 

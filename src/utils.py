@@ -1,13 +1,18 @@
 import json
 import logging
 import re
+from functools import lru_cache
 
 import boto3
 import httpx
 import jsonschema
 from fastapi import HTTPException
 from jsonschema.protocols import Validator
-from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchAddReplaceTest, PatchOperation
+from stac_fastapi.extensions.core.transaction.request import (
+    PartialItem,
+    PatchAddReplaceTest,
+    PatchOperation,
+)
 from stac_pydantic.item import Item
 
 from src.settings.transaction import default_extensions
@@ -32,7 +37,9 @@ def get_secret(region_name, secret_name):
         raise e
 
 
-def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
+def operation_to_partial_item(
+    collection_id: str, operations: list[PatchOperation]
+) -> PartialItem:
     """Convert operations to partial item
 
     Args:
@@ -53,10 +60,18 @@ def operation_to_partial_item(collection_id: str, operations: list[PatchOperatio
 
         if operation.op in ["add", "replace"]:
             if operation.path.lstrip("/") == "stac_extensions":
-                validate_extensions(collection_id=collection_id, item_extensions=operation.value, strict=True)
+                validate_extensions(
+                    collection_id=collection_id,
+                    item_extensions=operation.value,
+                    strict=True,
+                )
 
             path_parts = operation.path.split("/")
-            nest = [operation.value] if isinstance(int, path_parts[-1]) else operation.value
+            nest = (
+                [operation.value]
+                if isinstance(int, path_parts[-1])
+                else operation.value
+            )
 
             for path_part in reversed(path_parts[1:-1]):
                 nest = {path_part: nest}
@@ -65,12 +80,16 @@ def operation_to_partial_item(collection_id: str, operations: list[PatchOperatio
 
         if operation.op in ["move", "copy"]:
             # May need to update this for alternat asset updates
-            raise HTTPException(status_code=400, detail=f"Operation {operation.op} not permitted")
+            raise HTTPException(
+                status_code=400, detail=f"Operation {operation.op} not permitted"
+            )
 
     return item
 
 
-def validate_extensions(collection_id: str, item_extensions: list[str], strict: bool = False) -> list[str]:
+def validate_extensions(
+    collection_id: str, item_extensions: list[str], strict: bool = False
+) -> list[str]:
     """Validate expected default extensions are present.
 
     Args:
@@ -90,20 +109,32 @@ def validate_extensions(collection_id: str, item_extensions: list[str], strict: 
 
     for item_extension in item_extensions:
         expected = False
-        for expected_extension_key, expected_extension in expected_extensions.copy().items():
-            if any(re.compile(regex).match(str(item_extension)) for regex in expected_extension["regex"]):
+        for (
+            expected_extension_key,
+            expected_extension,
+        ) in expected_extensions.copy().items():
+            if any(
+                re.compile(regex).match(str(item_extension))
+                for regex in expected_extension["regex"]
+            ):
                 expected_extensions.pop(expected_extension_key)
                 expected = True
 
         if not expected:
             raise HTTPException(
-                status_code=400, detail=f"Unexpected extensions: {item_extension} {expected_extensions}"
+                status_code=400,
+                detail=f"Unexpected extensions: {item_extension} {expected_extensions}",
             )
 
-    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions.values()]
+    missing_extensions = [
+        expected_extension["default"]
+        for expected_extension in expected_extensions.values()
+    ]
 
     if strict & len(missing_extensions) > 0:
-        raise HTTPException(status_code=400, detail=f"Expected extensions missing: {missing_extensions}")
+        raise HTTPException(
+            status_code=400, detail=f"Expected extensions missing: {missing_extensions}"
+        )
 
     item_extensions.extend(missing_extensions)
 
@@ -141,6 +172,7 @@ def get_null_keys(item: PartialItem) -> tuple[PartialItem, set[str]]:
     return item, null_keys
 
 
+@lru_cache
 def get_extension_validator(extension: str) -> Validator:
     """Get JSON schema validator for an extension.
 
@@ -186,7 +218,9 @@ def validate_patch(
 
             required_keys = set()
             raise_errors = []
-            for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+            for error in extension_validator.iter_errors(
+                json.loads(item.model_dump_json())
+            ):
 
                 if error.validator != "required":
                     required_keys.add(error.validator_value)
@@ -199,7 +233,9 @@ def validate_patch(
             raise HTTPException(status_code=400, detail=str(e)) from e
 
         for null_key_error in required_keys & null_keys:
-            raise_errors.append(f"Variable {null_key_error} is required and cannot be removed")
+            raise_errors.append(
+                f"Variable {null_key_error} is required and cannot be removed"
+            )
 
         if raise_errors:
             error_detail = {
@@ -240,7 +276,9 @@ def validate_post(
             extension_validator = get_extension_validator(str(extension))
 
             raise_errors = []
-            for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+            for error in extension_validator.iter_errors(
+                json.loads(item.model_dump_json())
+            ):
                 raise_errors.append(error)
 
         except Exception as e:

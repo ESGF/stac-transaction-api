@@ -6,9 +6,9 @@ from stac_fastapi.types.config import ApiSettings
 from authorizer import EGIAuthorizer, GlobusAuthorizer
 from client import TransactionClient
 from producer import KafkaProducer
-from settings.transaction import event_stream, stac_api
+from src.settings.transaction import event_stream, stac_api
 
-app = FastAPI(debug=True)
+app = FastAPI(debug=stac_api.get("debug", False))
 
 
 # Health Check for AWS
