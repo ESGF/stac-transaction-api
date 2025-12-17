@@ -165,22 +165,12 @@
                 },
                 {
                     "required": [
-                        "cmip7:forcing_index"
-                    ]
-                },
-                {
-                    "required": [
                         "cmip7:frequency"
                     ]
                 },
                 {
                     "required": [
                         "cmip7:grid"
-                    ]
-                },
-                {
-                    "required": [
-                        "cmip7:initialization_index"
                     ]
                 },
                 {
@@ -200,22 +190,7 @@
                 },
                 {
                     "required": [
-                        "cmip7:physics_index"
-                    ]
-                },
-                {
-                    "required": [
-                        "cmip7:pid"
-                    ]
-                },
-                {
-                    "required": [
                         "cmip7:product"
-                    ]
-                },
-                {
-                    "required": [
-                        "cmip7:realization_index"
                     ]
                 },
                 {
@@ -234,20 +209,6 @@
                     ]
                 },
                 {
-                    "required": [
-                        "cmip7:temporal_label"
-                    ]
-                },
-                {
-                    "required": [
-                        "cmip7:variable_branded_name"
-                    ]
-                },
-                {
-                    "required": [
-                        "cmip7:variable_branded_name"
-                    ]
-                },
                 {
                     "required": [
                         "cmip7:variable_branded_suffix"
@@ -278,11 +239,6 @@
                         "cmip7:version"
                     ]
                 },
-                {
-                    "required": [
-                        "cmip7:vertical_label"
-                    ]
-                }
             ]
         },
         "require_asset_fields": {
