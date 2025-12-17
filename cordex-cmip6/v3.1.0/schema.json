@@ -1,0 +1,1212 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://esgf.github.io/stac-transaction-api/cordex-cmip6/v3.1.0/schema.json#",
+    "title": "CORDEX-CMIP6 Extension",
+    "description": "STAC CORDEX-CMIP6 Extension for STAC Items and STAC Collection Summaries.",
+    "type": "object",
+    "required": [
+        "stac_extensions"
+    ],
+    "properties": {
+        "stac_extensions": {
+            "type": "array",
+            "allOf": [
+                {
+                    "contains": {
+                        "const": "https://stac-extensions.github.io/file/v2.1.0/schema.json"
+                    }
+                },
+                {
+                    "contains": {
+                        "const": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"
+                    }
+                },
+                {
+                    "contains": {
+                        "const": "https://esgf.github.io/stac-transaction-api/cordex-cmip6/v3.1.0/schema.json"
+                    }
+                }
+            ]
+        }
+    },
+    "oneOf": [
+        {
+            "$comment": "This is the schema for STAC Items.",
+            "type": "object",
+            "required": [
+                "collection"
+            ],
+            "properties": {
+                "type": {
+                    "const": "Feature"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+$"
+                },
+                "collection": {
+                    "const": "CORDEX-CMIP6"
+                },
+                "properties": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/require_item_fields"
+                        },
+                        {
+                            "$ref": "#/definitions/item_fields"
+                        }
+                    ]
+                },
+                "assets": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/require_asset_fields"
+                            },
+                            {
+                                "$ref": "#/definitions/asset_fields"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "$comment": "This is the schema for STAC Collections, or more specifically only Collection Summaries in this case. By default, only checks the existence of the properties, but not the schema of the summaries.",
+            "type": "object",
+            "required": [
+                "type",
+                "summaries"
+            ],
+            "properties": {
+                "type": {
+                    "const": "Collection"
+                },
+                "summaries": {
+                    "$ref": "#/definitions/require_any"
+                }
+            }
+        }
+    ],
+    "definitions": {
+        "require_any": {
+            "$comment": "Only used for Collection summarizes.",
+            "type": "object",
+            "minProperties": 1
+        },
+        "require_item_fields": {
+            "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
+            "allOf": [
+                {
+                    "required": [
+                        "created"
+                    ]
+                },
+                {
+                    "required": [
+                        "end_datetime"
+                    ]
+                },
+                {
+                    "required": [
+                        "latest"
+                    ]
+                },
+                {
+                    "required": [
+                        "retracted"
+                    ]
+                },
+                {
+                    "required": [
+                        "size"
+                    ]
+                },
+                {
+                    "required": [
+                        "start_datetime"
+                    ]
+                },
+                {
+                    "required": [
+                        "title"
+                    ]
+                },
+                {
+                    "required": [
+                        "updated"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:activity_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:domain"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:domain_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:driving_experiment_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:driving_institution_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:driving_source_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:driving_variant_label"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:frequency"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:grid"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:institution_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:license"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:mip_era"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:pid"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:product"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:project_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:source_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:source_type"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:variable_cf_standard_name"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:variable_id"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:variable_long_name"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:variable_units"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:version"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:version_realization"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:version_realization_info"
+                    ]
+                }
+            ]
+        },
+        "require_asset_fields": {
+            "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
+            "allOf": [
+                {
+                    "required": [
+                        "created"
+                    ]
+                },
+                {
+                    "required": [
+                        "protocol"
+                    ]
+                },
+                {
+                    "required": [
+                        "updated"
+                    ]
+                },
+                {
+                    "required": [
+                        "cordex-cmip6:tracking_id"
+                    ]
+                }
+            ]
+        },
+        "asset_fields": {
+            "$comment": " Don't require fields here, do that above in the corresponding schema.",
+            "type": "object",
+            "properties": {
+                "protocol": {
+                    "type": "string",
+                    "enum": [
+                        "http",
+                        "https",
+                        "globus",
+                        "gridftp",
+                        "kerchunk",
+                        "netcdfsubset",
+                        "opendap",
+                        "wms",
+                        "wps",
+                        "s3"
+                    ]
+                },
+                "cordex-cmip6:tracking_id": {
+                    "type": "string",
+                    "pattern": "^hdl:21\\.14103/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                }
+            }
+        },
+        "item_fields": {
+            "$comment": " Don't require fields here, do that above in the corresponding schema.",
+            "type": "object",
+            "properties": {
+                "latest": {
+                    "type": "boolean"
+                },
+                "retracted": {
+                    "type": "boolean"
+                },
+                "size": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "cordex-cmip6:activity_id": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "DD",
+                            "ESD"
+                        ],
+                        "minItems": 1,
+                        "type": "string"
+                    }
+                },
+                "cordex-cmip6:contact": {
+                    "type": "string",
+                    "pattern": ".*"
+                },
+                "cordex-cmip6:conventions": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "CF-1.11"
+                        ],
+                        "minItems": 1,
+                        "type": "string"
+                    }
+                },
+                "cordex-cmip6:domain": {
+                    "type": "string",
+                    "enum": [
+                        "Africa",
+                        "Antarctica",
+                        "Arctic",
+                        "Australasia",
+                        "Central America",
+                        "Central Asia",
+                        "East Asia",
+                        "Europe",
+                        "Mediterranean",
+                        "Middle East and North Africa",
+                        "North America",
+                        "South America",
+                        "South Asia",
+                        "South East Asia"
+                    ]
+                },
+                "cordex-cmip6:domain_id": {
+                    "type": "string",
+                    "enum": [
+                        "AFR-12",
+                        "AFR-25",
+                        "AFR-50",
+                        "AFR-50i",
+                        "ANT-12",
+                        "ANT-50i",
+                        "ARC-12",
+                        "ARC-50i",
+                        "AUS-12",
+                        "AUS-25",
+                        "AUS-50",
+                        "AUS-50i",
+                        "CAM-12",
+                        "CAM-25",
+                        "CAM-50",
+                        "CAM-50i",
+                        "CAS-12",
+                        "CAS-25",
+                        "CAS-50",
+                        "CAS-50i",
+                        "EAS-12",
+                        "EAS-25",
+                        "EAS-50",
+                        "EAS-50i",
+                        "EUR-12",
+                        "EUR-12i",
+                        "EUR-25",
+                        "EUR-50",
+                        "EUR-50i",
+                        "MED-12",
+                        "MED-50",
+                        "MED-50i",
+                        "MNA-12",
+                        "MNA-25",
+                        "MNA-25i",
+                        "MNA-50",
+                        "MNA-50i",
+                        "NAM-12",
+                        "NAM-25",
+                        "NAM-50",
+                        "NAM-50i",
+                        "SAM-12",
+                        "SAM-25",
+                        "SAM-50",
+                        "SAM-50i",
+                        "SEA-12",
+                        "SEA-25",
+                        "SEA-25i",
+                        "WAS-12",
+                        "WAS-25",
+                        "WAS-50",
+                        "WAS-50i"
+                    ]
+                },
+                "cordex-cmip6:driving_experiment": {
+                    "type": "string"
+                },
+                "cordex-cmip6:driving_experiment_id": {
+                    "type": "string",
+                    "enum": [
+                        "evaluation",
+                        "historical",
+                        "ssp119",
+                        "ssp126",
+                        "ssp245",
+                        "ssp370",
+                        "ssp585"
+                    ]
+                },
+                "cordex-cmip6:driving_institution_id": {
+                    "type": "string",
+                    "enum": [
+                        "AER",
+                        "AS-RCEC",
+                        "AWI",
+                        "BCC",
+                        "BNU",
+                        "CAMS",
+                        "CAS",
+                        "CCCR-IITM",
+                        "CCCma",
+                        "CMCC",
+                        "CNRM-CERFACS",
+                        "CSIR-Wits-CSIRO",
+                        "CSIRO",
+                        "CSIRO-ARCCSS",
+                        "CSIRO-COSIMA",
+                        "DKRZ",
+                        "DWD",
+                        "E3SM-Project",
+                        "EC-Earth-Consortium",
+                        "ECMWF",
+                        "FIO-QLNM",
+                        "HAMMOZ-Consortium",
+                        "INM",
+                        "INPE",
+                        "IPSL",
+                        "KIOST",
+                        "LLNL",
+                        "MESSy-Consortium",
+                        "MIROC",
+                        "MOHC",
+                        "MPI-M",
+                        "MRI",
+                        "NASA-GISS",
+                        "NASA-GSFC",
+                        "NCAR",
+                        "NCC",
+                        "NERC",
+                        "NIMS-KMA",
+                        "NIWA",
+                        "NOAA-GFDL",
+                        "NTU",
+                        "NUIST",
+                        "PCMDI",
+                        "PNNL-WACCEM",
+                        "RTE-RRTMGP-Consortium",
+                        "RUBISCO",
+                        "SNU",
+                        "THU",
+                        "UA",
+                        "UCI",
+                        "UHH",
+                        "UTAS",
+                        "UofT"
+                    ]
+                },
+                "cordex-cmip6:driving_source_id": {
+                    "type": "string",
+                    "enum": [
+                        "4AOP-v1-5",
+                        "ACCESS-CM2",
+                        "ACCESS-ESM1-5",
+                        "ACCESS-OM2",
+                        "ACCESS-OM2-025",
+                        "ARTS-2-3",
+                        "AWI-CM-1-1-HR",
+                        "AWI-CM-1-1-LR",
+                        "AWI-CM-1-1-MR",
+                        "AWI-ESM-1-1-LR",
+                        "AWI-ESM-1-REcoM",
+                        "BCC-CSM2-HR",
+                        "BCC-CSM2-MR",
+                        "BCC-ESM1",
+                        "CAM-MPAS-HR",
+                        "CAM-MPAS-LR",
+                        "CAMS-CSM1-0",
+                        "CAS-ESM2-0",
+                        "CESM1-1-CAM5-CMIP5",
+                        "CESM1-CAM5-SE-HR",
+                        "CESM1-CAM5-SE-LR",
+                        "CESM1-WACCM-SC",
+                        "CESM2",
+                        "CESM2-FV2",
+                        "CESM2-WACCM",
+                        "CESM2-WACCM-FV2",
+                        "CIESM",
+                        "CMCC-CM2-HR4",
+                        "CMCC-CM2-SR5",
+                        "CMCC-CM2-VHR4",
+                        "CMCC-ESM2",
+                        "CNRM-CM6-1",
+                        "CNRM-CM6-1-HR",
+                        "CNRM-ESM2-1",
+                        "CanESM5",
+                        "CanESM5-1",
+                        "CanESM5-CanOE",
+                        "E3SM-1-0",
+                        "E3SM-1-1",
+                        "E3SM-1-1-ECA",
+                        "E3SM-2-0",
+                        "E3SM-2-0-NARRM",
+                        "E3SM-2-1",
+                        "EC-Earth3",
+                        "EC-Earth3-AerChem",
+                        "EC-Earth3-CC",
+                        "EC-Earth3-ESM-1",
+                        "EC-Earth3-GrIS",
+                        "EC-Earth3-HR",
+                        "EC-Earth3-LR",
+                        "EC-Earth3-Veg",
+                        "EC-Earth3-Veg-LR",
+                        "EC-Earth3P",
+                        "EC-Earth3P-HR",
+                        "EC-Earth3P-VHR",
+                        "ECMWF-IFS-HR",
+                        "ECMWF-IFS-LR",
+                        "ECMWF-IFS-MR",
+                        "ERA-5",
+                        "FGOALS-f3-H",
+                        "FGOALS-f3-L",
+                        "FGOALS-g3",
+                        "FIO-ESM-2-0",
+                        "GFDL-AM4",
+                        "GFDL-CM4",
+                        "GFDL-CM4C192",
+                        "GFDL-ESM2M",
+                        "GFDL-ESM4",
+                        "GFDL-GRTCODE",
+                        "GFDL-OM4p5B",
+                        "GFDL-RFM-DISORT",
+                        "GISS-E2-1-G",
+                        "GISS-E2-1-G-CC",
+                        "GISS-E2-1-H",
+                        "GISS-E2-2-G",
+                        "GISS-E2-2-H",
+                        "GISS-E3-G",
+                        "HadGEM3-GC31-HH",
+                        "HadGEM3-GC31-HM",
+                        "HadGEM3-GC31-LL",
+                        "HadGEM3-GC31-LM",
+                        "HadGEM3-GC31-MH",
+                        "HadGEM3-GC31-MM",
+                        "HiRAM-SIT-HR",
+                        "HiRAM-SIT-LR",
+                        "ICON-ESM-LR",
+                        "IITM-ESM",
+                        "INM-CM4-8",
+                        "INM-CM5-0",
+                        "INM-CM5-H",
+                        "IPSL-CM5A2-INCA",
+                        "IPSL-CM6A-ATM-HR",
+                        "IPSL-CM6A-ATM-ICO-HR",
+                        "IPSL-CM6A-ATM-ICO-LR",
+                        "IPSL-CM6A-ATM-ICO-MR",
+                        "IPSL-CM6A-ATM-ICO-VHR",
+                        "IPSL-CM6A-ATM-LR-REPROBUS",
+                        "IPSL-CM6A-LR",
+                        "IPSL-CM6A-LR-INCA",
+                        "IPSL-CM6A-MR1",
+                        "KACE-1-0-G",
+                        "KIOST-ESM",
+                        "LBLRTM-12-8",
+                        "MCM-UA-1-0",
+                        "MIROC-ES2H",
+                        "MIROC-ES2H-NB",
+                        "MIROC-ES2L",
+                        "MIROC6",
+                        "MPI-ESM-1-2-HAM",
+                        "MPI-ESM1-2-HR",
+                        "MPI-ESM1-2-LR",
+                        "MPI-ESM1-2-XR",
+                        "MRI-AGCM3-2-H",
+                        "MRI-AGCM3-2-S",
+                        "MRI-ESM2-0",
+                        "NESM3",
+                        "NICAM16-7S",
+                        "NICAM16-8S",
+                        "NICAM16-9S",
+                        "NorCPM1",
+                        "NorESM1-F",
+                        "NorESM2-LM",
+                        "NorESM2-MM",
+                        "PCMDI-test-1-0",
+                        "RRTMG-LW-4-91",
+                        "RRTMG-SW-4-02",
+                        "RTE-RRTMGP-181204",
+                        "SAM0-UNICON",
+                        "TaiESM1",
+                        "TaiESM1-TIMCOM",
+                        "TaiESM1-TIMCOM2",
+                        "UKESM1-0-LL",
+                        "UKESM1-1-LL",
+                        "UKESM1-ice-LL"
+                    ]
+                },
+                "cordex-cmip6:driving_variant_label": {
+                    "type": "string",
+                    "pattern": "^r(?P<realization_index>\\d+)i(?P<initialization_index>(\\d{4}\\d{2}[abcde]?|\\d+))p(?P<physics_index>\\d+)f(?P<forcing_index>\\d+)$"
+                },
+                "cordex-cmip6:frequency": {
+                    "type": "string",
+                    "enum": [
+                        "1hr",
+                        "3hr",
+                        "6hr",
+                        "day",
+                        "fx",
+                        "mon",
+                        "yr"
+                    ]
+                },
+                "cordex-cmip6:grid": {
+                    "type": "string",
+                    "pattern": ".*"
+                },
+                "cordex-cmip6:institution": {
+                    "type": "string",
+                    "enum": [
+                        "Aristotle University of Thessaloniki",
+                        "BCCR [Bjerknes Center for Climate Research (BCCR), NORCE Norwegian Research Center, Bergen, Norway]; UCAN [Instituto de Fisica de Cantabria (IFCA), CSIC-Universidad de Cantabria, Santander, Spain]",
+                        "British Antarctic Survey",
+                        "Bureau of Meteorology",
+                        "CNRM [Centre National de Recherches Meteorologiques, Toulouse, France]; MF [Meteo France, Toulouse, France]",
+                        "Center for Environmental and Marine Studies (CESAM), Aveiro University (UA)",
+                        "Centre National de Recherches Meteorologiques",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Alfred Wegener Institute, Helmholtz Centre for Polar and Marine Research",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Brandenburg University of Technology Cottbus-Senftenberg",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Climate Service Center Germany",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Euro-Mediterranean Center on Climate Change (CMCC Foundation)",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Federal Institute of Technology Zurich",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Forschungszentrum Juelich",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: German Meteorological Service",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Goethe University Frankfurt",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Helmholtz-Zentrum Hereon",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Institute of Meteorology and Water Management",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: KU Leuven",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Karlsruhe Institute of Technology",
+                        "Climate Limited-area Modelling Community (CLMcom) partner: Luxembourg Institute of Science and Technology",
+                        "Climate Service Center Germany, Helmholtz Centre hereon GmbH",
+                        "Consortium on Regional Climatology and Adaptation to Climate Change (Qu\u00e9bec, Canada)",
+                        "Cornell University",
+                        "DWD [Deutscher Wetterdienst]; BSH [Bundesamt fuer Seeschifffahrt und Hydrographie]",
+                        "Environment and Climate Change Canada",
+                        "HARMONIE Climate Modelling Community (HCLIMcom) partner: Danish Meteorological Institute (DMI)",
+                        "HARMONIE Climate Modelling Community (HCLIMcom) partner: Norwegian Meteorological Institute (METNo)",
+                        "HARMONIE Climate Modelling Community (HCLIMcom) partner: Swedish Meteorological and Hydrological Institute (SMHI)",
+                        "IRD [Institut de Recherche pour le Developpement, Noumea (New Caledonia), France]; MF [Meteo France, Toulouse, France]",
+                        "Institute for Marine and Atmospheric research Utrecht (IMAU), Utrecht University",
+                        "Institute of Meteorology and Water Management",
+                        "Instituto Dom Luiz, Faculdade de Ciencias, Universidade de Lisboa",
+                        "Italian National Agency for New Technologies, Energy and the Environment",
+                        "MOHC",
+                        "NCAR",
+                        "NIMS-KMA",
+                        "NORCE [NORCE Norwegian Research Centre, Bergen, Norway]; BCCR [Bjerknes Centre for Climate Research, Bergen, Norway]",
+                        "National and Kapodistrian University of Athens",
+                        "Royal Meteorological Institute of Belgium & Ghent University downscaling consortium",
+                        "Royal Netherlands Meteorological Institute",
+                        "The Abdus Salam International Centre for Theoretical Physics",
+                        "UBA [Universidad de Buenos Aires, C. A. Buenos Aires (CABA), Argentina]; CIMA [Centro de Investigaciones del Mar y la Atmosfera, C. A. Buenos Aires (CABA), Argentina]; IFAECI [Instituto Franco-Argentino sobre Estudios de Clima y sus Impactos, C. A. Buenos Aires (CABA), Argentina]",
+                        "UQ [University of Queensland, Brisbane, Australia]; DEC [Department of Energy and Climate, Brisbane, Australia]"
+                    ]
+                },
+                "cordex-cmip6:institution_id": {
+                    "type": "string",
+                    "enum": [
+                        "AUTH",
+                        "BAS",
+                        "BCCR-UCAN",
+                        "BOM",
+                        "CCCma",
+                        "CESAM-UA",
+                        "CLMcom-AWI",
+                        "CLMcom-BTU",
+                        "CLMcom-CMCC",
+                        "CLMcom-DWD",
+                        "CLMcom-ETH",
+                        "CLMcom-FZJ",
+                        "CLMcom-GERICS",
+                        "CLMcom-GUF",
+                        "CLMcom-Hereon",
+                        "CLMcom-IMWM",
+                        "CLMcom-KIT",
+                        "CLMcom-KUL",
+                        "CLMcom-LIST",
+                        "CNRM",
+                        "CNRM-MF",
+                        "CORNELL",
+                        "DWD-BSH",
+                        "ENEA",
+                        "GERICS",
+                        "HCLIMcom-DMI",
+                        "HCLIMcom-METNo",
+                        "HCLIMcom-SMHI",
+                        "ICTP",
+                        "IDL-FCUL",
+                        "IMWM",
+                        "IRD-MF",
+                        "KNMI",
+                        "MOHC",
+                        "NCAR",
+                        "NIMS-KMA",
+                        "NKUA",
+                        "NORCE-BCCR",
+                        "OURANOS",
+                        "RMIB-UGent",
+                        "UBA-CIMA-IFAECI",
+                        "UQ-DEC",
+                        "UU-IMAU"
+                    ]
+                },
+                "cordex-cmip6:license": {
+                    "type": "string",
+                    "enum": [
+                        "CC-BY-4.0"
+                    ]
+                },
+                "cordex-cmip6:mip_era": {
+                    "type": "string",
+                    "enum": [
+                        "CMIP6"
+                    ]
+                },
+                "cordex-cmip6:pid": {
+                    "type": "string",
+                    "pattern": "^hdl:21\\.14103/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+                },
+                "cordex-cmip6:product": {
+                    "type": "string",
+                    "enum": [
+                        "model-output"
+                    ]
+                },
+                "cordex-cmip6:project_id": {
+                    "type": "string",
+                    "enum": [
+                        "CORDEX"
+                    ]
+                },
+                "cordex-cmip6:source_id": {
+                    "type": "string",
+                    "enum": [
+                        "ALARO1-SFX",
+                        "BARPA-R1-NN",
+                        "CCAM-v2105",
+                        "CCAM-v2112",
+                        "CCAMoc-v2112",
+                        "CCLM6-0-1",
+                        "CCLM6-0-1-URB",
+                        "CCLM6-0-1-URB-ESG",
+                        "CNRM-ALADIN64C1",
+                        "CNRM-ALADIN64E1",
+                        "CNRM-ALADIN64P1",
+                        "CNRM-RCSM6-SN",
+                        "CNRM-RCSM6B-SN",
+                        "CRCM5-SN",
+                        "CanRCM5",
+                        "CanRCM5-SN",
+                        "ENEA-REG2",
+                        "ENEA-REG3",
+                        "GCOAST-AHOI1-1",
+                        "GCOAST-AHOI2-1",
+                        "GCOAST-AHOIB1-1",
+                        "HCLIM43-ALADIN",
+                        "HadREM3-GA7-05",
+                        "ICON-CLM-2-6-6-1-1",
+                        "ICON-CLM-202401-1-1",
+                        "ICON-CLM-202407-1-1",
+                        "MedX-CM",
+                        "MetUM",
+                        "RACMO23E",
+                        "RACMO24P",
+                        "REMO2020-2-2",
+                        "REMO2020-2-2-MR2",
+                        "REMO2020-2-2-iMOVE",
+                        "REMO2020-2-2-iMOVE-LUC",
+                        "ROAM-NBS",
+                        "RegCM-ES1-1",
+                        "RegCM5-0",
+                        "TSMP1-140-E",
+                        "WRF451Q",
+                        "WRF461T-SN"
+                    ]
+                },
+                "cordex-cmip6:source_type": {
+                    "type": "string",
+                    "enum": [
+                        "AGCM",
+                        "AOGCM",
+                        "AORCM",
+                        "ARCM"
+                    ]
+                },
+                "cordex-cmip6:variable_cf_standard_name": {
+                    "type": "string",
+                    "enum": [
+                        "air_temperature",
+                        "area_fraction",
+                        "atmosphere_boundary_layer_thickness",
+                        "atmosphere_convective_available_potential_energy_wrt_surface",
+                        "atmosphere_convective_inhibition_wrt_surface",
+                        "atmosphere_mass_content_of_cloud_condensed_water",
+                        "atmosphere_mass_content_of_cloud_ice",
+                        "atmosphere_mass_content_of_water_vapor",
+                        "atmosphere_optical_thickness_due_to_ambient_aerosol_particles",
+                        "bedrock_depth_below_ground_level",
+                        "cell_thickness",
+                        "cloud_area_fraction",
+                        "cloud_area_fraction_in_atmosphere_layer",
+                        "convective_precipitation_flux",
+                        "downward_x_stress_at_sea_water_surface",
+                        "downward_y_stress_at_sea_water_surface",
+                        "duration_of_sunshine",
+                        "eastward_wind",
+                        "frozen_water_content_of_soil_layer",
+                        "geopotential_height",
+                        "heat_flux_correction",
+                        "land_area_fraction",
+                        "land_ice_area_fraction",
+                        "latitude",
+                        "longitude",
+                        "mass_content_of_water_in_soil",
+                        "mass_content_of_water_in_soil_layer",
+                        "net_downward_shortwave_flux_at_sea_water_surface",
+                        "northward_wind",
+                        "ocean_mixed_layer_thickness_defined_by_sigma_t",
+                        "ocean_vertical_heat_diffusivity",
+                        "ocean_volume",
+                        "precipitation_flux",
+                        "relative_humidity",
+                        "root_depth",
+                        "runoff_flux",
+                        "sea_floor_depth_below_geoid",
+                        "sea_ice_surface_temperature",
+                        "sea_ice_thickness",
+                        "sea_surface_height_above_geoid",
+                        "sea_water_potential_density",
+                        "sea_water_potential_temperature",
+                        "sea_water_potential_temperature_at_sea_floor",
+                        "sea_water_salinity",
+                        "sea_water_x_velocity",
+                        "sea_water_y_velocity",
+                        "soil_frozen_water_content",
+                        "soil_moisture_content_at_field_capacity",
+                        "soil_temperature",
+                        "specific_humidity",
+                        "surface_air_pressure",
+                        "surface_altitude",
+                        "surface_direct_downwelling_shortwave_flux_in_air",
+                        "surface_downward_eastward_stress",
+                        "surface_downward_heat_flux_in_sea_water",
+                        "surface_downward_northward_stress",
+                        "surface_downwelling_longwave_flux_in_air_assuming_clear_sky",
+                        "surface_downwelling_shortwave_flux_in_air_assuming_clear_sky",
+                        "surface_roughness_length",
+                        "surface_runoff_flux",
+                        "surface_snow_amount",
+                        "surface_snow_area_fraction",
+                        "surface_snow_melt_flux",
+                        "surface_snow_thickness",
+                        "surface_upward_latent_heat_flux",
+                        "surface_upward_sensible_heat_flux",
+                        "surface_upwelling_longwave_flux_in_air",
+                        "surface_upwelling_longwave_flux_in_air_assuming_clear_sky",
+                        "surface_upwelling_shortwave_flux_in_air",
+                        "surface_upwelling_shortwave_flux_in_air_assuming_clear_sky",
+                        "temperature_difference_between_ambient_air_and_air_lifted_adiabatically_from_the_surface",
+                        "toa_incoming_shortwave_flux",
+                        "toa_outgoing_longwave_flux",
+                        "toa_outgoing_longwave_flux_assuming_clear_sky",
+                        "toa_outgoing_shortwave_flux",
+                        "toa_outgoing_shortwave_flux_assuming_clear_sky",
+                        "upward_air_velocity",
+                        "upward_sea_water_velocity",
+                        "water_evapotranspiration_flux",
+                        "water_flux_into_sea_water",
+                        "water_flux_into_sea_water_without_flux_correction",
+                        "water_potential_evaporation_flux",
+                        "wind_speed",
+                        "wind_speed_of_gust"
+                    ]
+                },
+                "cordex-cmip6:variable_id": {
+                    "type": "string",
+                    "enum": [
+                        "areacella",
+                        "areacello",
+                        "cape",
+                        "capemax",
+                        "cin",
+                        "cinmax",
+                        "clh",
+                        "clivi",
+                        "cll",
+                        "clm",
+                        "clt",
+                        "clwvi",
+                        "deptho",
+                        "difvho",
+                        "dtb",
+                        "evspsbl",
+                        "evspsblpot",
+                        "friver",
+                        "hfcorr",
+                        "hfds",
+                        "hfls",
+                        "hfss",
+                        "hurs",
+                        "hus10",
+                        "hus100",
+                        "hus1000",
+                        "hus150",
+                        "hus20",
+                        "hus200",
+                        "hus250",
+                        "hus30",
+                        "hus300",
+                        "hus400",
+                        "hus50",
+                        "hus500",
+                        "hus50m",
+                        "hus600",
+                        "hus70",
+                        "hus700",
+                        "hus750",
+                        "hus850",
+                        "hus925",
+                        "huss",
+                        "latitude",
+                        "li",
+                        "limax",
+                        "longitude",
+                        "mlotst",
+                        "mrfso",
+                        "mrfsos",
+                        "mrro",
+                        "mrros",
+                        "mrsfl",
+                        "mrso",
+                        "mrsofc",
+                        "mrsol",
+                        "mrsos",
+                        "od550aer",
+                        "orog",
+                        "pr",
+                        "prc",
+                        "prhmax",
+                        "prsn",
+                        "prw",
+                        "ps",
+                        "psl",
+                        "rhop",
+                        "rlds",
+                        "rldscs",
+                        "rlus",
+                        "rluscs",
+                        "rlut",
+                        "rlutcs",
+                        "rootd",
+                        "rsds",
+                        "rsdscs",
+                        "rsdsdir",
+                        "rsdt",
+                        "rsntds",
+                        "rsus",
+                        "rsuscs",
+                        "rsut",
+                        "rsutcs",
+                        "sfcWind",
+                        "sfcWindmax",
+                        "sftgif",
+                        "sftlaf",
+                        "sftlf",
+                        "sftof",
+                        "sfturf",
+                        "siconc",
+                        "siconca",
+                        "sitemptop",
+                        "sithick",
+                        "snc",
+                        "snd",
+                        "snm",
+                        "snw",
+                        "so",
+                        "sos",
+                        "sund",
+                        "ta10",
+                        "ta100",
+                        "ta1000",
+                        "ta150",
+                        "ta20",
+                        "ta200",
+                        "ta250",
+                        "ta30",
+                        "ta300",
+                        "ta400",
+                        "ta50",
+                        "ta500",
+                        "ta50m",
+                        "ta600",
+                        "ta70",
+                        "ta700",
+                        "ta750",
+                        "ta850",
+                        "ta925",
+                        "tas",
+                        "tasmax",
+                        "tasmin",
+                        "tauu",
+                        "tauuo",
+                        "tauv",
+                        "tauvo",
+                        "thetao",
+                        "thkcello",
+                        "tob",
+                        "tos",
+                        "ts",
+                        "tsl",
+                        "ua10",
+                        "ua100",
+                        "ua1000",
+                        "ua100m",
+                        "ua150",
+                        "ua150m",
+                        "ua20",
+                        "ua200",
+                        "ua200m",
+                        "ua250",
+                        "ua250m",
+                        "ua30",
+                        "ua300",
+                        "ua300m",
+                        "ua400",
+                        "ua50",
+                        "ua500",
+                        "ua50m",
+                        "ua600",
+                        "ua70",
+                        "ua700",
+                        "ua750",
+                        "ua850",
+                        "ua925",
+                        "uas",
+                        "uo",
+                        "uos",
+                        "va10",
+                        "va100",
+                        "va1000",
+                        "va100m",
+                        "va150",
+                        "va150m",
+                        "va20",
+                        "va200",
+                        "va200m",
+                        "va250",
+                        "va250m",
+                        "va30",
+                        "va300",
+                        "va300m",
+                        "va400",
+                        "va50",
+                        "va500",
+                        "va50m",
+                        "va600",
+                        "va70",
+                        "va700",
+                        "va750",
+                        "va850",
+                        "va925",
+                        "vas",
+                        "vertices_latitude",
+                        "vertices_longitude",
+                        "vo",
+                        "volcello",
+                        "vos",
+                        "wa10",
+                        "wa100",
+                        "wa1000",
+                        "wa150",
+                        "wa20",
+                        "wa200",
+                        "wa250",
+                        "wa30",
+                        "wa300",
+                        "wa400",
+                        "wa50",
+                        "wa500",
+                        "wa600",
+                        "wa70",
+                        "wa700",
+                        "wa750",
+                        "wa850",
+                        "wa925",
+                        "wfo",
+                        "wfonocorr",
+                        "wo",
+                        "wsgsmax",
+                        "z0",
+                        "zg10",
+                        "zg100",
+                        "zg1000",
+                        "zg150",
+                        "zg20",
+                        "zg200",
+                        "zg250",
+                        "zg30",
+                        "zg300",
+                        "zg400",
+                        "zg50",
+                        "zg500",
+                        "zg600",
+                        "zg70",
+                        "zg700",
+                        "zg750",
+                        "zg850",
+                        "zg925",
+                        "zmla",
+                        "zos"
+                    ]
+                },
+                "cordex-cmip6:variable_long_name": {
+                    "type": "string"
+                },
+                "cordex-cmip6:variable_units": {
+                    "type": "string",
+                    "enum": [
+                        "",
+                        "%",
+                        "0.001",
+                        "1",
+                        "J kg-1",
+                        "K",
+                        "N m-2",
+                        "Pa",
+                        "W m-2",
+                        "degC",
+                        "degrees_east",
+                        "degrees_north",
+                        "kg m-2",
+                        "kg m-2 s-1",
+                        "kg m-3",
+                        "m",
+                        "m s-1",
+                        "m2 s-1",
+                        "m3",
+                        "s"
+                    ]
+                },
+                "cordex-cmip6:version": {
+                    "type": "string",
+                    "pattern": "^v(1\\d{3}|2\\d{3})(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])$"
+                },
+                "cordex-cmip6:version_realization": {
+                    "type": "string",
+                    "pattern": "^v\\d+-r\\d+$"
+                },
+                "cordex-cmip6:version_realization_info": {
+                    "type": "string",
+                    "pattern": ".*"
+                }
+            },
+            "patternProperties": {
+                "^(?!cordex-cmip6:)": {}
+            },
+            "additionalProperties": false
+        }
+    }
+}
