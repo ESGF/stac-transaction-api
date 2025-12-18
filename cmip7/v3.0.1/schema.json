@@ -209,7 +209,6 @@
                     ]
                 },
                 {
-                {
                     "required": [
                         "cmip7:variable_branded_suffix"
                     ]
@@ -238,7 +237,7 @@
                     "required": [
                         "cmip7:version"
                     ]
-                },
+                }
             ]
         },
         "require_asset_fields": {
