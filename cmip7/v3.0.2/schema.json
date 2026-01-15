@@ -205,11 +205,6 @@
                 },
                 {
                     "required": [
-                        "cmip7:pid"
-                    ]
-                },
-                {
-                    "required": [
                         "cmip7:product"
                     ]
                 },
