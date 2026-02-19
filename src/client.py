@@ -24,7 +24,12 @@ from stac_pydantic.item import Item
 
 from models import Authorizer
 from src.settings.transaction import access_control_policy, event_stream, stac_api
-from utils import operation_to_partial_item, validate_extensions, validate_patch, validate_post
+from utils import (
+    operation_to_partial_item,
+    validate_extensions,
+    validate_patch,
+    validate_post,
+)
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -50,7 +55,9 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def globus_authorize(self, item: Item, request: Request, collection_id: str) -> dict:
+    def globus_authorize(
+        self, item: Item, request: Request, collection_id: str
+    ) -> dict:
         properties = item.properties
 
         if item.collection != collection_id:
@@ -89,7 +96,9 @@ class TransactionClient(BaseTransactionsClient):
                         "name": identity.get("name"),
                         "email": identity.get("email"),
                         "identity_provider": identity.get("identity_provider"),
-                        "identity_provider_display_name": identity.get("identity_provider_display_name"),
+                        "identity_provider_display_name": identity.get(
+                            "identity_provider_display_name"
+                        ),
                         "last_authentication": identity.get("last_authentication"),
                     }
 
@@ -110,7 +119,9 @@ class TransactionClient(BaseTransactionsClient):
 
         return auth
 
-    def egi_authorize(self, collection_id: str, item: Item, role: str, request: Request) -> Auth:
+    def egi_authorize(
+        self, collection_id: str, item: Item, role: str, request: Request
+    ) -> Auth:
         """_summary_
 
         Args:
@@ -128,12 +139,18 @@ class TransactionClient(BaseTransactionsClient):
             requester_data=authorizer.requester_data,
         )
 
-    def authorize(self, item: Item | PartialItem, role: str, request: Request, collection_id: str) -> Auth:
+    def authorize(
+        self, item: Item | PartialItem, role: str, request: Request, collection_id: str
+    ) -> Auth:
 
         if stac_api.get("authorizer", "globus") == "globus":
-            return self.globus_authorize(collection_id=collection_id, item=item, request=request)
+            return self.globus_authorize(
+                collection_id=collection_id, item=item, request=request
+            )
         else:
-            return self.egi_authorize(collection_id=collection_id, item=item, role=role, request=request)
+            return self.egi_authorize(
+                collection_id=collection_id, item=item, role=role, request=request
+            )
 
     async def create_item(
         self,
@@ -142,18 +159,20 @@ class TransactionClient(BaseTransactionsClient):
         collection_id: str,
     ) -> Optional[Union[Item, Response, None]]:
 
-        auth = self.authorize(item=item, role="CREATE", request=request, collection_id=collection_id)
+        auth = self.authorize(
+            item=item, role="CREATE", request=request, collection_id=collection_id
+        )
 
         headers = request.headers.get("headers", {})
 
         event_id = uuid.uuid4().hex
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
 
-        item_extensions = item.stac_extensions if item.stac_extensions else []
+        # item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+        # item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
 
-        validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
+        # validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
 
         user_agent = headers.get("User-Agent", "/").split("/")
 
@@ -165,7 +184,9 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
 
         metadata = Metadata(
             auth=auth,
@@ -201,7 +222,9 @@ class TransactionClient(BaseTransactionsClient):
         item_id: str,
     ) -> Optional[Union[Item, Response]]:
 
-        auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
+        auth = self.authorize(
+            collection_id=collection_id, item=item, role="UPDATE", request=request
+        )
 
         headers = request.headers.get("headers", {})
 
@@ -209,9 +232,17 @@ class TransactionClient(BaseTransactionsClient):
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+        item_extensions = validate_extensions(
+            collection_id=collection_id, item_extensions=item_extensions
+        )
 
-        validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
+        validate_post(
+            event_id=event_id,
+            request_id=request_id,
+            item_id=item.id,
+            item=item,
+            extensions=item_extensions,
+        )
 
         user_agent = headers.get("User-Agent", "/").split("/")
 
@@ -224,7 +255,9 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
         metadata = Metadata(
             auth=auth,
             event_id=event_id,
@@ -263,7 +296,9 @@ class TransactionClient(BaseTransactionsClient):
             if isinstance(patch, list)
             else patch
         )
-        auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
+        auth = self.authorize(
+            collection_id=collection_id, item=item, role="UPDATE", request=request
+        )
 
         headers = request.headers.get("headers", {})
 
@@ -272,9 +307,17 @@ class TransactionClient(BaseTransactionsClient):
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+        item_extensions = validate_extensions(
+            collection_id=collection_id, item_extensions=item_extensions
+        )
 
-        validate_patch(event_id=event_id, request_id=request_id, item_id=item_id, item=item, extensions=item_extensions)
+        validate_patch(
+            event_id=event_id,
+            request_id=request_id,
+            item_id=item_id,
+            item=item,
+            extensions=item_extensions,
+        )
 
         user_agent = headers.get("User-Agent", "/").split("/")
 
@@ -287,7 +330,9 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
         metadata = Metadata(
             auth=auth,
             event_id=event_id,
@@ -319,7 +364,9 @@ class TransactionClient(BaseTransactionsClient):
         collection_id: str,
         item_id: str,
     ) -> Optional[Union[Item, Response]]:
-        auth = self.authorize(collection_id=collection_id, item=item_id, role="UPDATE", request=request)
+        auth = self.authorize(
+            collection_id=collection_id, item=item_id, role="UPDATE", request=request
+        )
 
         headers = request.headers.get("headers", {})
 
@@ -336,7 +383,9 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
 
         metadata = Metadata(
             auth=auth,

@@ -275,11 +275,9 @@ def validate_post(
         try:
             extension_validator = get_extension_validator(str(extension))
 
-            raise_errors = []
-            for error in extension_validator.iter_errors(
-                json.loads(item.model_dump_json())
-            ):
-                raise_errors.append(error)
+            raise_errors = list(
+                extension_validator.iter_errors(json.loads(item.model_dump_json()))
+            )
 
         except Exception as e:
             logger.exception(e)
