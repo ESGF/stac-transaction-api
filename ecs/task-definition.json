@@ -8,8 +8,8 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "taskRoleArn": "arn:aws:iam::730335463484:role/ecsTaskExecutionRole",
-  "executionRoleArn": "arn:aws:iam::730335463484:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::730335463484:role/stac-transaction-api-ecs-task",
+  "executionRoleArn": "arn:aws:iam::730335463484:role/stac-transaction-api-ecs-task-execution",
   "containerDefinitions": [
     {
       "name": "stac-transaction-api",
