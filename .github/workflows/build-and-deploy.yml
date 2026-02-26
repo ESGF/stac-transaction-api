@@ -90,8 +90,8 @@ jobs:
   deploy-integration:
     runs-on: ubuntu-latest
     needs: build
-    environment: integration        # ← pulls AWS_ROLE_TO_ASSUME from the
-                                    #   integration environment's secrets
+    # environment: integration        # ← pulls AWS_ROLE_TO_ASSUME from the
+    #                                 #   integration environment's secrets
 
     if: |
       github.ref == 'refs/heads/add-ci-cd' ||
