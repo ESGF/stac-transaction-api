@@ -6,6 +6,6 @@
 # separate terminal tabs/windows
 
 docker run \
-    --detach \
     -p 8000:8000 \
+    -v ~/.aws:/root/.aws:ro \
     -it stac-transaction-api

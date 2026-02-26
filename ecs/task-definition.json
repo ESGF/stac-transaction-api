@@ -1,5 +1,5 @@
 {
-  "family": "stac-transaction-api",
+  "family": "transaction-api",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "512",
@@ -8,11 +8,11 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "taskRoleArn": "arn:aws:iam::730335463484:role/stac-transaction-api-ecs-task",
-  "executionRoleArn": "arn:aws:iam::730335463484:role/stac-transaction-api-ecs-task-execution",
+  "taskRoleArn": "arn:aws:iam::730335463484:role/esgf2-cluster-ecs-task",
+  "executionRoleArn": "arn:aws:iam::730335463484:role/esgf2-cluster-ecs-task-execution",
   "containerDefinitions": [
     {
-      "name": "stac-transaction-api",
+      "name": "transaction-api",
       "image": "REPLACED_BY_CI",
       "essential": true,
       "portMappings": [
@@ -22,14 +22,10 @@
           "appProtocol": "http"
         }
       ],
-      "environment": [
-        { "name": "APP_ENV", "value": "integration" },
-        { "name": "LOG_LEVEL", "value": "info" }
-      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/stac-transaction-api",
+          "awslogs-group": "/ecs/transaction-api",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
@@ -37,13 +33,39 @@
       "healthCheck": {
         "command": [
           "CMD-SHELL",
-          "curl -f http://localhost:8000/|| exit 1"
+          "curl -f http://localhost:8000/health|| exit 1"
         ],
         "interval": 30,
         "timeout": 5,
         "retries": 3,
         "startPeriod": 15
-      }
+      },
+      "secrets": [
+        {
+          "name": "BOOTSTRAP_SERVERS",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::BOOTSTRAP_SERVERS::"
+        },
+        {
+          "name": "CONFLUENT_CLOUD_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::CONFLUENT_CLOUD_USERNAME::"
+        },
+        {
+          "name": "CONFLUENT_CLOUD_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::CONFLUENT_CLOUD_PASSWORD::"
+        },
+        {
+          "name": "GLOBUS_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::GLOBUS_CLIENT_ID::"
+        },
+        {
+          "name": "GLOBUS_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::GLOBUS_CLIENT_SECRET::"
+        },
+        {
+          "name": "TOPIC",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::TOPIC::"
+        }
+      ]
     }
   ]
 }

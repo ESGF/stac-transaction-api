@@ -1,8 +1,7 @@
 locals {
-  name = "${var.project}-${var.environment}"
+  name = "${var.service_name}"
 }
 
-# ── Security Groups ───────────────────────────────────────────────────────────
 resource "aws_security_group" "alb" {
   name   = "${local.name}-alb-sg"
   vpc_id = var.vpc_id
@@ -25,10 +24,16 @@ resource "aws_security_group" "alb" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name        = "${local.name}-alb-sg"
+    Service     = var.service_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_security_group" "ecs_tasks" {
-  name   = "${local.name}-ecs-sg"
+  name   = "${local.name}-tasks-sg"
   vpc_id = var.vpc_id
 
   ingress {
@@ -43,28 +48,43 @@ resource "aws_security_group" "ecs_tasks" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name        = "${local.name}-tasks-sg"
+    Service     = var.service_name
+    Environment = var.environment
+  }
 }
 
-# ── ALB ───────────────────────────────────────────────────────────────────────
 resource "aws_lb" "this" {
-  name               = "${local.name}"
+  name               = "${local.name}-alb"
   load_balancer_type = "application"
   subnets            = var.public_subnet_ids
   security_groups    = [aws_security_group.alb.id]
+
+  tags = {
+    Service     = var.service_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_lb_target_group" "this" {
-  name        = "${local.name}"
+  name        = "${local.name}-tg"
   port        = var.container_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
 
   health_check {
-    path                = "/health"
+    path                = var.health_check_path
     healthy_threshold   = 2
     unhealthy_threshold = 3
     interval            = 30
+  }
+
+  tags = {
+    Service     = var.service_name
+    Environment = var.environment
   }
 }
 
@@ -79,33 +99,16 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-# ── CloudWatch Log Group ──────────────────────────────────────────────────────
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/ecs/${local.name}"
-  retention_in_days = 30
-}
+  name              = "/ecs/${var.project}/${var.environment}/${var.service_name}"
+  retention_in_days = var.log_retention_days
 
-# ── ECS Cluster ───────────────────────────────────────────────────────────────
-resource "aws_ecs_cluster" "this" {
-  name = local.name
-
-  setting {
-    name  = "containerInsights"
-    value = "enabled"
+  tags = {
+    Service     = var.service_name
+    Environment = var.environment
   }
 }
 
-resource "aws_ecs_cluster_capacity_providers" "this" {
-  cluster_name       = aws_ecs_cluster.this.name
-  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
-
-  default_capacity_provider_strategy {
-    capacity_provider = "FARGATE"
-    weight            = 1
-  }
-}
-
-# ── Task Definition (placeholder — CI/CD will update this) ────────────────────
 resource "aws_ecs_task_definition" "this" {
   family                   = local.name
   network_mode             = "awsvpc"
@@ -116,7 +119,7 @@ resource "aws_ecs_task_definition" "this" {
   task_role_arn            = var.task_role_arn
 
   container_definitions = jsonencode([{
-    name      = var.project
+    name      = var.service_name
     image     = "${var.ecr_repository_url}:latest"
     essential = true
 
@@ -130,21 +133,24 @@ resource "aws_ecs_task_definition" "this" {
       options = {
         "awslogs-group"         = aws_cloudwatch_log_group.this.name
         "awslogs-region"        = var.aws_region
-        "awslogs-stream-prefix" = "ecs"
+        "awslogs-stream-prefix" = var.service_name
       }
     }
   }])
 
   lifecycle {
-    # Allow CI/CD to manage the task definition outside Terraform
     ignore_changes = [container_definitions]
+  }
+
+  tags = {
+    Service     = var.service_name
+    Environment = var.environment
   }
 }
 
-# ── ECS Service ───────────────────────────────────────────────────────────────
 resource "aws_ecs_service" "this" {
-  name            = var.project
-  cluster         = aws_ecs_cluster.this.id
+  name            = var.service_name
+  cluster         = var.cluster_id
   task_definition = aws_ecs_task_definition.this.arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
@@ -157,14 +163,18 @@ resource "aws_ecs_service" "this" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.this.arn
-    container_name   = var.project
+    container_name   = var.service_name
     container_port   = var.container_port
   }
 
   lifecycle {
-    # Allow CI/CD to update the task definition without Terraform reverting it
     ignore_changes = [task_definition]
   }
 
   depends_on = [aws_lb_listener.http]
+
+  tags = {
+    Service     = var.service_name
+    Environment = var.environment
+  }
 }

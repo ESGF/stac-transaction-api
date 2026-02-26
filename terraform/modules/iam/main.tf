@@ -1,24 +1,28 @@
-# ── GitHub OIDC Provider ──────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+# GitHub OIDC Provider
+# ─────────────────────────────────────────────
 data "aws_iam_openid_connect_provider" "github" {
   url = "https://token.actions.githubusercontent.com"
 }
 
-# Provision it if it doesn't already exist in your account:
 # resource "aws_iam_openid_connect_provider" "github" {
 #   url             = "https://token.actions.githubusercontent.com"
 #   client_id_list  = ["sts.amazonaws.com"]
 #   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
 # }
 
-# ── Shared ECR push/pull policy ───────────────────────────────────────────────
+# ─────────────────────────────────────────────
+# Shared ECR push/pull policy
+# ─────────────────────────────────────────────
 data "aws_iam_policy_document" "ecr" {
   statement {
-    actions = [
-      "ecr:GetAuthorizationToken",
-    ]
+    sid       = "ECRAuthToken"
+    actions   = ["ecr:GetAuthorizationToken"]
     resources = ["*"]
   }
+
   statement {
+    sid = "ECRRepositoryAccess"
     actions = [
       "ecr:BatchCheckLayerAvailability",
       "ecr:CompleteLayerUpload",
@@ -28,49 +32,22 @@ data "aws_iam_policy_document" "ecr" {
       "ecr:BatchGetImage",
       "ecr:GetDownloadUrlForLayer",
     ]
-    resources = [var.ecr_repository_arn]
+    resources = var.ecr_repository_arns
   }
 }
 
 resource "aws_iam_policy" "ecr" {
-  name   = "${var.project}-ecr-push-pull"
-  policy = data.aws_iam_policy_document.ecr.json
+  name        = "${var.project}-ecr-push-pull"
+  description = "Allows push and pull to all ${var.project} ECR repositories"
+  policy      = data.aws_iam_policy_document.ecr.json
 }
 
-# ── Integration deploy role ───────────────────────────────────────────────────
-data "aws_iam_policy_document" "github_assume_integration" {
+# ─────────────────────────────────────────────
+# Shared ECS deploy policy
+# ─────────────────────────────────────────────
+data "aws_iam_policy_document" "ecs_deploy" {
   statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    principals {
-      type        = "Federated"
-      identifiers = [data.aws_iam_openid_connect_provider.github.arn]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_org}/${var.github_repo}:ref:refs/heads/add-ci-cd",
-                  "repo:${var.github_org}/${var.github_repo}:ref:refs/heads/integration"]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "token.actions.githubusercontent.com:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "github_actions_integration" {
-  name               = "${var.project}-github-actions-integration"
-  assume_role_policy = data.aws_iam_policy_document.github_assume_integration.json
-}
-
-resource "aws_iam_role_policy_attachment" "integration_ecr" {
-  role       = aws_iam_role.github_actions_integration.name
-  policy_arn = aws_iam_policy.ecr.arn
-}
-
-data "aws_iam_policy_document" "ecs_deploy_integration" {
-  statement {
+    sid = "ECSDeployAccess"
     actions = [
       "ecs:RegisterTaskDefinition",
       "ecs:DescribeTaskDefinition",
@@ -80,58 +57,28 @@ data "aws_iam_policy_document" "ecs_deploy_integration" {
     ]
     resources = ["*"]
   }
+
   statement {
-    actions   = ["iam:PassRole"]
-    resources = [aws_iam_role.ecs_task_execution.arn, aws_iam_role.ecs_task.arn]
+    sid     = "PassECSRoles"
+    actions = ["iam:PassRole"]
+    resources = [
+      aws_iam_role.ecs_task_execution.arn,
+      aws_iam_role.ecs_task.arn,
+    ]
   }
 }
 
-resource "aws_iam_role_policy" "ecs_deploy_integration" {
-  name   = "ecs-deploy"
-  role   = aws_iam_role.github_actions_integration.id
-  policy = data.aws_iam_policy_document.ecs_deploy_integration.json
-}
-
-# ── Production deploy role ────────────────────────────────────────────────────
-# data "aws_iam_policy_document" "github_assume_production" {
-#   statement {
-#     actions = ["sts:AssumeRoleWithWebIdentity"]
-#     principals {
-#       type        = "Federated"
-#       identifiers = [data.aws_iam_openid_connect_provider.github.arn]
-#     }
-#     condition {
-#       test     = "StringEquals"
-#       variable = "token.actions.githubusercontent.com:sub"
-#       values   = ["repo:${var.github_org}/${var.github_repo}:ref:refs/heads/main"]
-#     }
-#     condition {
-#       test     = "StringEquals"
-#       variable = "token.actions.githubusercontent.com:aud"
-#       values   = ["sts.amazonaws.com"]
-#     }
-#   }
-# }
-
-# resource "aws_iam_role" "github_actions_production" {
-#   name               = "${var.project}-github-actions-production"
-#   assume_role_policy = data.aws_iam_policy_document.github_assume_production.json
-# }
-
-# resource "aws_iam_role_policy_attachment" "production_ecr" {
-#   role       = aws_iam_role.github_actions_production.name
-#   policy_arn = aws_iam_policy.ecr.arn
-# }
-
-# resource "aws_iam_role_policy" "ecs_deploy_production" {
-#   name   = "ecs-deploy"
-#   role   = aws_iam_role.github_actions_production.id
-#   policy = data.aws_iam_policy_document.ecs_deploy_integration.json
-# }
-
-# ── ECS Task Execution Role ───────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+# ECS Task Execution Role
+# Used by ECS agent at container startup to:
+#   - pull image from ECR
+#   - fetch and inject secrets
+#   - write logs to CloudWatch
+# ─────────────────────────────────────────────
 resource "aws_iam_role" "ecs_task_execution" {
-  name = "${var.project}-ecs-task-execution"
+  name        = "${var.project}-ecs-task-execution"
+  description = "Assumed by the ECS agent at task startup to pull images and inject secrets"
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -147,9 +94,15 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_managed" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# ── ECS Task Role (runtime permissions) ──────────────────────────────────────
+# ─────────────────────────────────────────────
+# ECS Task Role
+# Used by the running container at runtime for
+# any direct AWS SDK calls from app code
+# ─────────────────────────────────────────────
 resource "aws_iam_role" "ecs_task" {
-  name = "${var.project}-ecs-task"
+  name        = "${var.project}-ecs-task"
+  description = "Assumed by the running container for runtime AWS access"
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -159,3 +112,117 @@ resource "aws_iam_role" "ecs_task" {
     }]
   })
 }
+
+# ─────────────────────────────────────────────
+# GitHub Actions — Integration Role
+# Trust policy is built dynamically from each
+# service's github_org and github_repo values,
+# allowing multiple repos to assume this role.
+#
+# Trusted branches: integration, add-ci-cd
+# ─────────────────────────────────────────────
+locals {
+  # Build the list of allowed sub claims for integration
+  # One entry per branch per service repo
+  integration_sub_claims = flatten([
+    for svc in values(var.services) : [
+      "repo:${svc.github_org}/${svc.github_repo}:ref:refs/heads/integration",
+      "repo:${svc.github_org}/${svc.github_repo}:ref:refs/heads/add-ci-cd",
+    ]
+  ])
+
+  # Build the list of allowed sub claims for production
+  # production_sub_claims = [
+  #   for svc in values(var.services) :
+  #   "repo:${svc.github_org}/${svc.github_repo}:ref:refs/heads/main"
+  # ]
+}
+
+data "aws_iam_policy_document" "github_assume_integration" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [data.aws_iam_openid_connect_provider.github.arn]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = local.integration_sub_claims
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "github_actions_integration" {
+  name        = "${var.project}-github-actions-integration"
+  description = "Assumed by GitHub Actions on integration and add-ci-cd branches"
+
+  assume_role_policy = data.aws_iam_policy_document.github_assume_integration.json
+}
+
+resource "aws_iam_role_policy_attachment" "github_integration_ecr" {
+  role       = aws_iam_role.github_actions_integration.name
+  policy_arn = aws_iam_policy.ecr.arn
+}
+
+resource "aws_iam_role_policy" "github_integration_ecs_deploy" {
+  name   = "ecs-deploy"
+  role   = aws_iam_role.github_actions_integration.id
+  policy = data.aws_iam_policy_document.ecs_deploy.json
+}
+
+# ─────────────────────────────────────────────
+# GitHub Actions — Production Role
+# Trusted branch: main (exact match only)
+#
+# Uncomment when enabling production.
+# ─────────────────────────────────────────────
+
+# data "aws_iam_policy_document" "github_assume_production" {
+#   statement {
+#     actions = ["sts:AssumeRoleWithWebIdentity"]
+#
+#     principals {
+#       type        = "Federated"
+#       identifiers = [data.aws_iam_openid_connect_provider.github.arn]
+#     }
+#
+#     condition {
+#       test     = "StringEquals"
+#       variable = "token.actions.githubusercontent.com:sub"
+#       values   = local.production_sub_claims
+#     }
+#
+#     condition {
+#       test     = "StringEquals"
+#       variable = "token.actions.githubusercontent.com:aud"
+#       values   = ["sts.amazonaws.com"]
+#     }
+#   }
+# }
+
+# resource "aws_iam_role" "github_actions_production" {
+#   name        = "${var.project}-github-actions-production"
+#   description = "Assumed by GitHub Actions on main branch only"
+#
+#   assume_role_policy = data.aws_iam_policy_document.github_assume_production.json
+# }
+
+# resource "aws_iam_role_policy_attachment" "github_production_ecr" {
+#   role       = aws_iam_role.github_actions_production.name
+#   policy_arn = aws_iam_policy.ecr.arn
+# }
+
+# resource "aws_iam_role_policy" "github_production_ecs_deploy" {
+#   name   = "ecs-deploy"
+#   role   = aws_iam_role.github_actions_production.id
+#   policy = data.aws_iam_policy_document.ecs_deploy.json
+# }

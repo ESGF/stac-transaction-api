@@ -1,18 +1,33 @@
-variable "aws_region"   { default = "us-east-1" }
-variable "project"      { default = "stac-transaction-api" }
-variable "vpc_id"       {
-                            description = "ID of the existing VPC"
-                            type        = string
-                        }
+variable "aws_region" {
+  description = "AWS region to deploy resources into"
+  default     = "us-east-1"
+}
 
-variable "github_org"   { description = "GitHub org or user owning the repo" }
-variable "github_repo"  { description = "GitHub repository name" }
+variable "project" {
+  description = "Top-level project name, used for cluster naming and tagging"
+  type        = string
+}
 
-variable "ecr_image_retention_count" { default = 30 }
+variable "vpc_id" {
+  description = "ID of the existing VPC"
+  type        = string
+}
 
-variable "container_port"   { default = 8000 }
-variable "container_cpu"    { default = 512 }
-variable "container_memory" { default = 1024 }
+variable "ecr_image_retention_count" {
+  description = "Number of images to retain in each ECR repository"
+  default     = 30
+}
 
-variable "integration_desired_count" { default = 1 }
-# variable "production_desired_count"  { default = 2 }
+variable "services" {
+  description = "Map of services to deploy into the cluster"
+  type = map(object({
+    container_port     = number
+    container_cpu      = number
+    container_memory   = number
+    health_check_path  = string
+    log_retention_days = number
+    desired_count      = number
+    github_org         = string
+    github_repo        = string
+  }))
+}
