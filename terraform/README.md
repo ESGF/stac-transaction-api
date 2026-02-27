@@ -1,6 +1,6 @@
-# West Discovery — Infrastructure as Code
+# STAC Transaction API — Infrastructure as Code
 
-Terraform configuration for deploying the West Discovery platform on AWS. This provisions all infrastructure needed to run containerized services on ECS Fargate, including networking integration, container registry, secrets management, and a GitHub Actions CI/CD pipeline via OIDC.
+Terraform configuration for deploying the STAC Transaction API platform on AWS. This provisions all infrastructure needed to run containerized services on ECS Fargate, including networking integration, container registry, secrets management, and a GitHub Actions CI/CD pipeline via OIDC.
 
 ---
 
