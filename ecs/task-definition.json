@@ -27,7 +27,8 @@
         "options": {
           "awslogs-group": "/ecs/esgf2-cluster/integration/transaction-api",
           "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "ecs"
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
         }
       },
       "healthCheck": {
