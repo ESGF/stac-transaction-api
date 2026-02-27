@@ -25,7 +25,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/transaction-api",
+          "awslogs-group": "/ecs/esgf2-cluster/integration/transaction-api",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
