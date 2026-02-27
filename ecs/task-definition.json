@@ -43,27 +43,27 @@
       "secrets": [
         {
           "name": "BOOTSTRAP_SERVERS",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::BOOTSTRAP_SERVERS::"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:730335463484:secret:transaction-api/integration::BOOTSTRAP_SERVERS::"
         },
         {
           "name": "CONFLUENT_CLOUD_USERNAME",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::CONFLUENT_CLOUD_USERNAME::"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:730335463484:secret:transaction-api/integration::CONFLUENT_CLOUD_USERNAME::"
         },
         {
           "name": "CONFLUENT_CLOUD_PASSWORD",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::CONFLUENT_CLOUD_PASSWORD::"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:730335463484:secret:transaction-api/integration::CONFLUENT_CLOUD_PASSWORD::"
         },
         {
           "name": "GLOBUS_CLIENT_ID",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::GLOBUS_CLIENT_ID::"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:730335463484:secret:transaction-api/integration::GLOBUS_CLIENT_ID::"
         },
         {
           "name": "GLOBUS_CLIENT_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::GLOBUS_CLIENT_SECRET::"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:730335463484:secret:transaction-api/integration::GLOBUS_CLIENT_SECRET::"
         },
         {
           "name": "TOPIC",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:transaction-api/integration::TOPIC::"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:730335463484:secret:transaction-api/integration::TOPIC::"
         }
       ]
     }
