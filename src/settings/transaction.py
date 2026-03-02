@@ -37,7 +37,7 @@ def load_secrets_to_env(secret_name: str, region: str = "us-east-1"):
     
     for key, value in secrets.items():
         os.environ[key] = value
-load_secrets_to_env("stac-transaction-api/integration")
+load_secrets_to_env("transaction-api/integration")
 
 # Suppress some kafka message streams
 logger = logging.getLogger("kafka")
