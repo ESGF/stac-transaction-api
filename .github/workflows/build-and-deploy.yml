@@ -1,13 +1,14 @@
 name: stac-transaction-api CI/CD
 
 on:
-  push:
-    branches:
-      - add-ci-cd
-      - integration
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - add-ci-cd
+  #     - integration
+  # pull_request:
+  #   branches:
+  #     - main
 
 env:
   AWS_REGION: us-east-1
@@ -30,7 +31,6 @@ jobs:
       image-uri: ${{ steps.export.outputs.image-uri }}
 
     if: |
-      github.event_name == 'push' &&
       (
         github.ref == 'refs/heads/add-ci-cd' ||
         github.ref == 'refs/heads/integration' ||
@@ -143,9 +143,7 @@ jobs:
     environment: production         # ← pulls AWS_ROLE_TO_ASSUME from the
                                     #   production environment's secrets
 
-    if: |
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
 
     env:
       ECS_CLUSTER: esgf2-cluster-production
