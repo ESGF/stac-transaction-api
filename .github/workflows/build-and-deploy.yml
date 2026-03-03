@@ -31,7 +31,6 @@ jobs:
 
     if: |
       (
-        github.ref == 'refs/heads/add-ci-cd' ||
         github.ref == 'refs/heads/integration' ||
         github.ref == 'refs/heads/main'
       )
