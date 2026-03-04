@@ -26,7 +26,6 @@ def load_access_control_policy(url):
 # Load the environment variables from AWS Secrets Manager
 def load_secrets_to_env(secret_name: str, region: str = "us-east-1"):
     try:
-        print(secret_name)
         session = boto3.session.Session()
         client = session.client("secretsmanager", region_name=region)
         response = client.get_secret_value(SecretId=secret_name)

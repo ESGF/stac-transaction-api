@@ -8,4 +8,5 @@
 docker run \
     -p 8000:8000 \
     -v ~/.aws:/root/.aws:ro \
-    -it stac-transaction-api
+    -it stac-transaction-api \
+    --detach
