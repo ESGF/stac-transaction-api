@@ -1,10 +1,10 @@
+import boto3
 import json
 import logging
 import os
 import socket
 
 import urllib3
-from dotenv import load_dotenv
 
 
 def load_access_control_policy(url):
@@ -23,8 +23,20 @@ def load_access_control_policy(url):
         return {}
 
 
-# Load the .env file
-load_dotenv()
+# Load the environment variables from AWS Secrets Manager
+def load_secrets_to_env(secret_name: str, region: str = "us-east-1"):
+    try:
+        session = boto3.session.Session()
+        client = session.client("secretsmanager", region_name=region)
+        response = client.get_secret_value(SecretId=secret_name)
+        secrets = json.loads(response["SecretString"])
+    except Exception as e:
+        print(f"Error loading secrets: {e}")
+        secrets = {}
+    
+    for key, value in secrets.items():
+        os.environ[key] = value
+load_secrets_to_env("transaction-api/integration")
 
 # Suppress some kafka message streams
 logger = logging.getLogger("kafka")
