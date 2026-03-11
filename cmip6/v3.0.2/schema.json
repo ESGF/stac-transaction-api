@@ -253,7 +253,7 @@
         },
         {
           "required": [
-            "cmip6:version"
+            "version"
           ]
         }
       ]
@@ -268,11 +268,6 @@
         },
         {
           "required": [
-            "node"
-          ]
-        },
-        {
-          "required": [
             "protocol"
           ]
         }
@@ -282,10 +277,6 @@
       "$comment": " Don't require fields here, do that above in the corresponding schema.",
       "type": "object",
       "properties": {
-        "node": {
-          "type": "string",
-          "pattern": "^([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}$"
-        },
         "protocol": {
           "type": "string",
           "enum": [
@@ -378,6 +369,7 @@
             "01.00.23",
             "01.00.25",
             "01.00.27",
+	    "01.00.28",
             "01.00.29",
             "01.00.31",
             "01.00.32",
