@@ -1,7 +1,6 @@
 import json
 import logging
 import re
-from functools import lru_cache
 
 import boto3
 import httpx
@@ -15,10 +14,10 @@ from stac_fastapi.extensions.core.transaction.request import (
 )
 from stac_pydantic.item import Item
 
-from src.settings.transaction import default_extensions
+from settings.transaction import default_extensions
 
 # Setup logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn.error")
 
 
 def get_secret(region_name, secret_name):
@@ -55,6 +54,7 @@ def operation_to_partial_item(
     item = {}
 
     for operation in operations:
+
         if operation.op == "remove":
             operation = PatchAddReplaceTest(op="add", path=operation.path, value=None)
 
@@ -66,17 +66,27 @@ def operation_to_partial_item(
                     strict=True,
                 )
 
-            path_parts = operation.path.split("/")
-            nest = (
-                [operation.value]
-                if isinstance(int, path_parts[-1])
-                else operation.value
-            )
+            path_parts = operation.path.lstrip("/").split("/")
 
-            for path_part in reversed(path_parts[1:-1]):
+            if isinstance(path_parts[-1], int):
+                path_parts.remove(-1)
+                nest = [operation.value]
+
+            else:
+                nest = operation.value
+
+            if isinstance(nest, list):
+                existing = item.copy()
+                for path_part in path_parts:
+                    existing = existing.get(path_part, {})
+
+                if existing:
+                    nest.extend(existing)
+
+            for path_part in reversed(path_parts):
                 nest = {path_part: nest}
 
-            item[path_parts[0]] = nest
+            item |= nest
 
         if operation.op in ["move", "copy"]:
             # May need to update this for alternat asset updates
@@ -84,7 +94,7 @@ def operation_to_partial_item(
                 status_code=400, detail=f"Operation {operation.op} not permitted"
             )
 
-    return item
+    return PartialItem.model_validate(item)
 
 
 def validate_extensions(
@@ -160,7 +170,7 @@ def get_null_keys(item: PartialItem) -> tuple[PartialItem, set[str]]:
                 null_keys.add(k)
 
             if isinstance(v, dict):
-                sub_dict, sub_null_keys = get_null_keys(v)
+                sub_dict, sub_null_keys = nested_null_keys(v)
                 null_keys.update(sub_null_keys)
                 d[k] = sub_dict
 
@@ -172,7 +182,6 @@ def get_null_keys(item: PartialItem) -> tuple[PartialItem, set[str]]:
     return item, null_keys
 
 
-@lru_cache
 def get_extension_validator(extension: str) -> Validator:
     """Get JSON schema validator for an extension.
 
@@ -210,6 +219,8 @@ def validate_patch(
         HTTPException: Validation error
         HTTPException: Unexpect exception with validation
     """
+    # extensions.pop()
+
     item, null_keys = get_null_keys(item)
 
     for extension in extensions:
@@ -222,8 +233,11 @@ def validate_patch(
                 json.loads(item.model_dump_json())
             ):
 
-                if error.validator != "required":
-                    required_keys.add(error.validator_value)
+                if error.validator in ["oneOf"]:
+                    continue
+
+                elif error.validator == "required":
+                    required_keys.add(json.dumps(error.validator_value))
 
                 else:
                     raise_errors.append(error)
@@ -248,6 +262,7 @@ def validate_patch(
             }
 
             logger.error(error_detail)
+
             raise HTTPException(status_code=400, detail=str(error_detail))
 
 
@@ -275,9 +290,11 @@ def validate_post(
         try:
             extension_validator = get_extension_validator(str(extension))
 
-            raise_errors = list(
-                extension_validator.iter_errors(json.loads(item.model_dump_json()))
-            )
+            raise_errors = []
+            for error in extension_validator.iter_errors(
+                json.loads(item.model_dump_json())
+            ):
+                raise_errors.append(error)
 
         except Exception as e:
             logger.exception(e)

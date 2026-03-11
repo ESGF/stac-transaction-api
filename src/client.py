@@ -4,7 +4,14 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-from esgf_playground_utils.models.kafka import (
+from fastapi import HTTPException, Request, Response, status
+from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
+from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
+from stac_fastapi.types.stac import Collection
+from stac_pydantic.item import Item
+
+from models import Authorizer
+from src.kafka import (
     Auth,
     CreatePayload,
     Data,
@@ -16,13 +23,6 @@ from esgf_playground_utils.models.kafka import (
     RevokePayload,
     UpdatePayload,
 )
-from fastapi import HTTPException, Request, Response, status
-from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
-from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
-from stac_fastapi.types.stac import Collection
-from stac_pydantic.item import Item
-
-from models import Authorizer
 from src.settings.transaction import access_control_policy, event_stream, stac_api
 from utils import (
     operation_to_partial_item,
@@ -32,7 +32,8 @@ from utils import (
 )
 
 # Setup logger
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn.error")
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -135,8 +136,10 @@ class TransactionClient(BaseTransactionsClient):
         authorizer: Authorizer = request.state.authorizer
         authorizer.authorize(collection_id, item, role)
 
+        logger.info(f"REQUESTER DATA: {authorizer.requester_data}")
+
         return Auth(
-            requester_data=authorizer.requester_data,
+            requester_data=authorizer.requester_data.model_dump(),
         )
 
     def authorize(
@@ -168,18 +171,26 @@ class TransactionClient(BaseTransactionsClient):
         event_id = uuid.uuid4().hex
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
 
-        # item_extensions = item.stac_extensions if item.stac_extensions else []
+        item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        # item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+        item_extensions = validate_extensions(
+            collection_id=collection_id, item_extensions=item_extensions
+        )
 
-        # validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
+        validate_post(
+            event_id=event_id,
+            request_id=request_id,
+            item_id=item.id,
+            item=item,
+            extensions=item_extensions,
+        )
 
         user_agent = headers.get("User-Agent", "/").split("/")
 
         payload = CreatePayload(
             method="POST",
             collection_id=collection_id,
-            item=item,
+            item=item.model_dump(),
         )
 
         data = Data(type="STAC", payload=payload)
@@ -290,12 +301,14 @@ class TransactionClient(BaseTransactionsClient):
         patch: Union[PartialItem, list[PatchOperation]],
         request: Request,
     ) -> Optional[Union[Item, Response]]:
+        logger.info("PATCH REQUEST: %s", patch)
 
         item = (
             operation_to_partial_item(collection_id=collection_id, operations=patch)
             if isinstance(patch, list)
             else patch
         )
+
         auth = self.authorize(
             collection_id=collection_id, item=item, role="UPDATE", request=request
         )
@@ -325,7 +338,7 @@ class TransactionClient(BaseTransactionsClient):
             method="PATCH",
             collection_id=collection_id,
             item_id=item_id,
-            patch=patch,
+            patch=patch.model_dump(),
         )
 
         data = Data(type="STAC", payload=payload)

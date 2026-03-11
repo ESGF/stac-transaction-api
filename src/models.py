@@ -65,6 +65,22 @@ class Nodes(BaseModel):
         else:
             self.nodes[node.id] = node
 
+    def authorize_href(self, asset_href: str, role: Role):
+        asset_url = urlparse(asset_href)
+        node_permission = self.nodes.get(asset_url.hostname, None)
+
+        if not node_permission:
+            raise HTTPException(
+                status_code=401,
+                detail=f"Node permission missing for {asset_href}",
+            )
+
+        if role not in node_permission.roles:
+            raise HTTPException(
+                status_code=401,
+                detail=f"Node role ({role}) permission missing for {asset_href}",
+            )
+
     def authorize(self, assets: dict, role: Role):
         """Check for appropriate authorisation.
 
@@ -75,22 +91,28 @@ class Nodes(BaseModel):
         Raises:
             HTTPException: Raised if either node or role permission is missing
         """
+
         if assets:
             for asset in assets.values():
-                asset_url = urlparse(asset.href)
-                node_permission = self.nodes.get(asset_url.hostname, None)
+                if not isinstance(asset, dict):
+                    asset = asset.model_dump()
 
-                if not node_permission:
-                    raise HTTPException(
-                        status_code=401,
-                        detail=f"Node permission missing for {asset.href}",
-                    )
+                if href := asset.get("href"):
+                    if "globus" in href:
+                        self.authorize_href(f"https://{asset['alternate:name']}", role)
 
-                if role not in node_permission.roles:
-                    raise HTTPException(
-                        status_code=401,
-                        detail=f"Node role ({role}) permission missing for {asset.href}",
-                    )
+                    else:
+                        self.authorize_href(href, role)
+
+                if alternates := asset.get("alternate"):
+                    for alternate in alternates.values():
+                        if "globus" in href:
+                            self.authorize_href(
+                                f"https://{alternate['alternate:name']}", role
+                            )
+
+                        else:
+                            self.authorize_href(alternate["href"], role)
 
 
 class Projects(BaseModel):
