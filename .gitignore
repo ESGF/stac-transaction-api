@@ -1,15 +1,112 @@
-*.pyc
-.idea
-*.iml
-.vscode
-venv
-dist
-build
-*.egg-info
-.env*
+# ----------------------------------
+# Python
+# ----------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.whl
+.poetry/
+
+# Virtual environments
+.env
+.env.*
+.venv
+venv/
+ENV/
+env/
+
+# Pytest
+.pytest_cache/
 .coverage
 htmlcov/
 __pycache__/
 esgf1-payloads/
 esgfng-payloads/
 .python-version
+
+# Mypy
+.mypy_cache/
+
+# Ruff / lint
+.ruff_cache/
+
+# Logs
+*.log
+
+# ----------------------------------
+# Django
+# ----------------------------------
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+local_settings.py
+
+# ----------------------------------
+# Secrets / config
+# ----------------------------------
+*.env
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# AWS / cloud credentials
+.aws/
+aws_credentials/
+
+# ----------------------------------
+# Docker
+# ----------------------------------
+docker-compose.override.yml
+*.pid
+
+# Docker build artifacts
+*.tar
+
+# ----------------------------------
+# IDE / editors
+# ----------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# ----------------------------------
+# OS
+# ----------------------------------
+Thumbs.db
+
+# ----------------------------------
+# Terraform (if used later)
+# ----------------------------------
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# ----------------------------------
+# Coverage + test output
+# ----------------------------------
+coverage.xml
+junit.xml
+test-results/
+
+# ----------------------------------
+# Node (if frontend or tooling added)
+# ----------------------------------
+node_modules/
+
+# ----------------------------------
+# Globus / access-ci temporary files
+# ----------------------------------
+*.gmeta
+*.json.tmp

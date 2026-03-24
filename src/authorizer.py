@@ -8,7 +8,7 @@ from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
 import src.settings.transaction as settings
-from models import Authorizer
+from src.models import Authorizer
 
 confidential_client = ConfidentialAppAuthClient(
     client_id=settings.stac_api.get("client_id"),

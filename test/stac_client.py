@@ -14,21 +14,12 @@ class TransactionClient:
             self.stac_api = stac_api
         else:
             self.stac_api = STAC_TRANSACTION_API.get("base_url")
-        self.scopes = [
-            GroupsScopes.view_my_groups_and_memberships,
-            STAC_TRANSACTION_API.get("scope_string")
-        ]
-        self.auth_client = NativeAppAuthClient(
-            client_id=STAC_CLIENT.get("client_id"),
-            app_name="ESGF2 STAC Transaction API"
-        )   
+        self.scopes = [GroupsScopes.view_my_groups_and_memberships, STAC_TRANSACTION_API.get("scope_string")]
+        self.auth_client = NativeAppAuthClient(client_id=STAC_CLIENT.get("client_id"), app_name="ESGF2 STAC Transaction API")
         self._create_clients()
 
     def _do_login_flow(self):
-        self.auth_client.oauth2_start_flow(
-            requested_scopes=self.scopes,
-            refresh_tokens=True
-        )
+        self.auth_client.oauth2_start_flow(requested_scopes=self.scopes, refresh_tokens=True)
         authorize_url = self.auth_client.oauth2_get_authorize_url()
         print("Please go to this URL and login: {0}".format(authorize_url))
         auth_code = input("Please enter the code here: ").strip()
@@ -53,9 +44,7 @@ class TransactionClient:
             expires_at=self.groups_tokens["expires_at_seconds"],
             on_refresh=token_storage.on_refresh,
         )
-        self.groups_client = GroupsClient(
-            authorizer=groups_authorizer
-        )
+        self.groups_client = GroupsClient(authorizer=groups_authorizer)
 
         transaction_authorizer = RefreshTokenAuthorizer(
             self.transaction_tokens["refresh_token"],
@@ -64,17 +53,14 @@ class TransactionClient:
             expires_at=self.transaction_tokens["expires_at_seconds"],
             on_refresh=token_storage.on_refresh,
         )
-        self.transaction_client = BaseClient(
-            base_url=self.stac_api,
-            authorizer=transaction_authorizer
-        )
+        self.transaction_client = BaseClient(base_url=self.stac_api, authorizer=transaction_authorizer)
 
     def get_my_groups(self):
         groups = self.groups_client.get_my_groups()
         return groups
 
     def post(self, entry):
-        collection = entry.get('collection')
+        collection = entry.get("collection")
         headers = {
             "User-Agent": f"test_client/{__version__}",
         }
@@ -113,7 +99,7 @@ class TransactionClient:
     def json_patch(self, collection, item_id, entry):
         """
         RFC 6902 https://tools.ietf.org/html/rfc6902
-        JSON Patch is a format for describing changes to a JSON document 
+        JSON Patch is a format for describing changes to a JSON document
         in a way that is similar to a diff
         It consists of a sequence of operations to be applied to the target JSON document
         """
@@ -156,4 +142,3 @@ class TransactionClient:
         else:
             print(f"Failed to update (MERGE PATCH): Error {resp.http_status}")
             return False
-

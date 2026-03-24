@@ -1,8 +1,6 @@
 import argparse
 import json
-import logging
 import os
-import sys
 from esgf import download
 from esgfng import convert2stac
 
@@ -10,7 +8,7 @@ from esgfng import convert2stac
 def convert(paths, documents_dir, payloads_dir):
     if not os.path.exists(payloads_dir):
         os.makedirs(payloads_dir)
-    
+
     counter = 1
     for path in paths:
         file_name = path.replace("/", ".") + ".json"
@@ -21,6 +19,10 @@ def convert(paths, documents_dir, payloads_dir):
             continue
 
         document_file_path = os.path.join(documents_dir, file_name)
+        if not os.path.exists(document_file_path):
+            print(f"{counter}/{len(paths)}: File {file_name} does not exist in {documents_dir}")
+            counter += 1
+            continue
         with open(document_file_path, "r") as df:
             json_data = json.load(df)
             item = convert2stac(json_data)

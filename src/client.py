@@ -106,7 +106,7 @@ class TransactionClient(BaseTransactionsClient):
         requester_data = RequesterData(
             client_id=token_info.get("client_id"),
             sub=token_info.get("sub"),
-            iss=token_info.get("username"),
+            iss=token_info.get("iss"),
         )
 
         auth = Auth(
@@ -166,10 +166,10 @@ class TransactionClient(BaseTransactionsClient):
             item=item, role="CREATE", request=request, collection_id=collection_id
         )
 
-        headers = request.headers.get("headers", {})
+        headers = request.headers
 
         event_id = uuid.uuid4().hex
-        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        request_id = headers.get("x-request-id", uuid.uuid4().hex)
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
@@ -185,7 +185,7 @@ class TransactionClient(BaseTransactionsClient):
             extensions=item_extensions,
         )
 
-        user_agent = headers.get("User-Agent", "/").split("/")
+        user_agent = headers.get("user-agent", "/").split("/")
 
         payload = CreatePayload(
             method="POST",
@@ -313,10 +313,10 @@ class TransactionClient(BaseTransactionsClient):
             collection_id=collection_id, item=item, role="UPDATE", request=request
         )
 
-        headers = request.headers.get("headers", {})
+        headers = request.headers
 
         event_id = uuid.uuid4().hex
-        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        request_id = headers.get("x-request-id", uuid.uuid4().hex)
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
@@ -332,7 +332,7 @@ class TransactionClient(BaseTransactionsClient):
             extensions=item_extensions,
         )
 
-        user_agent = headers.get("User-Agent", "/").split("/")
+        user_agent = headers.get("user-agent", "/").split("/")
 
         payload = PatchPayload(
             method="PATCH",
@@ -384,9 +384,9 @@ class TransactionClient(BaseTransactionsClient):
         headers = request.headers.get("headers", {})
 
         event_id = uuid.uuid4().hex
-        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        request_id = headers.get("x-request-id", uuid.uuid4().hex)
 
-        user_agent = headers.get("User-Agent", "/").split("/")
+        user_agent = headers.get("user-agent", "/").split("/")
 
         payload = RevokePayload(
             method="DELETE",
