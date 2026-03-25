@@ -5,16 +5,19 @@ import re
 import boto3
 import httpx
 import jsonschema
-from esgf_playground_utils.models.item import CMIP6Item
 from fastapi import HTTPException
 from jsonschema.protocols import Validator
-from pydantic import HttpUrl, ValidationError
-from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchAddReplaceTest, PatchOperation
+from stac_fastapi.extensions.core.transaction.request import (
+    PartialItem,
+    PatchAddReplaceTest,
+    PatchOperation,
+)
+from stac_pydantic.item import Item
 
-from settings.transaction import default_extensions
+from src.settings.transaction import default_extensions
 
 # Setup logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn.error")
 
 
 def get_secret(region_name, secret_name):
@@ -33,7 +36,9 @@ def get_secret(region_name, secret_name):
         raise e
 
 
-def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
+def operation_to_partial_item(
+    collection_id: str, operations: list[PatchOperation]
+) -> PartialItem:
     """Convert operations to partial item
 
     Args:
@@ -49,29 +54,52 @@ def operation_to_partial_item(collection_id: str, operations: list[PatchOperatio
     item = {}
 
     for operation in operations:
+
         if operation.op == "remove":
             operation = PatchAddReplaceTest(op="add", path=operation.path, value=None)
 
         if operation.op in ["add", "replace"]:
             if operation.path.lstrip("/") == "stac_extensions":
-                validate_extensions(collection_id=collection_id, item_extensions=operation.value, strict=True)
+                validate_extensions(
+                    collection_id=collection_id,
+                    item_extensions=operation.value,
+                    strict=True,
+                )
 
-            path_parts = operation.path.split("/")
-            nest = [operation.value] if isinstance(int, path_parts[-1]) else operation.value
+            path_parts = operation.path.lstrip("/").split("/")
 
-            for path_part in reversed(path_parts[1:-1]):
+            if isinstance(path_parts[-1], int):
+                path_parts.remove(-1)
+                nest = [operation.value]
+
+            else:
+                nest = operation.value
+
+            if isinstance(nest, list):
+                existing = item.copy()
+                for path_part in path_parts:
+                    existing = existing.get(path_part, {})
+
+                if existing:
+                    nest.extend(existing)
+
+            for path_part in reversed(path_parts):
                 nest = {path_part: nest}
 
-            item[path_parts[0]] = nest
+            item |= nest
 
         if operation.op in ["move", "copy"]:
             # May need to update this for alternat asset updates
-            raise HTTPException(status_code=400, detail=f"Operation {operation.op} not permitted")
+            raise HTTPException(
+                status_code=400, detail=f"Operation {operation.op} not permitted"
+            )
 
-    return item
+    return PartialItem.model_validate(item)
 
 
-def validate_extensions(collection_id: str, item_extensions: list[str], strict: bool = False) -> list[str]:
+def validate_extensions(
+    collection_id: str, item_extensions: list[str], strict: bool = False
+) -> list[str]:
     """Validate expected default extensions are present.
 
     Args:
@@ -91,20 +119,32 @@ def validate_extensions(collection_id: str, item_extensions: list[str], strict: 
 
     for item_extension in item_extensions:
         expected = False
-        for expected_extension_key, expected_extension in expected_extensions.copy().items():
-            if any(re.compile(regex).match(str(item_extension)) for regex in expected_extension["regex"]):
+        for (
+            expected_extension_key,
+            expected_extension,
+        ) in expected_extensions.copy().items():
+            if any(
+                re.compile(regex).match(str(item_extension))
+                for regex in expected_extension["regex"]
+            ):
                 expected_extensions.pop(expected_extension_key)
                 expected = True
 
         if not expected:
             raise HTTPException(
-                status_code=400, detail=f"Unexpected extensions: {item_extension} {expected_extensions}"
+                status_code=400,
+                detail=f"Unexpected extensions: {item_extension} {expected_extensions}",
             )
 
-    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions.values()]
+    missing_extensions = [
+        expected_extension["default"]
+        for expected_extension in expected_extensions.values()
+    ]
 
     if strict & len(missing_extensions) > 0:
-        raise HTTPException(status_code=400, detail=f"Expected extensions missing: {missing_extensions}")
+        raise HTTPException(
+            status_code=400, detail=f"Expected extensions missing: {missing_extensions}"
+        )
 
     item_extensions.extend(missing_extensions)
 
@@ -130,7 +170,7 @@ def get_null_keys(item: PartialItem) -> tuple[PartialItem, set[str]]:
                 null_keys.add(k)
 
             if isinstance(v, dict):
-                sub_dict, sub_null_keys = get_null_keys(v)
+                sub_dict, sub_null_keys = nested_null_keys(v)
                 null_keys.update(sub_null_keys)
                 d[k] = sub_dict
 
@@ -179,6 +219,8 @@ def validate_patch(
         HTTPException: Validation error
         HTTPException: Unexpect exception with validation
     """
+    # extensions.pop()
+
     item, null_keys = get_null_keys(item)
 
     for extension in extensions:
@@ -187,10 +229,15 @@ def validate_patch(
 
             required_keys = set()
             raise_errors = []
-            for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+            for error in extension_validator.iter_errors(
+                json.loads(item.model_dump_json())
+            ):
 
-                if error.validator != "required":
-                    required_keys.add(error.validator_value)
+                if error.validator in ["oneOf"]:
+                    continue
+
+                elif error.validator == "required":
+                    required_keys.add(json.dumps(error.validator_value))
 
                 else:
                     raise_errors.append(error)
@@ -200,7 +247,9 @@ def validate_patch(
             raise HTTPException(status_code=400, detail=str(e)) from e
 
         for null_key_error in required_keys & null_keys:
-            raise_errors.append(f"Variable {null_key_error} is required and cannot be removed")
+            raise_errors.append(
+                f"Variable {null_key_error} is required and cannot be removed"
+            )
 
         if raise_errors:
             error_detail = {
@@ -213,6 +262,7 @@ def validate_patch(
             }
 
             logger.error(error_detail)
+
             raise HTTPException(status_code=400, detail=str(error_detail))
 
 
@@ -220,16 +270,16 @@ def validate_post(
     event_id: str,
     request_id: str,
     item_id: str,
-    item: CMIP6Item,
+    item: Item,
     extensions: list[str],
 ) -> None:
-    """Validate a CMIP6Item post request
+    """Validate a Item post request
 
     Args:
         event_id (str): ID of the Kafka event
         request_id (str): ID of the request
         item_id (str): ID of the item to validate
-        item (CMIP6Item): Partial Item to be validated to validate
+        item (Item): Partial Item to be validated to validate
         extensions (list[str]): List of STAC extensions to be validated against
 
     Raises:
@@ -241,7 +291,9 @@ def validate_post(
             extension_validator = get_extension_validator(str(extension))
 
             raise_errors = []
-            for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+            for error in extension_validator.iter_errors(
+                json.loads(item.model_dump_json())
+            ):
                 raise_errors.append(error)
 
         except Exception as e:
