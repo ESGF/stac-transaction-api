@@ -4,18 +4,18 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-from esgf_core_utils.models.egi_auth import Authorizer
-from esgf_core_utils.models.exception import (
+from esgf_core_utils.models.auth.egi import EGIAuth
+from esgf_core_utils.models.exceptions import (
     AuthorizationException,
     ExpectedExtensionsMissingException,
     MissingPermissionException,
     OperationNotPermittedException,
+    RFC9457Exception,
     STACValidationException,
     UnexpectedExtensionException,
-    rfc9457Exception,
     UnknownException,
 )
-from esgf_core_utils.models.kafka import (
+from esgf_core_utils.models.kafka.events import (
     Auth,
     CreatePayload,
     Data,
@@ -26,7 +26,7 @@ from esgf_core_utils.models.kafka import (
     RequesterData,
     UpdatePayload,
 )
-from esgf_core_utils.models.producer import KafkaProducer
+from esgf_core_utils.models.kafka.producer import KafkaProducer
 from fastapi import Request, Response, status
 from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
 from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
@@ -142,7 +142,7 @@ class TransactionClient(BaseTransactionsClient):
         Returns:
             Auth: Auth object if successful
         """
-        authorizer: Authorizer = request.state.authorizer
+        authorizer: EGIAuth = request.state.authorizer
         authorizer.authorize(collection_id, item, role)
 
         logger.info(f"REQUESTER DATA: {authorizer.requester_data}")
@@ -208,7 +208,7 @@ class TransactionClient(BaseTransactionsClient):
             STACValidationException,
             UnexpectedExtensionException,
         ) as exc:
-            raise rfc9457Exception(
+            raise RFC9457Exception(
                 status_code=exc.status_code,
                 type=exc.type,
                 detail=exc.detail,
@@ -240,8 +240,7 @@ class TransactionClient(BaseTransactionsClient):
         event = KafkaEvent(metadata=metadata, data=data)
 
         try:
-            self.producer.produce(
-                topic=settings.kafka_topic,
+            self.producer.success(
                 key=item.id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
@@ -310,8 +309,7 @@ class TransactionClient(BaseTransactionsClient):
         event = KafkaEvent(metadata=metadata, data=data)
 
         try:
-            self.producer.produce(
-                topic=settings.kafka_topic,
+            self.producer.success(
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
@@ -388,8 +386,7 @@ class TransactionClient(BaseTransactionsClient):
         event = KafkaEvent(metadata=metadata, data=data)
 
         try:
-            self.producer.produce(
-                topic=settings.kafka_topic,
+            self.producer.success(
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
@@ -446,8 +443,7 @@ class TransactionClient(BaseTransactionsClient):
         event = KafkaEvent(metadata=metadata, data=data)
 
         try:
-            self.producer.produce(
-                topic=settings.kafka_topic,
+            self.producer.success(
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )

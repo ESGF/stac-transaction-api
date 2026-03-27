@@ -1,15 +1,14 @@
 import json
 
 import httpx
-from esgf_core_utils.models.egi_auth import EGIAuth
-from esgf_core_utils.models.kafka import RequesterData
+from esgf_core_utils.models.auth.egi import EGIAuth
+from esgf_core_utils.models.kafka.events import RequesterData
 from fastapi import Request
 from globus_sdk import AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.settings import settings
-
 
 """
 FastAPI Middleware Authorizer

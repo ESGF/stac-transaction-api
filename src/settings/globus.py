@@ -3,9 +3,10 @@ from typing import Self
 
 import boto3
 import urllib3
+from globus_sdk import ConfidentialAppAuthClient
 from pydantic import model_validator
 from pydantic_settings import BaseSettings
-from globus_sdk import ConfidentialAppAuthClient
+
 
 class GlobusClientSettings(BaseSettings):
     """
@@ -28,6 +29,14 @@ class GlobusClientSettings(BaseSettings):
     region: str = "us-east-1"
 
     def load_access_control_policy(self, policy_path: str) -> dict:
+        """load access control policy
+
+        Args:
+            data (dict): inital data
+
+        Returns:
+            dict: data with access control policy
+        """
         parsed = urllib3.util.parse_url(policy_path)
         if parsed.scheme == "file":
             with open(parsed.path) as file:
@@ -40,7 +49,15 @@ class GlobusClientSettings(BaseSettings):
                 print("Access Control Policy loaded")
                 return json.loads(response.data.decode("utf-8"))
 
-    def load_secrets(self, data:dict) -> dict:
+    def load_secrets(self, data: dict) -> dict:
+        """load secrets from AWS
+
+        Args:
+            data (dict): inital data
+
+        Returns:
+            dict: data with secrets
+        """
         try:
             session = boto3.session.Session()
             client = session.client("secretsmanager", region_name=data["region"])
@@ -51,12 +68,12 @@ class GlobusClientSettings(BaseSettings):
             secrets = {}
 
         for key, value in secrets.items():
-            data["key"] = value
+            data[key] = value
 
         return data
 
     @model_validator(mode="before")
-    def load_secrets(self, data: dict) -> Self:
+    def pre_load(self, data: dict) -> Self:
         """
         Load the access control policy, secrets, and confidential_client.
         """
@@ -69,5 +86,3 @@ class GlobusClientSettings(BaseSettings):
         )
 
         return data
-
-

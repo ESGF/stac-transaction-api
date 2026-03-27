@@ -18,5 +18,3 @@ class CEDAClientSettings(BaseSettings):
     regex: str = (
         r"urn\:mace\:egi\.eu\:group\:esgf.vo.egi.eu\:(?P<type>.*)\:(?P<id>.*)\:role=(?P<role>.*)#aai.egi.eu"
     )
-
-

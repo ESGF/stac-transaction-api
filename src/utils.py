@@ -7,6 +7,7 @@ import jsonschema
 from esgf_core_utils.models.exceptions import (
     ExpectedExtensionsMissingException,
     OperationNotPermittedException,
+    STACValidationException,
     UnexpectedExtensionException,
 )
 from jsonschema.protocols import Validator
@@ -17,7 +18,7 @@ from stac_fastapi.extensions.core.transaction.request import (
 )
 from stac_pydantic.item import Item
 
-from src.settings.transaction import DEFAULT_EXTENSIONS
+from src.settings import DEFAULT_EXTENSIONS
 
 # Setup logger
 logger = logging.getLogger("uvicorn.error")

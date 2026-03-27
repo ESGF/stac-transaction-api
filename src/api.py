@@ -1,4 +1,4 @@
-from esgf_core_utils.models.exceptions import rfc9457Exception
+from esgf_core_utils.models.exceptions import RFC9457Exception
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from stac_fastapi.extensions.core.transaction import TransactionExtension
@@ -20,8 +20,9 @@ async def healthcheck():
         status_code=200,
     )
 
-@app.exception_handler(rfc9457Exception)
-async def rfc9457_handler(request: Request, exc: rfc9457Exception):
+
+@app.exception_handler(RFC9457Exception)
+async def rfc9457_handler(request: Request, exc: RFC9457Exception):
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -47,4 +48,3 @@ app.add_middleware(Authorizer)
 app.state.router_prefix = ""
 transaction_extension = TransactionExtension(client=core_client, settings=api_settings)
 transaction_extension.register(app)
-

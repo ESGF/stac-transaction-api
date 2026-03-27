@@ -1,7 +1,9 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings
 
-from settings.ceda import CEDAClientSettings
-from settings.globus import GlobusClientSettings
+from src.settings.ceda import CEDAClientSettings
+from src.settings.globus import GlobusClientSettings
 
 DEFAULT_EXTENSIONS = {
     "CMIP6": {
@@ -46,6 +48,7 @@ DEFAULT_EXTENSIONS = {
     },
 }
 
+
 class Settings(BaseSettings):
     """
     Event Stream Settings
@@ -54,10 +57,8 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = "TRANSACTION_"
 
-    authorizer: Literal["egi","globus"] = "globus"
+    authorizer: Literal["egi", "globus"] = "globus"
     client: CEDAClientSettings | GlobusClientSettings
-
-    kafka_topic: str
 
     debug: bool = False
 
