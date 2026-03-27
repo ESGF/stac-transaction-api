@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = "TRANSACTION_"
 
-    authorizer: Literal["ceda","globus"] = "globus"
+    authorizer: Literal["egi","globus"] = "globus"
     client: CEDAClientSettings | GlobusClientSettings
 
     kafka_topic: str
