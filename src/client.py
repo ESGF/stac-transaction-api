@@ -4,14 +4,18 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-from fastapi import HTTPException, Request, Response, status
-from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
-from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
-from stac_fastapi.types.stac import Collection
-from stac_pydantic.item import Item
-
-from models import Authorizer
-from src.kafka import (
+from esgf_core_utils.models.egi_auth import Authorizer
+from esgf_core_utils.models.exception import (
+    AuthorizationException,
+    ExpectedExtensionsMissingException,
+    MissingPermissionException,
+    OperationNotPermittedException,
+    STACValidationException,
+    UnexpectedExtensionException,
+    rfc9457Exception,
+    UnknownException,
+)
+from esgf_core_utils.models.kafka import (
     Auth,
     CreatePayload,
     Data,
@@ -20,10 +24,16 @@ from src.kafka import (
     PatchPayload,
     Publisher,
     RequesterData,
-    RevokePayload,
     UpdatePayload,
 )
-from src.settings.transaction import access_control_policy, event_stream, stac_api
+from esgf_core_utils.models.producer import KafkaProducer
+from fastapi import Request, Response, status
+from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
+from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
+from stac_fastapi.types.stac import Collection
+from stac_pydantic.item import Item
+
+from src.settings import settings
 from utils import (
     operation_to_partial_item,
     validate_extensions,
@@ -38,8 +48,8 @@ logger = logging.getLogger("uvicorn.error")
 
 class TransactionClient(BaseTransactionsClient):
 
-    def __init__(self, producer):
-        self.producer = producer
+    def __init__(self):
+        self.producer = KafkaProducer()
 
     def allowed_groups(self, properties, acp) -> list:
         if isinstance(acp, list):
@@ -66,7 +76,9 @@ class TransactionClient(BaseTransactionsClient):
         if getattr(properties, "project", None) != collection_id:
             raise ValueError("Item project must match path collection_id")
 
-        allowed_groups = self.allowed_groups(properties, access_control_policy)
+        allowed_groups = self.allowed_groups(
+            properties, settings.client.access_control_policy
+        )
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
 
         authorizer = request.state.authorizer
@@ -86,7 +98,9 @@ class TransactionClient(BaseTransactionsClient):
                     }
                 )
         if not authorized_identities:
-            raise HTTPException(status_code=403, detail="Forbidden")
+            raise MissingPermissionException(
+                permission_type="globus", target=collection_id
+            )
 
         identity_set_detail = token_info.get("identity_set_detail", [])
         for identity in identity_set_detail:
@@ -112,16 +126,11 @@ class TransactionClient(BaseTransactionsClient):
         auth = Auth(
             requester_data=requester_data,
         )
-        # "auth_basis_data": {
-        #     "authorization_basis_type": "group",
-        #     "authorization_basis_service": "groups.globus.org",
-        #     "authorization_basis": authorized_identities,
-        # },
 
         return auth
 
     def egi_authorize(
-        self, collection_id: str, item: Item, role: str, request: Request
+        self, collection_id: str, item: Item | PartialItem, role: str, request: Request
     ) -> Auth:
         """_summary_
 
@@ -143,10 +152,10 @@ class TransactionClient(BaseTransactionsClient):
         )
 
     def authorize(
-        self, item: Item | PartialItem, role: str, request: Request, collection_id: str
+        self, collection_id: str, item: Item | PartialItem, role: str, request: Request
     ) -> Auth:
 
-        if stac_api.get("authorizer", "globus") == "globus":
+        if settings.authorizer == "globus":
             return self.globus_authorize(
                 collection_id=collection_id, item=item, request=request
             )
@@ -157,33 +166,54 @@ class TransactionClient(BaseTransactionsClient):
 
     async def create_item(
         self,
+        collection_id: str,
         item: Item,
         request: Request,
-        collection_id: str,
     ) -> Optional[Union[Item, Response, None]]:
-
-        auth = self.authorize(
-            item=item, role="CREATE", request=request, collection_id=collection_id
-        )
 
         headers = request.headers
 
         event_id = uuid.uuid4().hex
         request_id = headers.get("x-request-id", uuid.uuid4().hex)
 
+        try:
+            auth = self.authorize(
+                item=item,
+                role="CREATE",
+                request=request,
+                collection_id=collection_id,
+            )
+
+        except MissingPermissionException as exc:
+            raise AuthorizationException(instance=f"{request_id}:{event_id}") from exc
+
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        item_extensions = validate_extensions(
-            collection_id=collection_id, item_extensions=item_extensions
-        )
+        try:
+            item_extensions = validate_extensions(
+                collection_id=collection_id, item_extensions=item_extensions
+            )
 
-        validate_post(
-            event_id=event_id,
-            request_id=request_id,
-            item_id=item.id,
-            item=item,
-            extensions=item_extensions,
-        )
+            validate_post(
+                event_id=event_id,
+                request_id=request_id,
+                item_id=item.id,
+                item=item,
+                extensions=item_extensions,
+            )
+
+        except (
+            ExpectedExtensionsMissingException,
+            OperationNotPermittedException,
+            STACValidationException,
+            UnexpectedExtensionException,
+        ) as exc:
+            raise rfc9457Exception(
+                status_code=exc.status_code,
+                type=exc.type,
+                detail=exc.detail,
+                instance=f"{request_id}:{event_id}",
+            ) from exc
 
         user_agent = headers.get("user-agent", "/").split("/")
 
@@ -211,26 +241,26 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic=event_stream.get("topic"),
+                topic=settings.kafka_topic,
                 key=item.id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
 
-        except Exception as e:
-            logger.error(f"Error producing message: {e}")
-            raise HTTPException(status_code=500, detail=str(e)) from e
+        except Exception as exc:
+            logger.error(f"Error producing message: {exc}")
+            raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
-            content="Item queued for publication",
+            content=f"Item queued for publication",
         )
 
     async def update_item(
         self,
-        item: Item,
-        request: Request,
         collection_id: str,
         item_id: str,
+        item: Item,
+        request: Request,
     ) -> Optional[Union[Item, Response]]:
 
         auth = self.authorize(
@@ -281,13 +311,14 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic=event_stream.get("topic"),
+                topic=settings.kafka_topic,
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
-        except Exception as e:
-            logger.error(f"Error producing message: {e}")
-            raise HTTPException(status_code=500, detail=str(e)) from e
+
+        except Exception as exc:
+            logger.error(f"Error producing message: {exc}")
+            raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
@@ -358,13 +389,14 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic=event_stream.get("topic"),
+                topic=settings.kafka_topic,
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
-        except Exception as e:
-            logger.error(f"Error producing message: {e}")
-            raise HTTPException(status_code=500, detail=str(e)) from e
+
+        except Exception as exc:
+            logger.error(f"Error producing message: {exc}")
+            raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
@@ -373,10 +405,12 @@ class TransactionClient(BaseTransactionsClient):
 
     async def delete_item(
         self,
-        request: Request,
         collection_id: str,
         item_id: str,
+        request: Request,
     ) -> Optional[Union[Item, Response]]:
+        logger.info("DELETE REQUEST: %s %s", collection_id, item_id)
+
         auth = self.authorize(
             collection_id=collection_id, item=item_id, role="UPDATE", request=request
         )
@@ -388,10 +422,11 @@ class TransactionClient(BaseTransactionsClient):
 
         user_agent = headers.get("user-agent", "/").split("/")
 
-        payload = RevokePayload(
-            method="DELETE",
+        payload = PatchPayload(
+            method="PATCH",
             collection_id=collection_id,
             item_id=item_id,
+            patch=[{"op": "add", "path": "properties.retracted", "value": True}],
         )
 
         data = Data(type="STAC", payload=payload)
@@ -412,12 +447,14 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.produce(
-                topic=event_stream.get("topic"),
+                topic=settings.kafka_topic,
                 key=item_id.encode("utf-8"),
                 value=event.model_dump_json().encode("utf8"),
             )
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e)) from e
+
+        except Exception as exc:
+            logger.error(f"Error producing message: {exc}")
+            raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,

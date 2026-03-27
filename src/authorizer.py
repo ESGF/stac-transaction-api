@@ -1,19 +1,15 @@
 import json
 
 import httpx
-from esgf_playground_utils.models.kafka import RequesterData
+from esgf_core_utils.models.egi_auth import EGIAuth
+from esgf_core_utils.models.kafka import RequesterData
 from fastapi import Request
-from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsClient
+from globus_sdk import AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import src.settings.transaction as settings
-from src.models import Authorizer
+from src.settings import settings
 
-confidential_client = ConfidentialAppAuthClient(
-    client_id=settings.stac_api.get("client_id"),
-    client_secret=settings.stac_api.get("client_secret"),
-)
 
 """
 FastAPI Middleware Authorizer
@@ -37,7 +33,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header[7:]
-        response = confidential_client.oauth2_token_introspect(
+        response = settings.client.confidential_client.oauth2_token_introspect(
             access_token, include="identity_set_detail"
         )
         token_info = response.data
@@ -51,17 +47,17 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
                 "unknown", "Deny", resource_arn, token_info=token_info
             )
 
-        if settings.stac_api.get("client_id") not in token_info.get("aud", []):
+        if settings.client.client_id not in token_info.get("aud", []):
             policy = self.generate_policy(
                 token_info.get("sub"), "Deny", resource_arn, token_info=token_info
             )
 
-        if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
+        if settings.client.scope_string != token_info.get("scope", ""):
             policy = self.generate_policy(
                 token_info.get("sub"), "Deny", resource_arn, token_info=token_info
             )
 
-        if settings.stac_api.get("issuer") != token_info.get("iss", ""):
+        if settings.client.issuer != token_info.get("iss", ""):
             policy = self.generate_policy(
                 token_info.get("sub"), "Deny", resource_arn, token_info=token_info
             )
@@ -92,7 +88,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
         and if the a new request with the same bearer token
         """
 
-        tokens = confidential_client.oauth2_get_dependent_tokens(
+        tokens = settings.client.confidential_client.oauth2_get_dependent_tokens(
             token, scope=GroupsScopes.view_my_groups_and_memberships
         )
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
@@ -151,17 +147,17 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         settings.logger.info("Request Headers %s", request.headers)
 
         auth = httpx.BasicAuth(
-            username=settings.stac_api.get("client_id"),
-            password=settings.stac_api.get("client_secret"),
+            username=settings.client.client_id,
+            password=settings.client.client_secret,
         )
 
         async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
             settings.logger.info(
                 "Post request to %s",
-                settings.stac_api.get("introspection_endpoint"),
+                settings.client.introspection_endpoint,
             )
             response = await client.post(
-                settings.stac_api.get("introspection_endpoint"),
+                settings.client.introspection_endpoint,
                 headers={"Content-type": "application/x-www-form-urlencoded"},
                 data=f"token={request.headers.get('authorization')[7:]}",
                 auth=auth,
@@ -171,9 +167,10 @@ class EGIAuthorizer(BaseHTTPMiddleware):
 
         token_info = response.json()
 
-        authorizer = Authorizer(
+        authorizer = EGIAuth(
+            regex=settings.client.regex,
             requester_data=RequesterData(
-                client_id=settings.event_stream["config"].get("client.id"),
+                client_id=token_info["client_id"],
                 sub=token_info["sub"],
                 iss=token_info["iss"],
             ),
@@ -184,3 +181,6 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         request.state.authorizer = authorizer
 
         return await call_next(request)
+
+
+Authorizer = GlobusAuthorizer if settings.authorizer == "globus" else EGIAuthorizer
