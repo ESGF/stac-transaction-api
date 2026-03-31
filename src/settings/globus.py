@@ -5,7 +5,7 @@ import boto3
 import urllib3
 from globus_sdk import ConfidentialAppAuthClient
 from pydantic import model_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class GlobusClientSettings(BaseSettings):
@@ -13,8 +13,7 @@ class GlobusClientSettings(BaseSettings):
     Globus settings
     """
 
-    class Config:
-        env_prefix = "GLOBUS_"
+    model_config = SettingsConfigDict(env_prefix="GLOBUS_")
 
     client_id: str
     client_secret: str

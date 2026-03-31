@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class CEDAClientSettings(BaseSettings):
@@ -6,8 +6,7 @@ class CEDAClientSettings(BaseSettings):
     CEDA settings
     """
 
-    class Config:
-        env_prefix = "CEDA_"
+    model_config = SettingsConfigDict(env_prefix="CEDA_")
 
     client_id: str
     client_secret: str

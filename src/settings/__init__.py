@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.settings.ceda import CEDAClientSettings
 from src.settings.globus import GlobusClientSettings
@@ -54,8 +54,7 @@ class Settings(BaseSettings):
     Event Stream Settings
     """
 
-    class Config:
-        env_prefix = "TRANSACTION_"
+    model_config = SettingsConfigDict(env_prefix="TRANSACTION_")
 
     authorizer: Literal["egi", "globus"] = "globus"
     client: CEDAClientSettings | GlobusClientSettings
