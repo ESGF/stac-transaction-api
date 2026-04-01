@@ -621,15 +621,15 @@ test = ["certifi", "pretend", "pytest (>=6.2.0)", "pytest-benchmark", "pytest-co
 test-randomorder = ["pytest-randomly"]
 
 [[package]]
-name = "esgf-playground-utils"
-version = "1.0.5"
-description = "Common library and models for the ESGF-Playground"
+name = "esgf-core-utils"
+version = "1.0.6"
+description = "Common library and models for the ESGF core architecture"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "esgf_playground_utils-1.0.5-py3-none-any.whl", hash = "sha256:8951df898e4a107791cd27d50115935b2de4d0e826822cdf31637b96f02d9778"},
-    {file = "esgf_playground_utils-1.0.5.tar.gz", hash = "sha256:c0e5671d4a7f055b6e194e81fe09fbc9695047a8f9bef1d17462f3521de68f93"},
+    {file = "esgf_core_utils-1.0.6-py3-none-any.whl", hash = "sha256:957f42c205bb2c79e8f9745e8f82e8c16a511a317789faa297bb26f0e3961693"},
+    {file = "esgf_core_utils-1.0.6.tar.gz", hash = "sha256:0808c33f118b50abf0252fbce167fff2c00f42605ff32318ed95fd5900fd3049"},
 ]
 
 [package.dependencies]
@@ -2236,4 +2236,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "097451201604c36c2f3a45e8987f2b8ec8f9b8ae7e3e71b226b8f1980b768618"
+content-hash = "c2d4819e7b40f451e77ca641288413ba919592592318ab1b998fdcac82cb3b8c"
