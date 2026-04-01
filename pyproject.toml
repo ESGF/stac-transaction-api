@@ -8,7 +8,7 @@ dependencies = [
     "charset-normalizer == 3.3.2",
     "confluent-kafka == 2.6.0",
     "cryptography == 42.0.8",
-    "esgf-core-utils @ git+https://github.com/ESGF/esgf-core-utils.git@6118d40",
+    # "esgf-core-utils == 1.0.6",
     "esgvoc == 1.0.0",
     "fastapi == 0.114.0",
     "globus-sdk == 3.41.0",

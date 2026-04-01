@@ -14,7 +14,7 @@ click==8.3.1
 confluent-kafka==2.6.0
 coverage==7.13.5
 cryptography==42.0.8
-esgf-core-utils @ git+https://github.com/ESGF/esgf-core-utils.git@6118d406cc586e6e8d184360c056bbb93a6c91b3
+# esgf-core-utils==1.0.6
 esgvoc==1.0.0
 fastapi==0.114.0
 frozendict==2.4.7
