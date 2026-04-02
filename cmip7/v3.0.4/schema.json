@@ -101,9 +101,7 @@
       }
     },
     {
-      "$comment": "This is the schema for STAC Collections, or more specifically only Collection 
-Summaries in this case. By default, only checks the existence of the properties, but not the schema 
-of the summaries.",
+      "$comment": "This is the schema for STAC Collections, or more specifically only Collection Summaries in this case. By default, only checks the existence of the properties, but not the schema of the summaries.",
       "type": "object",
       "required": [
         "type",
@@ -126,8 +124,7 @@ of the summaries.",
       "minProperties": 1
     },
     "require_item_fields": {
-      "$comment": "Please list all fields here so that we can force the existence of one of them in 
-other parts of the schemas.",
+      "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
       "allOf": [
         {
           "required": [
@@ -307,8 +304,7 @@ other parts of the schemas.",
       ]
     },
     "require_asset_fields": {
-      "$comment": "Please list all fields here so that we can force the existence of one of them in 
-other parts of the schemas.",
+      "$comment": "Please list all fields here so that we can force the existence of one of them in other parts of the schemas.",
       "allOf": [
         {
           "required": [
@@ -343,8 +339,7 @@ other parts of the schemas.",
         },
         "cmip7:tracking_id": {
           "type": "string",
-          "pattern": 
-"^hdl:21.14107/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
+          "pattern": "^hdl:21.14107/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
         }
       }
     },
@@ -538,14 +533,12 @@ other parts of the schemas.",
         },
         "cmip7:initialization_index": {
           "type": "string",
-          "pattern": "^i(\\d{4}\\d{2}?|\\d+)$"
+          "pattern": "^i(\\d{4}\\d{2}[abcde]?|\\d+)$"
         },
         "cmip7:institution": {
           "type": "string",
           "enum": [
-            "CNRM (Centre National de Recherches Meteorologiques, Toulouse 31057, France), CERFACS 
-(Centre Europeen de Recherche et de Formation Avancee en Calcul Scientifique, Toulouse 31057, 
-France)",
+            "CNRM (Centre National de Recherches Meteorologiques, Toulouse 31057, France), CERFACS (Centre Europeen de Recherche et de Formation Avancee en Calcul Scientifique, Toulouse 31057, France)",
             "Environment and Climate Change Canada",
             "Institut Pierre-Simon Laplace",
             "Met Office Hadley Centre"
@@ -595,8 +588,7 @@ France)",
         },
         "cmip7:pid": {
           "type": "string",
-          "pattern": 
-"^hdl:21.14107/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
+          "pattern": "^hdl:21.14107/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
         },
         "cmip7:product": {
           "type": "string",
@@ -639,20 +631,8 @@ France)",
         "cmip7:source": {
           "type": "string",
           "enum": [
-            "CNRM-ESM2-1e is the CNRM Earth System model version 2 designed for CMIP6 on the basis of
-the physical core CNRM-CM6-1 (Voldoire et al. 2019). In concentration mode, it is the same model as 
-CNRM-ESM2-1 (S\u00e9f\u00e9rian et al. 2019), it only differs from CNRM-ESM2-1 in emission-driven 
-mode (see Bossert et al. 2026). The main adaptations consist in a better conservation of the carbon 
-in all the components leading to a more consistent/realistic carbon flux evolution in historical 
-simulations. The atmosphere is based on ARPEGE-Climat V6.3 online coupled to the land, terrestrial 
-biosphere and lakes components included in the SURFEX v8.0 platform. The prognostic aerosols scheme 
-TACTIC v2 is embedded in the atmospheric component as well as the stratospheric chemistry scheme 
-REPROBUS v2. The water budget is closed by the river routing scheme CTRIP v2. NEMO3.6 is implemented 
-to represent the ocean along with GELATO v6 for the seaice. The ocean biogeochemistry is simulated 
-using the PISCES v2-gas model. Land ice-sheet are not represented, the snow mass budget over these 
-icesheet and land glaciers is directly fed to the ocean.",
-            "Dummy model for testing esgvoc queries. This model is not real and should not be used in
-production. All components use the g999 grid."
+            "CNRM-ESM2-1e is the CNRM Earth System model version 2 designed for CMIP6 on the basis of the physical core CNRM-CM6-1 (Voldoire et al. 2019). In concentration mode, it is the same model as CNRM-ESM2-1 (Séférian et al. 2019), it only differs from CNRM-ESM2-1 in emission-driven mode (see Bossert et al. 2026). The main adaptations consist in a better conservation of the carbon in all the components leading to a more consistent/realistic carbon flux evolution in historical simulations. The atmosphere is based on ARPEGE-Climat V6.3 online coupled to the land, terrestrial biosphere and lakes components included in the SURFEX v8.0 platform. The prognostic aerosols scheme TACTIC v2 is embedded in the atmospheric component as well as the stratospheric chemistry scheme REPROBUS v2. The water budget is closed by the river routing scheme CTRIP v2. NEMO3.6 is implemented to represent the ocean along with GELATO v6 for the seaice. The ocean biogeochemistry is simulated using the PISCES v2-gas model. Land ice-sheet are not represented, the snow mass budget over these icesheet and land glaciers is directly fed to the ocean.",
+            "Dummy model for testing esgvoc queries. This model is not real and should not be used in production. All components use the g999 grid."
           ]
         },
         "cmip7:source_id": {
@@ -2269,8 +2249,7 @@ production. All components use the g999 grid."
             "atmosphere_absorption_optical_thickness_due_to_black_carbon_ambient_aerosol",
             "atmosphere_absorption_optical_thickness_due_to_dust_ambient_aerosol_particles",
             "atmosphere_absorption_optical_thickness_due_to_nitrate_ambient_aerosol_particles",
-            "atmosphere_absorption_optical_thickness_due_to_particulate_organic_matter_ambient_aeroso
-l_particles",
+            "atmosphere_absorption_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles",
             "atmosphere_absorption_optical_thickness_due_to_sea_salt_ambient_aerosol_particles",
             "atmosphere_absorption_optical_thickness_due_to_sulfate_ambient_aerosol_particles",
             "atmosphere_boundary_layer_thickness",
@@ -2300,19 +2279,16 @@ l_particles",
             "atmosphere_number_content_of_cloud_droplets",
             "atmosphere_optical_thickness_due_to_ambient_aerosol_particles",
             "atmosphere_optical_thickness_due_to_ambient_aerosol_particles_assuming_clear_sky",
-            "atmosphere_optical_thickness_due_to_biomass_burning_particulate_matter_ambient_aerosol_p
-articles",
+            "atmosphere_optical_thickness_due_to_biomass_burning_particulate_matter_ambient_aerosol_particles",
             "atmosphere_optical_thickness_due_to_black_carbon_ambient_aerosol",
             "atmosphere_optical_thickness_due_to_cloud",
             "atmosphere_optical_thickness_due_to_convective_cloud",
             "atmosphere_optical_thickness_due_to_dust_ambient_aerosol_particles",
             "atmosphere_optical_thickness_due_to_nitrate_ambient_aerosol_particles",
-            "atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles
-",
+            "atmosphere_optical_thickness_due_to_particulate_organic_matter_ambient_aerosol_particles",
             "atmosphere_optical_thickness_due_to_pm1_ambient_aerosol_particles",
             "atmosphere_optical_thickness_due_to_sea_salt_ambient_aerosol_particles",
-            "atmosphere_optical_thickness_due_to_secondary_particulate_organic_matter_ambient_aerosol
-_particles",
+            "atmosphere_optical_thickness_due_to_secondary_particulate_organic_matter_ambient_aerosol_particles",
             "atmosphere_optical_thickness_due_to_stratiform_cloud",
             "atmosphere_optical_thickness_due_to_sulfate_ambient_aerosol_particles",
             "atmosphere_optical_thickness_due_to_water_in_ambient_aerosol_particles",
@@ -2327,8 +2303,7 @@ _particles",
             "carbon_mass_content_of_forestry_and_agricultural_products",
             "carbon_mass_content_of_geological_storage",
             "carbon_mass_content_of_soil_layer",
-            "carbon_mass_flux_into_forestry_and_agricultural_products_due_to_anthropogenic_land_use_o
-r_land_cover_change",
+            "carbon_mass_flux_into_forestry_and_agricultural_products_due_to_anthropogenic_land_use_or_land_cover_change",
             "carbon_mass_flux_into_soil_from_litter",
             "carbon_mass_flux_into_soil_from_vegetation_excluding_litter",
             "cell_area",
@@ -2374,12 +2349,10 @@ r_land_cover_change",
             "effective_radius_of_cloud_liquid_water_particles_at_liquid_water_cloud_top",
             "effective_radius_of_convective_cloud_ice_particles",
             "effective_radius_of_convective_cloud_liquid_water_particles",
-            "effective_radius_of_convective_cloud_liquid_water_particles_at_convective_liquid_water_c
-loud_top",
+            "effective_radius_of_convective_cloud_liquid_water_particles_at_convective_liquid_water_cloud_top",
             "effective_radius_of_stratiform_cloud_ice_particles",
             "effective_radius_of_stratiform_cloud_liquid_water_particles",
-            "effective_radius_of_stratiform_cloud_liquid_water_particles_at_stratiform_liquid_water_c
-loud_top",
+            "effective_radius_of_stratiform_cloud_liquid_water_particles_at_stratiform_liquid_water_cloud_top",
             "equivalent_thickness_at_stp_of_atmosphere_ozone_content",
             "equivalent_thickness_at_stp_of_troposphere_ozone_content",
             "floating_ice_shelf_area",
@@ -2468,18 +2441,13 @@ loud_top",
             "mass_concentration_of_calcareous_phytoplankton_expressed_as_chlorophyll_in_sea_water",
             "mass_concentration_of_diatoms_expressed_as_chlorophyll_in_sea_water",
             "mass_concentration_of_diazotrophic_phytoplankton_expressed_as_chlorophyll_in_sea_water",
-            "mass_concentration_of_miscellaneous_phytoplankton_expressed_as_chlorophyll_in_sea_water"
-,
+            "mass_concentration_of_miscellaneous_phytoplankton_expressed_as_chlorophyll_in_sea_water",
             "mass_concentration_of_phytoplankton_expressed_as_chlorophyll_in_sea_water",
             "mass_concentration_of_picophytoplankton_expressed_as_chlorophyll_in_sea_water",
-            "mass_content_of_13C_in_vegetation_and_litter_and_soil_and_forestry_and_agricultural_prod
-ucts",
-            "mass_content_of_14C_in_vegetation_and_litter_and_soil_and_forestry_and_agricultural_prod
-ucts",
-            "mass_content_of_carbon_in_vegetation_and_litter_and_soil_and_forestry_and_agricultural_p
-roducts",
-            "mass_content_of_nitrogen_in_vegetation_and_litter_and_soil_and_forestry_and_agricultural
-_products",
+            "mass_content_of_13C_in_vegetation_and_litter_and_soil_and_forestry_and_agricultural_products",
+            "mass_content_of_14C_in_vegetation_and_litter_and_soil_and_forestry_and_agricultural_products",
+            "mass_content_of_carbon_in_vegetation_and_litter_and_soil_and_forestry_and_agricultural_products",
+            "mass_content_of_nitrogen_in_vegetation_and_litter_and_soil_and_forestry_and_agricultural_products",
             "mass_content_of_water_in_soil",
             "mass_content_of_water_in_soil_layer",
             "mass_content_of_water_in_soil_layer_defined_by_root_depth",
@@ -2493,8 +2461,7 @@ _products",
             "mass_flux_of_carbon_into_soil_from_vegetation_due_to_senescence",
             "mass_flux_of_carbon_out_of_soil_due_to_leaching_and_runoff",
             "mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_into_sea_from_rivers",
-            "mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_out_of_litter_and_soil_due_to_immo
-bilisation_and_remineralization",
+            "mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_out_of_litter_and_soil_due_to_immobilisation_and_remineralization",
             "mass_fraction_of_ammonium_dry_aerosol_particles_in_air",
             "mass_fraction_of_carbon_dioxide_tracer_in_air",
             "mass_fraction_of_cloud_ice_in_air",
@@ -2523,43 +2490,26 @@ bilisation_and_remineralization",
             "maximum_over_coordinate_rotation_of_sea_ice_horizontal_shear_stress",
             "minus_tendency_of_atmosphere_mass_content_of_ammonia_due_to_dry_deposition",
             "minus_tendency_of_atmosphere_mass_content_of_ammonia_due_to_wet_deposition",
-            "minus_tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_dry_d
-eposition",
-            "minus_tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_wet_d
-eposition",
-            "minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_depositio
-n",
-            "minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_dry_depos
-ition",
-            "minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_wet_depos
-ition",
-            "minus_tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_
-to_dry_deposition",
-            "minus_tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_
-to_wet_deposition",
-            "minus_tendency_of_atmosphere_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_du
-e_to_deposition",
-            "minus_tendency_of_atmosphere_mass_content_of_noy_expressed_as_nitrogen_due_to_dry_deposi
-tion",
-            "minus_tendency_of_atmosphere_mass_content_of_noy_expressed_as_nitrogen_due_to_wet_deposi
-tion",
+            "minus_tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_dry_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_wet_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_dry_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_wet_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_dry_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_wet_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_due_to_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_noy_expressed_as_nitrogen_due_to_dry_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_noy_expressed_as_nitrogen_due_to_wet_deposition",
             "minus_tendency_of_atmosphere_mass_content_of_ozone_due_to_dry_deposition",
-            "minus_tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_part
-icles_due_to_dry_deposition",
-            "minus_tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_part
-icles_due_to_wet_deposition",
-            "minus_tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_dry_d
-eposition",
-            "minus_tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_wet_d
-eposition",
-            "minus_tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_dry_de
-position",
-            "minus_tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_wet_de
-position",
+            "minus_tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_due_to_dry_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_due_to_wet_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_dry_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_wet_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_dry_deposition",
+            "minus_tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_wet_deposition",
             "minus_tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_dry_deposition",
             "minus_tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_wet_deposition",
-            "minus_tendency_of_ocean_mole_content_of_elemental_nitrogen_due_to_denitrification_and_se
-dimentation",
+            "minus_tendency_of_ocean_mole_content_of_elemental_nitrogen_due_to_denitrification_and_sedimentation",
             "minus_tendency_of_ocean_mole_content_of_inorganic_carbon_due_to_sedimentation",
             "minus_tendency_of_ocean_mole_content_of_iron_due_to_sedimentation",
             "minus_tendency_of_ocean_mole_content_of_organic_carbon_due_to_sedimentation",
@@ -2573,8 +2523,7 @@ dimentation",
             "mole_concentration_of_bacteria_expressed_as_carbon_in_sea_water",
             "mole_concentration_of_calcareous_phytoplankton_expressed_as_carbon_in_sea_water",
             "mole_concentration_of_calcite_expressed_as_carbon_in_sea_water",
-            "mole_concentration_of_carbonate_expressed_as_carbon_at_equilibrium_with_pure_aragonite_i
-n_sea_water",
+            "mole_concentration_of_carbonate_expressed_as_carbon_at_equilibrium_with_pure_aragonite_in_sea_water",
             "mole_concentration_of_carbonate_expressed_as_carbon_in_sea_water",
             "mole_concentration_of_diatoms_expressed_as_carbon_in_sea_water",
             "mole_concentration_of_diazotrophic_phytoplankton_expressed_as_carbon_in_sea_water",
@@ -2587,8 +2536,7 @@ n_sea_water",
             "mole_concentration_of_dissolved_iron_in_sea_water",
             "mole_concentration_of_dissolved_molecular_oxygen_in_sea_water",
             "mole_concentration_of_dissolved_molecular_oxygen_in_sea_water_at_saturation",
-            "mole_concentration_of_dissolved_molecular_oxygen_in_sea_water_at_shallowest_local_minimu
-m_in_vertical_profile",
+            "mole_concentration_of_dissolved_molecular_oxygen_in_sea_water_at_shallowest_local_minimum_in_vertical_profile",
             "mole_concentration_of_dissolved_organic_carbon_in_sea_water",
             "mole_concentration_of_mesozooplankton_expressed_as_carbon_in_sea_water",
             "mole_concentration_of_microzooplankton_expressed_as_carbon_in_sea_water",
@@ -2639,22 +2587,17 @@ m_in_vertical_profile",
             "mole_fraction_of_sulfur_dioxide_in_air",
             "net_downward_radiative_flux_at_top_of_atmosphere_model",
             "net_downward_shortwave_flux_at_sea_water_surface",
-            "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_calcareous_phytoplankton
-",
+            "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_calcareous_phytoplankton",
             "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_diatoms",
-            "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_diazotrophic_phytoplankt
-on",
-            "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_miscellaneous_phytoplank
-ton",
+            "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_diazotrophic_phytoplankton",
+            "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_miscellaneous_phytoplankton",
             "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_nanophytoplankton",
             "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_phytoplankton",
             "net_primary_mole_productivity_of_biomass_expressed_as_carbon_by_picophytoplankton",
-            "net_primary_mole_productivity_of_biomass_expressed_as_carbon_due_to_nitrate_utilization"
-,
+            "net_primary_mole_productivity_of_biomass_expressed_as_carbon_due_to_nitrate_utilization",
             "net_primary_productivity_of_biomass_expressed_as_carbon",
             "net_primary_productivity_of_biomass_expressed_as_carbon_accumulated_in_leaves",
-            "net_primary_productivity_of_biomass_expressed_as_carbon_accumulated_in_miscellaneous_liv
-ing_matter",
+            "net_primary_productivity_of_biomass_expressed_as_carbon_accumulated_in_miscellaneous_living_matter",
             "net_primary_productivity_of_biomass_expressed_as_carbon_accumulated_in_roots",
             "net_primary_productivity_of_biomass_expressed_as_carbon_accumulated_in_stems",
             "net_rate_of_absorption_of_shortwave_energy_in_ocean_layer",
@@ -2664,8 +2607,7 @@ ing_matter",
             "nitrogen_growth_limitation_of_miscellaneous_phytoplankton",
             "nitrogen_growth_limitation_of_picophytoplankton",
             "nitrogen_mass_content_of_forestry_and_agricultural_products",
-            "nitrogen_mass_flux_into_forestry_and_agricultural_products_due_to_anthropogenic_land_use
-_or_land_cover_change",
+            "nitrogen_mass_flux_into_forestry_and_agricultural_products_due_to_anthropogenic_land_use_or_land_cover_change",
             "nitrogen_mass_flux_into_litter_from_vegetation",
             "nitrogen_mass_flux_into_soil_from_litter",
             "nitrogen_mass_flux_into_soil_from_vegetation_excluding_litter",
@@ -2689,11 +2631,9 @@ _or_land_cover_change",
             "number_concentration_of_cloud_condensation_nuclei_at_stp_in_air",
             "number_concentration_of_cloud_liquid_water_particles_in_air",
             "number_concentration_of_cloud_liquid_water_particles_in_air_at_liquid_water_cloud_top",
-            "number_concentration_of_convective_cloud_liquid_water_particles_at_convective_liquid_wat
-er_cloud_top",
+            "number_concentration_of_convective_cloud_liquid_water_particles_at_convective_liquid_water_cloud_top",
             "number_concentration_of_ice_crystals_in_air_at_ice_cloud_top",
-            "number_concentration_of_stratiform_cloud_liquid_water_particles_at_stratiform_liquid_wat
-er_cloud_top",
+            "number_concentration_of_stratiform_cloud_liquid_water_particles_at_stratiform_liquid_water_cloud_top",
             "ocean_barotropic_mass_streamfunction",
             "ocean_heat_transport_across_line",
             "ocean_heat_x_transport",
@@ -2705,10 +2645,8 @@ er_cloud_top",
             "ocean_mass_x_transport",
             "ocean_mass_y_transport",
             "ocean_meridional_overturning_mass_streamfunction",
-            "ocean_meridional_overturning_mass_streamfunction_due_to_parameterized_mesoscale_eddy_adv
-ection",
-            "ocean_meridional_overturning_mass_streamfunction_due_to_parameterized_submesoscale_eddy_
-advection",
+            "ocean_meridional_overturning_mass_streamfunction_due_to_parameterized_mesoscale_eddy_advection",
+            "ocean_meridional_overturning_mass_streamfunction_due_to_parameterized_submesoscale_eddy_advection",
             "ocean_mixed_layer_thickness_defined_by_sigma_t",
             "ocean_momentum_xy_biharmonic_diffusivity",
             "ocean_momentum_xy_laplacian_diffusivity",
@@ -2814,8 +2752,7 @@ advection",
             "shallow_convection_time_fraction",
             "sinking_mole_flux_at_sea_floor_of_calcite_expressed_as_carbon_in_sea_water ",
             "sinking_mole_flux_at_sea_floor_of_particulate_iron_in_sea_water ",
-            "sinking_mole_flux_at_sea_floor_of_particulate_organic_matter_expressed_as_carbon_in_sea_
-water ",
+            "sinking_mole_flux_at_sea_floor_of_particulate_organic_matter_expressed_as_carbon_in_sea_water ",
             "sinking_mole_flux_at_sea_floor_of_particulate_organic_nitrogen_in_sea_water ",
             "sinking_mole_flux_at_sea_floor_of_particulate_organic_phosphorus_in_sea_water ",
             "sinking_mole_flux_at_sea_floor_of_particulate_silicon_in_sea_water ",
@@ -2885,21 +2822,15 @@ water ",
             "surface_litter_mass_content_of_nitrogen",
             "surface_molecular_oxygen_partial_pressure_difference_between_sea_water_and_air",
             "surface_net_downward_longwave_flux",
-            "surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_13C_due_to_all_land_proces
-ses",
-            "surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_14C_due_to_all_land_proces
-ses",
-            "surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_all_land_pro
-cesses",
-            "surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_all_land_pro
-cesses_excluding_anthropogenic_land_use_change",
+            "surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_13C_due_to_all_land_processes",
+            "surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_14C_due_to_all_land_processes",
+            "surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_all_land_processes",
+            "surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_all_land_processes_excluding_anthropogenic_land_use_change",
             "surface_net_downward_radiative_flux",
             "surface_net_downward_shortwave_flux",
-            "surface_net_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_
-anthropogenic_land_use_change",
+            "surface_net_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_anthropogenic_land_use_change",
             "surface_net_upward_mass_flux_of_methane_due_to_emission_from_freshwater_lakes",
-            "surface_net_upward_mass_flux_of_methane_due_to_emission_from_wetland_biological_processe
-s",
+            "surface_net_upward_mass_flux_of_methane_due_to_emission_from_wetland_biological_processes",
             "surface_partial_pressure_of_carbon_dioxide_in_sea_water",
             "surface_runoff_flux",
             "surface_sea_water_x_velocity",
@@ -2913,54 +2844,33 @@ s",
             "surface_snow_thickness",
             "surface_temperature",
             "surface_upward_latent_heat_flux",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_13C_due_to_heterotrophic_respira
-tion",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_13C_due_to_heterotrophic_respiration",
             "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_13C_due_to_plant_respiration",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_14C_due_to_heterotrophic_respira
-tion",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_14C_due_to_heterotrophic_respiration",
             "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_14C_due_to_plant_respiration",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_land
-_use_or_land_cover_change_excluding_forestry_and_agricultural_products",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_crop
-_harvesting",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_fire
-s",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_fire
-s_excluding_anthropogenic_land_use_change",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_litt
-er_in_fires",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_natu
-ral_fires",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_natu
-ral_sources",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_vege
-tation_in_fires",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_heterotrophic_resp
-iration",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration"
-,
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration_
-in_leaves",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration_
-in_miscellaneous_living_matter",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration_
-in_roots",
-            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration_
-in_stems",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_land_use_or_land_cover_change_excluding_forestry_and_agricultural_products",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_crop_harvesting",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_fires",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_fires_excluding_anthropogenic_land_use_change",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_litter_in_fires",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_natural_fires",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_natural_sources",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_vegetation_in_fires",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_heterotrophic_respiration",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration_in_leaves",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration_in_miscellaneous_living_matter",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration_in_roots",
+            "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration_in_stems",
             "surface_upward_mass_flux_of_carbon_due_to_heterotrophic_respiration_in_litter",
             "surface_upward_mass_flux_of_carbon_due_to_heterotrophic_respiration_in_soil",
             "surface_upward_mass_flux_of_methane_due_to_emission_from_wetland_biological_production",
             "surface_upward_mass_flux_of_nitrogen_compounds_expressed_as_nitrogen",
-            "surface_upward_mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_due_to_all_land_pro
-cesses_excluding_fires",
-            "surface_upward_mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_due_to_emission_fro
-m_fires",
-            "surface_upward_mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_out_of_vegetation_a
-nd_litter_and_soil",
-            "surface_upward_mass_flux_of_nitrous_oxide_expressed_as_nitrogen_out_of_vegetation_and_li
-tter_and_soil",
-            "surface_upward_mass_flux_of_nox_expressed_as_nitrogen_out_of_vegetation_and_litter_and_s
-oil",
+            "surface_upward_mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_due_to_all_land_processes_excluding_fires",
+            "surface_upward_mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_due_to_emission_from_fires",
+            "surface_upward_mass_flux_of_nitrogen_compounds_expressed_as_nitrogen_out_of_vegetation_and_litter_and_soil",
+            "surface_upward_mass_flux_of_nitrous_oxide_expressed_as_nitrogen_out_of_vegetation_and_litter_and_soil",
+            "surface_upward_mass_flux_of_nox_expressed_as_nitrogen_out_of_vegetation_and_litter_and_soil",
             "surface_upward_mole_flux_of_dimethyl_sulfide",
             "surface_upward_sensible_heat_flux",
             "surface_upwelling_longwave_flux_assuming_clear_sky",
@@ -2987,30 +2897,22 @@ oil",
             "tendency_of_air_temperature_due_to_shortwave_heating",
             "tendency_of_air_temperature_due_to_shortwave_heating_assuming_clear_sky",
             "tendency_of_air_temperature_due_to_stratiform_cloud_and_precipitation",
-            "tendency_of_air_temperature_due_to_stratiform_cloud_and_precipitation_and_boundary_layer
-_mixing",
+            "tendency_of_air_temperature_due_to_stratiform_cloud_and_precipitation_and_boundary_layer_mixing",
             "tendency_of_atmosphere_mass_content_of_ammonia_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_ammonia_due_to_emission_from_fires",
-            "tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_net_chemica
-l_production",
-            "tendency_of_atmosphere_mass_content_of_biogenic_nmvoc_expressed_as_carbon_due_to_emissio
-n",
+            "tendency_of_atmosphere_mass_content_of_ammonium_dry_aerosol_particles_due_to_net_chemical_production",
+            "tendency_of_atmosphere_mass_content_of_biogenic_nmvoc_expressed_as_carbon_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_butane_due_to_emission",
-            "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_anthrop
-ogenic_emission",
-            "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_emissio
-n_from_forestry_and_agricultural_products",
-            "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_emissio
-n_from_fossil_fuel_combustion",
+            "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_emission",
+            "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_forestry_and_agricultural_products",
+            "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_fossil_fuel_combustion",
             "tendency_of_atmosphere_mass_content_of_carbon_monoxide_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_carbon_monoxide_due_to_emission_from_fires",
             "tendency_of_atmosphere_mass_content_of_dimethyl_sulfide_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_dimethyl_sulfide_due_to_emission_from_fires",
             "tendency_of_atmosphere_mass_content_of_dust_dry_aerosol_particles_due_to_emission",
-            "tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_emi
-ssion",
-            "tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_emi
-ssion_from_fires",
+            "tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_emission",
+            "tendency_of_atmosphere_mass_content_of_elemental_carbon_dry_aerosol_particles_due_to_emission_from_fires",
             "tendency_of_atmosphere_mass_content_of_ethane_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_ethanol_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_ethene_due_to_emission",
@@ -3021,84 +2923,59 @@ ssion_from_fires",
             "tendency_of_atmosphere_mass_content_of_molecular_hydrogen_due_to_dry_deposition",
             "tendency_of_atmosphere_mass_content_of_molecular_hydrogen_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_due_to_dry_deposition",
-            "tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_particles_due_to_net_chemical
-_production",
-            "tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_particles_due_to_wet_depositi
-on",
+            "tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_particles_due_to_net_chemical_production",
+            "tendency_of_atmosphere_mass_content_of_nitrate_dry_aerosol_particles_due_to_wet_deposition",
             "tendency_of_atmosphere_mass_content_of_nitric_acid_due_to_dry_deposition",
             "tendency_of_atmosphere_mass_content_of_nitric_acid_due_to_wet_deposition",
-            "tendency_of_atmosphere_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_due_to_a
-nthropogenic_emission",
+            "tendency_of_atmosphere_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_due_to_anthropogenic_emission",
             "tendency_of_atmosphere_mass_content_of_nmvoc_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_nmvoc_due_to_emission_from_fires",
             "tendency_of_atmosphere_mass_content_of_nox_expressed_as_nitrogen_due_to_emission",
-            "tendency_of_atmosphere_mass_content_of_nox_expressed_as_nitrogen_due_to_emission_from_fi
-res",
-            "tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_
-due_to_emission_from_fires",
-            "tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_
-due_to_net_chemical_production_and_emission",
+            "tendency_of_atmosphere_mass_content_of_nox_expressed_as_nitrogen_due_to_emission_from_fires",
+            "tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_due_to_emission_from_fires",
+            "tendency_of_atmosphere_mass_content_of_particulate_organic_matter_dry_aerosol_particles_due_to_net_chemical_production_and_emission",
             "tendency_of_atmosphere_mass_content_of_propane_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_propene_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_sea_salt_dry_aerosol_particles_due_to_emission",
-            "tendency_of_atmosphere_mass_content_of_secondary_particulate_organic_matter_dry_aerosol_
-particles_due_to_net_chemical_production",
-            "tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_aqueous_phas
-e_net_chemical_production",
+            "tendency_of_atmosphere_mass_content_of_secondary_particulate_organic_matter_dry_aerosol_particles_due_to_net_chemical_production",
+            "tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_aqueous_phase_net_chemical_production",
             "tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_emission",
-            "tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_gaseous_phas
-e_net_chemical_production",
+            "tendency_of_atmosphere_mass_content_of_sulfate_dry_aerosol_particles_due_to_gaseous_phase_net_chemical_production",
             "tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_emission",
             "tendency_of_atmosphere_mass_content_of_sulfur_dioxide_due_to_emission_from_fires",
-            "tendency_of_atmosphere_mass_content_of_water_vapor_due_to_sublimation_of_surface_snow_an
-d_ice",
-            "tendency_of_atmosphere_mole_concentration_of_carbon_monoxide_due_to_chemical_destruction
-",
-            "tendency_of_atmosphere_mole_concentration_of_hydroxyl_radical_due_to_chemical_production
-_from_atomic_singlet_oxygen_and_water_vapor",
+            "tendency_of_atmosphere_mass_content_of_water_vapor_due_to_sublimation_of_surface_snow_and_ice",
+            "tendency_of_atmosphere_mole_concentration_of_carbon_monoxide_due_to_chemical_destruction",
+            "tendency_of_atmosphere_mole_concentration_of_hydroxyl_radical_due_to_chemical_production_from_atomic_singlet_oxygen_and_water_vapor",
             "tendency_of_atmosphere_mole_concentration_of_methane_due_to_chemical_destruction",
-            "tendency_of_atmosphere_mole_concentration_of_methane_due_to_chemical_destruction_by_hydr
-oxyl_radical",
-            "tendency_of_atmosphere_mole_concentration_of_molecular_hydrogen_due_to_chemical_destruct
-ion",
-            "tendency_of_atmosphere_mole_concentration_of_molecular_hydrogen_due_to_chemical_producti
-on",
+            "tendency_of_atmosphere_mole_concentration_of_methane_due_to_chemical_destruction_by_hydroxyl_radical",
+            "tendency_of_atmosphere_mole_concentration_of_molecular_hydrogen_due_to_chemical_destruction",
+            "tendency_of_atmosphere_mole_concentration_of_molecular_hydrogen_due_to_chemical_production",
             "tendency_of_atmosphere_mole_concentration_of_nitrous_oxide_due_to_chemical_destruction",
             "tendency_of_atmosphere_mole_concentration_of_ozone_due_to_chemical_destruction",
             "tendency_of_atmosphere_mole_concentration_of_ozone_due_to_chemical_production",
             "tendency_of_atmosphere_mole_concentration_of_ozone_due_to_net_chemical_production",
-            "tendency_of_eastward_wind_due_to_advection_by_northward_transformed_eulerian_mean_air_ve
-locity",
-            "tendency_of_eastward_wind_due_to_advection_by_upward_transformed_eulerian_mean_air_veloc
-ity",
+            "tendency_of_eastward_wind_due_to_advection_by_northward_transformed_eulerian_mean_air_velocity",
+            "tendency_of_eastward_wind_due_to_advection_by_upward_transformed_eulerian_mean_air_velocity",
             "tendency_of_eastward_wind_due_to_eliassen_palm_flux_divergence",
             "tendency_of_eastward_wind_due_to_nonorographic_gravity_wave_drag",
             "tendency_of_eastward_wind_due_to_orographic_gravity_wave_drag",
             "tendency_of_land_ice_mass_due_to_basal_mass_balance",
             "tendency_of_land_ice_mass_due_to_calving",
             "tendency_of_land_ice_mass_due_to_surface_mass_balance",
-            "tendency_of_mole_concentration_of_particulate_organic_matter_expressed_as_carbon_in_sea_
-water_due_to_grazing_of_phytoplankton",
-            "tendency_of_mole_concentration_of_particulate_organic_matter_expressed_as_carbon_in_sea_
-water_due_to_net_primary_production",
+            "tendency_of_mole_concentration_of_particulate_organic_matter_expressed_as_carbon_in_sea_water_due_to_grazing_of_phytoplankton",
+            "tendency_of_mole_concentration_of_particulate_organic_matter_expressed_as_carbon_in_sea_water_due_to_net_primary_production",
             "tendency_of_northward_wind_due_to_nonorographic_gravity_wave_drag",
             "tendency_of_northward_wind_due_to_orographic_gravity_wave_drag",
             "tendency_of_ocean_eddy_kinetic_energy_content_due_to_parameterized_eddy_advection",
-            "tendency_of_ocean_mole_content_of_aragonite_expressed_as_carbon_due_to_biological_produc
-tion",
-            "tendency_of_ocean_mole_content_of_calcite_expressed_as_carbon_due_to_biological_producti
-on",
-            "tendency_of_ocean_mole_content_of_elemental_nitrogen_due_to_deposition_and_fixation_and_
-runoff",
+            "tendency_of_ocean_mole_content_of_aragonite_expressed_as_carbon_due_to_biological_production",
+            "tendency_of_ocean_mole_content_of_calcite_expressed_as_carbon_due_to_biological_production",
+            "tendency_of_ocean_mole_content_of_elemental_nitrogen_due_to_deposition_and_fixation_and_runoff",
             "tendency_of_ocean_mole_content_of_elemental_nitrogen_due_to_fixation",
-            "tendency_of_ocean_mole_content_of_inorganic_carbon_due_to_runoff_and_sediment_dissolutio
-n",
+            "tendency_of_ocean_mole_content_of_inorganic_carbon_due_to_runoff_and_sediment_dissolution",
             "tendency_of_ocean_mole_content_of_iron_due_to_biological_production",
-            "tendency_of_ocean_mole_content_of_iron_due_to_deposition_and_runoff_and_sediment_dissolu
-tion",
+            "tendency_of_ocean_mole_content_of_iron_due_to_deposition_and_runoff_and_sediment_dissolution",
             "tendency_of_ocean_mole_content_of_nitrogen_due_to_biological_production",
-            "tendency_of_ocean_mole_content_of_organic_carbon_due_to_runoff_and_sediment_dissolution"
-,
+            "tendency_of_ocean_mole_content_of_organic_carbon_due_to_runoff_and_sediment_dissolution",
             "tendency_of_ocean_mole_content_of_phosphorus_due_to_biological_production",
             "tendency_of_ocean_mole_content_of_silicon_due_to_biological_production",
             "tendency_of_ocean_potential_energy_content",
@@ -3113,42 +2990,25 @@ tion",
             "tendency_of_sea_ice_area_fraction_due_to_dynamics",
             "tendency_of_sea_ice_area_fraction_due_to_thermodynamics",
             "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content",
-            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_paramete
-rized_dianeutral_mixing",
-            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_paramete
-rized_eddy_advection",
-            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_paramete
-rized_mesoscale_eddy_diffusion",
-            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_paramete
-rized_submesoscale_eddy_advection",
-            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_residual
-_mean_advection",
+            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_parameterized_dianeutral_mixing",
+            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_parameterized_eddy_advection",
+            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_parameterized_mesoscale_eddy_diffusion",
+            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_parameterized_submesoscale_eddy_advection",
+            "tendency_of_sea_water_conservative_temperature_expressed_as_heat_content_due_to_residual_mean_advection",
             "tendency_of_sea_water_potential_temperature_expressed_as_heat_content",
-            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_parameteriz
-ed_dianeutral_mixing",
-            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_parameteriz
-ed_eddy_advection",
-            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_parameteriz
-ed_mesoscale_eddy_diffusion",
-            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_parameteriz
-ed_submesoscale_eddy_advection",
-            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_residual_me
-an_advection",
+            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_parameterized_dianeutral_mixing",
+            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_parameterized_eddy_advection",
+            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_parameterized_mesoscale_eddy_diffusion",
+            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_parameterized_submesoscale_eddy_advection",
+            "tendency_of_sea_water_potential_temperature_expressed_as_heat_content_due_to_residual_mean_advection",
             "tendency_of_sea_water_salinity_expressed_as_salt_content",
-            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_parameterized_dianeutral
-_mixing",
-            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_parameterized_eddy_advec
-tion",
-            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_parameterized_mesoscale_
-eddy_diffusion",
-            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_parameterized_submesosca
-le_eddy_advection",
-            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_residual_mean_advection"
-,
-            "tendency_of_soil_and_vegetation_mass_content_of_nitrogen_compounds_expressed_as_nitrogen
-_due_to_fixation",
-            "tendency_of_soil_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_due_to_fertili
-zation",
+            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_parameterized_dianeutral_mixing",
+            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_parameterized_eddy_advection",
+            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_parameterized_mesoscale_eddy_diffusion",
+            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_parameterized_submesoscale_eddy_advection",
+            "tendency_of_sea_water_salinity_expressed_as_salt_content_due_to_residual_mean_advection",
+            "tendency_of_soil_and_vegetation_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_due_to_fixation",
+            "tendency_of_soil_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_due_to_fertilization",
             "tendency_of_specific_humidity",
             "tendency_of_specific_humidity_due_to_advection",
             "tendency_of_specific_humidity_due_to_boundary_layer_mixing",
@@ -3156,32 +3016,26 @@ zation",
             "tendency_of_specific_humidity_due_to_diffusion",
             "tendency_of_specific_humidity_due_to_model_physics",
             "tendency_of_specific_humidity_due_to_stratiform_cloud_and_precipitation",
-            "tendency_of_specific_humidity_due_to_stratiform_cloud_and_precipitation_and_boundary_lay
-er_mixing",
+            "tendency_of_specific_humidity_due_to_stratiform_cloud_and_precipitation_and_boundary_layer_mixing",
             "tendency_of_surface_snow_amount_due_to_conversion_of_snow_to_sea_ice",
             "tendency_of_surface_snow_amount_due_to_drifting_into_sea",
             "tendency_of_surface_snow_amount_due_to_sea_ice_dynamics",
-            "tendency_of_vegetation_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_due_to_f
-ixation",
+            "tendency_of_vegetation_mass_content_of_nitrogen_compounds_expressed_as_nitrogen_due_to_fixation",
             "thermal_energy_content_of_surface_snow",
             "thickness_of_ice_on_sea_ice_melt_pond",
             "toa_bidirectional_reflectance",
             "toa_incoming_shortwave_flux",
             "toa_outgoing_longwave_flux",
             "toa_outgoing_longwave_flux_assuming_clear_sky",
-            "toa_outgoing_longwave_flux_assuming_clear_sky_and_reference_mole_fraction_of_methane_in_
-air",
-            "toa_outgoing_longwave_flux_assuming_clear_sky_and_reference_mole_fraction_of_ozone_in_ai
-r",
+            "toa_outgoing_longwave_flux_assuming_clear_sky_and_reference_mole_fraction_of_methane_in_air",
+            "toa_outgoing_longwave_flux_assuming_clear_sky_and_reference_mole_fraction_of_ozone_in_air",
             "toa_outgoing_longwave_flux_assuming_reference_mole_fraction_of_methane_in_air",
             "toa_outgoing_longwave_flux_assuming_reference_mole_fraction_of_ozone_in_air",
             "toa_outgoing_shortwave_flux",
             "toa_outgoing_shortwave_flux_assuming_clear_sky",
             "toa_outgoing_shortwave_flux_assuming_clear_sky_and_no_aerosol",
-            "toa_outgoing_shortwave_flux_assuming_clear_sky_and_reference_mole_fraction_of_methane_in
-_air",
-            "toa_outgoing_shortwave_flux_assuming_clear_sky_and_reference_mole_fraction_of_ozone_in_a
-ir",
+            "toa_outgoing_shortwave_flux_assuming_clear_sky_and_reference_mole_fraction_of_methane_in_air",
+            "toa_outgoing_shortwave_flux_assuming_clear_sky_and_reference_mole_fraction_of_ozone_in_air",
             "toa_outgoing_shortwave_flux_assuming_reference_mole_fraction_of_methane_in_air",
             "toa_outgoing_shortwave_flux_assuming_reference_mole_fraction_of_ozone_in_air",
             "tracer_lifetime",
@@ -4300,7 +4154,7 @@ ir",
         },
         "cmip7:variant_label": {
           "type": "string",
-          "pattern": "^r\\d+i(\\d{4}\\d{2}?|\\d+)p\\d+f\\d+$"
+          "pattern": "^r\\d+i(\\d{4}\\d{2}[abcde]?|\\d+)p\\d+f\\d+$"
         },
         "cmip7:vertical_label": {
           "type": "string",
@@ -4357,8 +4211,7 @@ ir",
       "additionalProperties": false
     },
     "link_fields": {
-      "$comment": "Validation schema for STAC links. See 
-https://github.com/radiantearth/stac-spec/blob/master/commons/links.md",
+      "$comment": "Validation schema for STAC links. See https://github.com/radiantearth/stac-spec/blob/master/commons/links.md",
       "type": "object",
       "properties": {
         "href": {
