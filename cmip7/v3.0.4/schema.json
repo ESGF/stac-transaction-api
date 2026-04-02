@@ -82,25 +82,11 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/link_fields"
-          },
-          "allOf": [
-            {
-              "contains": {
-                "properties": {
-                  "rel": {
-                    "const": "cite-as"
-                  }
-                },
-                "required": [
-                  "rel"
-                ]
-              }
-            }
-          ]
+          }
         }
       }
-    },
-    {
+    },	  
+      {
       "$comment": "This is the schema for STAC Collections, or more specifically only Collection Summaries in this case. By default, only checks the existence of the properties, but not the schema of the summaries.",
       "type": "object",
       "required": [
@@ -588,7 +574,7 @@
         },
         "cmip7:pid": {
           "type": "string",
-          "pattern": "^hdl:21.14107/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
+          "pattern": "^hdl:21.14107/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$"
         },
         "cmip7:product": {
           "type": "string",
