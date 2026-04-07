@@ -1,27 +1,25 @@
 import json
-from typing import Self
+from typing import Any, Literal, Self
 
 import boto3
 import urllib3
 from globus_sdk import ConfidentialAppAuthClient
-from pydantic import model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, model_validator
 
 
-class GlobusClientSettings(BaseSettings):
+class GlobusClientSettings(BaseModel):
     """
     Globus settings
     """
 
-    model_config = SettingsConfigDict(env_prefix="GLOBUS_")
-
+    client_type: Literal["globus"]
     client_id: str
     client_secret: str
     issuer: str
     scope_string: str
 
     access_control_policy: dict
-    confidential_client = ConfidentialAppAuthClient
+    confidential_client: Any
 
     policy_path: str
     secret_name: str = "transaction-api/integration"
