@@ -60,7 +60,7 @@ class Settings(BaseSettings):
         env_nested_delimiter="__",
     )
 
-    authorizer: Literal["egi", "globus"] = "egi"
+    authorizer: Literal["egi", "globus"]
     client: CEDAClientSettings | GlobusClientSettings = Field(
         discriminator="client_type"
     )
