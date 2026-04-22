@@ -132,7 +132,7 @@ class TransactionClient(BaseTransactionsClient):
     def egi_authorize(
         self, collection_id: str, item: Item | PartialItem, role: str, request: Request
     ) -> Auth:
-        """_summary_
+        """Auhorise request with EGI
 
         Args:
             item (Item): item to check authorization for
@@ -145,7 +145,7 @@ class TransactionClient(BaseTransactionsClient):
         authorizer: EGIAuth = request.state.authorizer
         authorizer.authorize(collection_id, item, role)
 
-        logger.info(f"REQUESTER DATA: {authorizer.requester_data}")
+        logger.info("REQUESTER DATA: %s", authorizer.requester_data)
 
         return Auth(
             requester_data=authorizer.requester_data.model_dump(),
@@ -241,17 +241,17 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.success(
-                key=item.id.encode("utf-8"),
+                key=item.id,
                 value=event.model_dump_json().encode("utf8"),
             )
 
         except Exception as exc:
-            logger.error(f"Error producing message: {exc}")
+            logger.error("Error producing message: %s", exc)
             raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
             status_code=status.HTTP_202_ACCEPTED,
-            content=f"Item queued for publication",
+            content="Item queued for publication",
         )
 
     async def update_item(
@@ -310,12 +310,12 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.success(
-                key=item_id.encode("utf-8"),
+                key=item_id,
                 value=event.model_dump_json().encode("utf8"),
             )
 
         except Exception as exc:
-            logger.error(f"Error producing message: {exc}")
+            logger.error("Error producing message: %s", exc)
             raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
@@ -387,12 +387,12 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.success(
-                key=item_id.encode("utf-8"),
+                key=item_id,
                 value=event.model_dump_json().encode("utf8"),
             )
 
         except Exception as exc:
-            logger.error(f"Error producing message: {exc}")
+            logger.error("Error producing message: %s", exc)
             raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
@@ -444,12 +444,12 @@ class TransactionClient(BaseTransactionsClient):
 
         try:
             self.producer.success(
-                key=item_id.encode("utf-8"),
+                key=item_id,
                 value=event.model_dump_json().encode("utf8"),
             )
 
         except Exception as exc:
-            logger.error(f"Error producing message: {exc}")
+            logger.error("Error producing message: %s", exc)
             raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
