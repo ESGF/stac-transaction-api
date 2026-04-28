@@ -1,4 +1,5 @@
 import json
+import logging
 
 import httpx
 from esgf_core_utils.models.auth.egi import EGIAuth
@@ -9,6 +10,8 @@ from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.settings import settings
+
+logger = logging.getLogger("uvicorn.error")
 
 """
 FastAPI Middleware Authorizer
@@ -143,7 +146,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         if request.url.path == "/healthcheck":
             return await call_next(request)
 
-        settings.logger.info("Request Headers %s", request.headers)
+        logger.info("Request Headers %s", request.headers)
 
         auth = httpx.BasicAuth(
             username=settings.client.client_id,
@@ -151,7 +154,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         )
 
         async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
-            settings.logger.info(
+            logger.info(
                 "Post request to %s",
                 settings.client.introspection_endpoint,
             )
