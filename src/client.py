@@ -130,7 +130,13 @@ class TransactionClient(BaseTransactionsClient):
         return auth
 
     def egi_authorize(
-        self, collection_id: str, item: Item | PartialItem, role: str, request: Request
+        self,
+        collection_id: str,
+        item: Item | PartialItem,
+        role: str,
+        request: Request,
+        request_id: str,
+        event_id: str,
     ) -> Auth:
         """Auhorise request with EGI
 
@@ -143,7 +149,13 @@ class TransactionClient(BaseTransactionsClient):
             Auth: Auth object if successful
         """
         authorizer: EGIAuth = request.state.authorizer
-        authorizer.authorize(collection_id, item, role)
+        authorizer.authorize(
+            collection_id=collection_id,
+            item=item,
+            role=role,
+            request_id=request_id,
+            event_id=event_id,
+        )
 
         logger.info("REQUESTER DATA: %s", authorizer.requester_data)
 
@@ -167,7 +179,12 @@ class TransactionClient(BaseTransactionsClient):
             )
         else:
             return self.egi_authorize(
-                collection_id=collection_id, item=item, role=role, request=request
+                collection_id=collection_id,
+                item=item,
+                role=role,
+                request=request,
+                request_id=request_id,
+                event_id=event_id,
             )
 
     async def create_item(
