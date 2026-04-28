@@ -152,7 +152,13 @@ class TransactionClient(BaseTransactionsClient):
         )
 
     def authorize(
-        self, collection_id: str, item: Item | PartialItem, role: str, request: Request
+        self,
+        collection_id: str,
+        item: Item | PartialItem,
+        role: str,
+        request: Request,
+        request_id: str,
+        event_id: str,
     ) -> Auth:
 
         if settings.authorizer == "globus":
@@ -182,6 +188,8 @@ class TransactionClient(BaseTransactionsClient):
                 role="CREATE",
                 request=request,
                 collection_id=collection_id,
+                request_id=request_id,
+                event_id=event_id,
             )
 
         except MissingPermissionException as exc:
@@ -262,14 +270,20 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
     ) -> Optional[Union[Item, Response]]:
 
-        auth = self.authorize(
-            collection_id=collection_id, item=item, role="UPDATE", request=request
-        )
-
         headers = request.headers.get("headers", {})
 
         event_id = uuid.uuid4().hex
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+
+        auth = self.authorize(
+            collection_id=collection_id,
+            item=item,
+            role="UPDATE",
+            request=request,
+            request_id=request_id,
+            event_id=event_id,
+        )
+
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
         item_extensions = validate_extensions(
@@ -338,14 +352,19 @@ class TransactionClient(BaseTransactionsClient):
             else patch
         )
 
-        auth = self.authorize(
-            collection_id=collection_id, item=item, role="UPDATE", request=request
-        )
-
-        headers = request.headers
+        headers = request.headers.get("headers", {})
 
         event_id = uuid.uuid4().hex
-        request_id = headers.get("x-request-id", uuid.uuid4().hex)
+        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+
+        auth = self.authorize(
+            collection_id=collection_id,
+            item=item,
+            role="UPDATE",
+            request=request,
+            request_id=request_id,
+            event_id=event_id,
+        )
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
@@ -408,14 +427,19 @@ class TransactionClient(BaseTransactionsClient):
     ) -> Optional[Union[Item, Response]]:
         logger.info("DELETE REQUEST: %s %s", collection_id, item_id)
 
-        auth = self.authorize(
-            collection_id=collection_id, item=item_id, role="UPDATE", request=request
-        )
-
         headers = request.headers.get("headers", {})
 
         event_id = uuid.uuid4().hex
         request_id = headers.get("x-request-id", uuid.uuid4().hex)
+
+        auth = self.authorize(
+            collection_id=collection_id,
+            item=item_id,
+            role="UPDATE",
+            request=request,
+            request_id=request_id,
+            event_id=event_id,
+        )
 
         user_agent = headers.get("user-agent", "/").split("/")
 
