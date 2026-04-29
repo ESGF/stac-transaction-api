@@ -66,5 +66,7 @@ class Settings(BaseSettings):
     authorizer: Literal["egi", "globus"]
     client: ClientSettings
 
+    debug: bool = False
+
 
 settings = Settings()
