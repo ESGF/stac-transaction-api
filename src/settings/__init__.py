@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-if os.environ.get("TRANSACTION_AUTHORIZER") == "ceda":
+if os.environ.get("TRANSACTION_AUTHORIZER") == "egi":
     from src.settings.ceda import CEDAClientSettings as ClientSettings
 else:
     from src.settings.globus import GlobusClientSettings as ClientSettings
