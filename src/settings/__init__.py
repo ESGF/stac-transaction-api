@@ -1,10 +1,12 @@
-from typing import Any, Literal
+import os
+from typing import Literal
 
-from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from src.settings.ceda import CEDAClientSettings
-from src.settings.globus import GlobusClientSettings
+if os.environ.get("TRANSACTION_AUTHORIZER") == "ceda":
+    from src.settings.ceda import CEDAClientSettings as ClientSettings
+else:
+    from src.settings.globus import GlobusClientSettings as ClientSettings
 
 DEFAULT_EXTENSIONS = {
     "CMIP6": {
@@ -62,25 +64,7 @@ class Settings(BaseSettings):
     )
 
     authorizer: Literal["egi", "globus"]
-    client: CEDAClientSettings | GlobusClientSettings = Field(
-        discriminator="client_type"
-    )
-
-    debug: bool = False
-
-    @model_validator(mode="before")
-    @classmethod
-    def set_client_type(cls, data: Any) -> Any:
-        """set authorizer as client type.
-
-        Args:
-            data (Any): model data
-
-        Returns:
-            Any: data with updated client type
-        """
-        data["client"]["client_type"] = data["authorizer"]
-        return data
+    client: ClientSettings
 
 
 settings = Settings()
