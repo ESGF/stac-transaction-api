@@ -1,5 +1,3 @@
-from typing import Literal
-
 from pydantic import BaseModel
 
 
@@ -8,7 +6,6 @@ class CEDAClientSettings(BaseModel):
     CEDA settings
     """
 
-    client_type: Literal["egi"]
     client_id: str
     client_secret: str
     token_url: str = "https://aai.egi.eu/auth/realms/egi/protocol/openid-connect/token"

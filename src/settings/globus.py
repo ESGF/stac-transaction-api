@@ -1,5 +1,5 @@
 import json
-from typing import Any, Literal, Self
+from typing import Any, Self
 
 import boto3
 import urllib3
@@ -12,7 +12,6 @@ class GlobusClientSettings(BaseModel):
     Globus settings
     """
 
-    client_type: Literal["globus"]
     client_id: str
     client_secret: str
     issuer: str
