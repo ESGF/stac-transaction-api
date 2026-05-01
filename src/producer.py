@@ -16,8 +16,8 @@ class BaseProducer(ABC):
 
 
 class StdoutProducer(BaseProducer):
-    def produce(self, topic, message):
-        logger.info(f"message: {message}")
+    def produce(self, topic, key, value):
+        logger.info(f"message: {value}")
 
 
 class KafkaProducer(BaseProducer):
@@ -37,8 +37,6 @@ class KafkaProducer(BaseProducer):
                 )
             delivery_reports.append((err, msg))
 
-        self.producer.produce(
-            topic=topic, key=key, value=value, callback=delivery_report
-        )
+        self.producer.produce(topic=topic, key=key, value=value, callback=delivery_report)
         self.producer.flush()
         return delivery_reports

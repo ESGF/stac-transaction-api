@@ -4,8 +4,14 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-from esgf_playground_utils.models.item import CMIP6Item
-from esgf_playground_utils.models.kafka import (
+from fastapi import HTTPException, Request, Response, status
+from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
+from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
+from stac_fastapi.types.stac import Collection
+from stac_pydantic.item import Item
+
+from models import Authorizer
+from src.kafka import (
     Auth,
     CreatePayload,
     Data,
@@ -17,17 +23,17 @@ from esgf_playground_utils.models.kafka import (
     RevokePayload,
     UpdatePayload,
 )
-from fastapi import HTTPException, Request, Response, status
-from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
-from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
-from stac_fastapi.types.stac import Collection
-
-from models import Authorizer
-from settings.transaction import access_control_policy, event_stream, stac_api
-from utils import operation_to_partial_item, validate_extensions, validate_patch, validate_post
+from src.settings.transaction import access_control_policy, event_stream, stac_api
+from utils import (
+    operation_to_partial_item,
+    validate_extensions,
+    validate_patch,
+    validate_post,
+)
 
 # Setup logger
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn.error")
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -50,7 +56,9 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def globus_authorize(self, item: CMIP6Item, request: Request, collection_id: str) -> dict:
+    def globus_authorize(
+        self, item: Item, request: Request, collection_id: str
+    ) -> dict:
         properties = item.properties
 
         if item.collection != collection_id:
@@ -89,7 +97,9 @@ class TransactionClient(BaseTransactionsClient):
                         "name": identity.get("name"),
                         "email": identity.get("email"),
                         "identity_provider": identity.get("identity_provider"),
-                        "identity_provider_display_name": identity.get("identity_provider_display_name"),
+                        "identity_provider_display_name": identity.get(
+                            "identity_provider_display_name"
+                        ),
                         "last_authentication": identity.get("last_authentication"),
                     }
 
@@ -110,11 +120,13 @@ class TransactionClient(BaseTransactionsClient):
 
         return auth
 
-    def egi_authorize(self, collection_id: str, item: CMIP6Item, role: str, request: Request) -> Auth:
+    def egi_authorize(
+        self, collection_id: str, item: Item, role: str, request: Request
+    ) -> Auth:
         """_summary_
 
         Args:
-            item (CMIP6Item): item to check authorization for
+            item (Item): item to check authorization for
             role (str): role to check authorization for
             request (Request): current request
 
@@ -124,25 +136,35 @@ class TransactionClient(BaseTransactionsClient):
         authorizer: Authorizer = request.state.authorizer
         authorizer.authorize(collection_id, item, role)
 
+        logger.info(f"REQUESTER DATA: {authorizer.requester_data}")
+
         return Auth(
-            requester_data=authorizer.requester_data,
+            requester_data=authorizer.requester_data.model_dump(),
         )
 
-    def authorize(self, item: CMIP6Item | PartialItem, role: str, request: Request, collection_id: str) -> Auth:
+    def authorize(
+        self, item: Item | PartialItem, role: str, request: Request, collection_id: str
+    ) -> Auth:
 
         if stac_api.get("authorizer", "globus") == "globus":
-            return self.globus_authorize(collection_id=collection_id, item=item, request=request)
+            return self.globus_authorize(
+                collection_id=collection_id, item=item, request=request
+            )
         else:
-            return self.egi_authorize(collection_id=collection_id, item=item, role=role, request=request)
+            return self.egi_authorize(
+                collection_id=collection_id, item=item, role=role, request=request
+            )
 
     async def create_item(
         self,
-        item: CMIP6Item,
+        item: Item,
         request: Request,
         collection_id: str,
-    ) -> Optional[Union[CMIP6Item, Response, None]]:
+    ) -> Optional[Union[Item, Response, None]]:
 
-        auth = self.authorize(item=item, role="CREATE", request=request, collection_id=collection_id)
+        auth = self.authorize(
+            item=item, role="CREATE", request=request, collection_id=collection_id
+        )
 
         headers = request.headers
 
@@ -151,9 +173,17 @@ class TransactionClient(BaseTransactionsClient):
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+        item_extensions = validate_extensions(
+            collection_id=collection_id, item_extensions=item_extensions
+        )
 
-        validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
+        validate_post(
+            event_id=event_id,
+            request_id=request_id,
+            item_id=item.id,
+            item=item,
+            extensions=item_extensions,
+        )
 
         user_agent = headers.get("user-agent", "/").split("/")
 
@@ -165,7 +195,9 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
 
         metadata = Metadata(
             auth=auth,
@@ -195,13 +227,15 @@ class TransactionClient(BaseTransactionsClient):
 
     async def update_item(
         self,
-        item: CMIP6Item,
+        item: Item,
         request: Request,
         collection_id: str,
         item_id: str,
-    ) -> Optional[Union[CMIP6Item, Response]]:
+    ) -> Optional[Union[Item, Response]]:
 
-        auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
+        auth = self.authorize(
+            collection_id=collection_id, item=item, role="UPDATE", request=request
+        )
 
         headers = request.headers.get("headers", {})
 
@@ -209,9 +243,17 @@ class TransactionClient(BaseTransactionsClient):
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+        item_extensions = validate_extensions(
+            collection_id=collection_id, item_extensions=item_extensions
+        )
 
-        validate_post(event_id=event_id, request_id=request_id, item_id=item.id, item=item, extensions=item_extensions)
+        validate_post(
+            event_id=event_id,
+            request_id=request_id,
+            item_id=item.id,
+            item=item,
+            extensions=item_extensions,
+        )
 
         user_agent = headers.get("User-Agent", "/").split("/")
 
@@ -224,7 +266,9 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
         metadata = Metadata(
             auth=auth,
             event_id=event_id,
@@ -256,10 +300,18 @@ class TransactionClient(BaseTransactionsClient):
         item_id: str,
         patch: Union[PartialItem, list[PatchOperation]],
         request: Request,
-    ) -> Optional[Union[CMIP6Item, Response]]:
+    ) -> Optional[Union[Item, Response]]:
+        logger.info("PATCH REQUEST: %s", patch)
 
-        item = operation_to_partial_item(patch) if isinstance(patch, list) else patch
-        auth = self.authorize(collection_id=collection_id, item=item, role="UPDATE", request=request)
+        item = (
+            operation_to_partial_item(collection_id=collection_id, operations=patch)
+            if isinstance(patch, list)
+            else patch
+        )
+
+        auth = self.authorize(
+            collection_id=collection_id, item=item, role="UPDATE", request=request
+        )
 
         headers = request.headers
 
@@ -268,9 +320,17 @@ class TransactionClient(BaseTransactionsClient):
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
 
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+        item_extensions = validate_extensions(
+            collection_id=collection_id, item_extensions=item_extensions
+        )
 
-        validate_patch(event_id=event_id, request_id=request_id, item_id=item_id, item=item, extensions=item_extensions)
+        validate_patch(
+            event_id=event_id,
+            request_id=request_id,
+            item_id=item_id,
+            item=item,
+            extensions=item_extensions,
+        )
 
         user_agent = headers.get("user-agent", "/").split("/")
 
@@ -278,12 +338,14 @@ class TransactionClient(BaseTransactionsClient):
             method="PATCH",
             collection_id=collection_id,
             item_id=item_id,
-            patch=json.dumps(patch),
+            patch=patch.model_dump(),
         )
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
         metadata = Metadata(
             auth=auth,
             event_id=event_id,
@@ -314,8 +376,10 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         collection_id: str,
         item_id: str,
-    ) -> Optional[Union[CMIP6Item, Response]]:
-        auth = self.authorize(collection_id=collection_id, item=item_id, role="UPDATE", request=request)
+    ) -> Optional[Union[Item, Response]]:
+        auth = self.authorize(
+            collection_id=collection_id, item=item_id, role="UPDATE", request=request
+        )
 
         headers = request.headers.get("headers", {})
 
@@ -332,7 +396,9 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
+        publisher = Publisher(
+            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
+        )
 
         metadata = Metadata(
             auth=auth,

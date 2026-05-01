@@ -25,6 +25,10 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+__pycache__/
+esgf1-payloads/
+esgfng-payloads/
+.python-version
 
 # Mypy
 .mypy_cache/
