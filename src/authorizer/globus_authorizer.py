@@ -1,19 +1,14 @@
 import json
+import logging
 
-import httpx
-from esgf_playground_utils.models.kafka import RequesterData
 from fastapi import Request
-from globus_sdk import AccessTokenAuthorizer, ConfidentialAppAuthClient, GroupsClient
+from globus_sdk import AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-import src.settings.transaction as settings
-from src.models import Authorizer
+from src.settings import settings
 
-confidential_client = ConfidentialAppAuthClient(
-    client_id=settings.stac_api.get("client_id"),
-    client_secret=settings.stac_api.get("client_secret"),
-)
+logger = logging.getLogger("uvicorn.error")
 
 """
 FastAPI Middleware Authorizer
@@ -37,7 +32,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         # Set API Gateway token validation correctly to avoid IndexError exception
         access_token = authorization_header[7:]
-        response = confidential_client.oauth2_token_introspect(
+        response = settings.client.confidential_client.oauth2_token_introspect(
             access_token, include="identity_set_detail"
         )
         token_info = response.data
@@ -51,17 +46,17 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
                 "unknown", "Deny", resource_arn, token_info=token_info
             )
 
-        if settings.stac_api.get("client_id") not in token_info.get("aud", []):
+        if settings.client.client_id not in token_info.get("aud", []):
             policy = self.generate_policy(
                 token_info.get("sub"), "Deny", resource_arn, token_info=token_info
             )
 
-        if settings.stac_api.get("scope_string") != token_info.get("scope", ""):
+        if settings.client.scope_string != token_info.get("scope", ""):
             policy = self.generate_policy(
                 token_info.get("sub"), "Deny", resource_arn, token_info=token_info
             )
 
-        if settings.stac_api.get("issuer") != token_info.get("iss", ""):
+        if settings.client.issuer != token_info.get("iss", ""):
             policy = self.generate_policy(
                 token_info.get("sub"), "Deny", resource_arn, token_info=token_info
             )
@@ -92,7 +87,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
         and if the a new request with the same bearer token
         """
 
-        tokens = confidential_client.oauth2_get_dependent_tokens(
+        tokens = settings.client.confidential_client.oauth2_get_dependent_tokens(
             token, scope=GroupsScopes.view_my_groups_and_memberships
         )
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
@@ -136,51 +131,3 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
                     auth_response["context"]["groups"] = json.dumps(groups)
 
         return auth_response
-
-
-class EGIAuthorizer(BaseHTTPMiddleware):
-    """
-    EGI Authorization middleware.
-    """
-
-    async def dispatch(self, request: Request, call_next):
-        # Need to bypass authorization for this endpoint
-        if request.url.path == "/healthcheck":
-            return await call_next(request)
-
-        settings.logger.info("Request Headers %s", request.headers)
-
-        auth = httpx.BasicAuth(
-            username=settings.stac_api.get("client_id"),
-            password=settings.stac_api.get("client_secret"),
-        )
-
-        async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
-            settings.logger.info(
-                "Post request to %s",
-                settings.stac_api.get("introspection_endpoint"),
-            )
-            response = await client.post(
-                settings.stac_api.get("introspection_endpoint"),
-                headers={"Content-type": "application/x-www-form-urlencoded"},
-                data=f"token={request.headers.get('authorization')[7:]}",
-                auth=auth,
-                timeout=5,
-            )
-            response.raise_for_status()
-
-        token_info = response.json()
-
-        authorizer = Authorizer(
-            requester_data=RequesterData(
-                client_id=settings.event_stream["config"].get("client.id"),
-                sub=token_info["sub"],
-                iss=token_info["iss"],
-            ),
-        )
-
-        authorizer.add(token_info["entitlements"])
-
-        request.state.authorizer = authorizer
-
-        return await call_next(request)

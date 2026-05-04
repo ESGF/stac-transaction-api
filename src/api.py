@@ -1,14 +1,14 @@
-from fastapi import FastAPI
+from esgf_core_utils.models.exceptions import RFC9457Exception
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from stac_fastapi.extensions.core.transaction import TransactionExtension
 from stac_fastapi.types.config import ApiSettings
 
-from authorizer import EGIAuthorizer, GlobusAuthorizer
 from client import TransactionClient
-from producer import KafkaProducer
-from src.settings.transaction import event_stream, stac_api
+from src.authorizer import Authorizer
+from src.settings import settings
 
-app = FastAPI(debug=stac_api.get("debug", False))
+app = FastAPI(debug=settings.debug)
 
 
 # Health Check for AWS
@@ -21,21 +21,30 @@ async def healthcheck():
     )
 
 
-producer = KafkaProducer(config=event_stream.get("config"))
-core_client = TransactionClient(producer=producer)
+@app.exception_handler(RFC9457Exception)
+async def rfc9457_handler(request: Request, exc: RFC9457Exception):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "status_code": exc.status_code,
+            "type": exc.type,
+            "title": exc.title,
+            "detail": exc.detail,
+            "instance": exc.instance,
+        },
+    )
 
-settings = ApiSettings(
+
+core_client = TransactionClient()
+
+api_settings = ApiSettings(
     api_title="STAC Transaction API",
     api_version="0.1.0",
     openapi_url="/openapi.json",
 )
 
-if stac_api.get("authorizer", "globus") == "globus":
-    Authorizer = GlobusAuthorizer
-else:
-    Authorizer = EGIAuthorizer
 
 app.add_middleware(Authorizer)
 app.state.router_prefix = ""
-transaction_extension = TransactionExtension(client=core_client, settings=settings)
+transaction_extension = TransactionExtension(client=core_client, settings=api_settings)
 transaction_extension.register(app)

@@ -1,31 +1,6 @@
 [project]
 name = "stac-transaction-api"
-requires-python = ">=3.10,<4.0"
-dependencies = [
-    "boto3 == 1.35.60",
-    "certifi == 2024.6.2",
-    "cffi == 1.16.0",
-    "charset-normalizer == 3.3.2",
-    "confluent-kafka == 2.6.0",
-    "cryptography == 42.0.8",
-    "esgf-playground-utils==1.0.5",
-    "esgvoc == 1.0.0",
-    "fastapi == 0.114.0",
-    "globus-sdk == 3.41.0",
-    "httpx == 0.28.1",
-    "httpx-auth == 0.23.1",
-    "idna == 3.10",
-    "jsonschema == 4.24.0",
-    "pyjwt == 2.8.0",
-    "pytest == 8.3.5",
-    "pytest-cov == 6.0.0",
-    "pytest-mock == 3.14.0",
-    "python-dotenv == 1.0.1",
-    "requests == 2.32.3",
-    "stac-fastapi.types == 6.0.0",
-    "stac-fastapi.extensions == 6.0.0",
-    "uvicorn == 0.34.0",
-]
+requires-python = ">=3.12,<4.0"
 description = "West ESGF STAC Transaction API"
 version = "0.1.0"
 authors = [
@@ -33,6 +8,37 @@ authors = [
     {"name" = "Steve Turoscy", "email" = "sturoscy@uchicago.edu"},
     ]
 readme = "README.md"
+dependencies = [
+    "esgf-core-utils>=1.0.7",
+    "fastapi>=0.114.0",
+    "jsonschema>=4.24.0",
+    "stac-fastapi.types>=6.0.0",
+    "stac-fastapi.extensions>=6.0.0",
+    "uvicorn>=0.34.0",
+]
+
+[project.optional-dependencies]
+ceda = [
+    "httpx>=0.28.1",
+    "httpx-auth>=0.23.1",
+]
+globus = [
+    "boto3==1.35.60",
+    "certifi==2024.6.2",
+    "cffi==1.16.0",
+    "charset-normalizer==3.3.2",
+    "cryptography==42.0.8",
+    "esgvoc==1.0.0",
+    "globus-sdk==3.41.0",
+    "idna==3.10",
+    "pyjwt==2.8.0",
+]
+test = [
+    "httpx>=0.28.1",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+]
 
 [tool.poetry]
 packages = [
