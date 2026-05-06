@@ -782,7 +782,7 @@
           "type": "string",
           "enum": [
             "CC-BY-4.0",
-            "https://cordex.org/data-access/cordex-cmip6-data/cordex-cmip6-terms-of-use/"
+            "https://cordex.org/data-access/cordex-cmip6-data/cordex-cmip6-terms-of-use"
           ]
         },
         "cordex-cmip6:mip_era": {

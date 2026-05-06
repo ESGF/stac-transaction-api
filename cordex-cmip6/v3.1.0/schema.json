@@ -42,7 +42,7 @@
                 },
                 "id": {
                     "type": "string",
-                    "pattern": "^[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+\\\\.[A-Za-z0-9-]+$"
+                    "pattern": "^CORDEX-CMIP6(\\.[A-Za-z0-9-]+){11}$"
                 },
                 "collection": {
                     "const": "CORDEX-CMIP6"
@@ -196,11 +196,6 @@
                 {
                     "required": [
                         "cordex-cmip6:mip_era"
-                    ]
-                },
-                {
-                    "required": [
-                        "cordex-cmip6:pid"
                     ]
                 },
                 {
@@ -754,10 +749,7 @@
                     ]
                 },
                 "cordex-cmip6:license": {
-                    "type": "string",
-                    "enum": [
-                        "CC-BY-4.0"
-                    ]
+                    "type": "string"
                 },
                 "cordex-cmip6:mip_era": {
                     "type": "string",
