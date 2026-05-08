@@ -23,7 +23,7 @@
         },
         {
           "contains": {
-            "const": "https://esgf.github.io/stac-transaction-api/cmip6/v3.0.3/schema.json"
+            "const": "https://esgf.github.io/stac-transaction-api/cmip6/v3.0.4/schema.json"
           }
         }
       ]
