@@ -3013,28 +3013,6 @@
           "if": {
             "properties": {
               "rel": {
-                "const": "describedby"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "href": {
-                "pattern": "^https?://furtherinfo.es-doc.org/CMIP6.*$"
-              },
-              "title": {
-                "const": "ES-DOC"
-              },
-              "type": {
-                "const": "text/html"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "rel": {
                 "const": "related"
               }
             }
