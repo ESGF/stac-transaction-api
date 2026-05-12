@@ -2,9 +2,10 @@ import json
 import os
 import sys
 import time
-import requests
-import settings
 
+import httpx
+
+import settings
 
 esgf_search_url = settings.ESGF_SEARCH_URL
 
@@ -35,7 +36,7 @@ def get_search_response(object_type, limit, extra_params):
     }
     params.update(extra_params)
 
-    r = requests.get(esgf_search_url, params=params)
+    r = httpx.get(esgf_search_url, params=params, timeout=5.0)
     # print(r)
     if r.status_code != 200:
         print(f"The ESGF Index server returned {r.status_code}")
