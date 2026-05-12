@@ -18,7 +18,7 @@ from stac_fastapi.extensions.core.transaction.request import (
 )
 from stac_pydantic.item import Item
 
-from src.settings import DEFAULT_EXTENSIONS
+from settings import DEFAULT_EXTENSIONS
 
 # Setup logger
 logger = logging.getLogger("uvicorn.error")

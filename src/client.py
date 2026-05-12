@@ -33,7 +33,7 @@ from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchO
 from stac_fastapi.types.stac import Collection
 from stac_pydantic.item import Item
 
-from src.settings import settings
+from settings import settings
 from utils import (
     operation_to_partial_item,
     validate_extensions,

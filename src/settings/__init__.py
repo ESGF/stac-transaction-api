@@ -4,10 +4,9 @@ from typing import Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if os.environ.get("TRANSACTION_AUTHORIZER") == "egi":
-    from src.settings.ceda import CEDAClientSettings as ClientSettings
+    from settings.ceda import CEDAClientSettings as ClientSettings
 else:
-    from src.settings.globus import GlobusClientSettings as ClientSettings
-
+    from settings.globus import GlobusClientSettings as ClientSettings
 DEFAULT_EXTENSIONS = {
     "CMIP6": {
         "CMIP6": {
@@ -61,12 +60,11 @@ class Settings(BaseSettings):
         env_prefix="TRANSACTION_",
         env_nested_delimiter="__",
         env_file=".env",
+        extra="ignore",
     )
 
     authorizer: Literal["egi", "globus"]
     client: ClientSettings
-
     debug: bool = False
-
 
 settings = Settings()
