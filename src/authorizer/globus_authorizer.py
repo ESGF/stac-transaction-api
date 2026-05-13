@@ -26,7 +26,8 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Health check endpoint for AWS ALB target group
         # Need to bypass authorization for this endpoint
-        if request.url.path == "/healthcheck":
+        bypass_paths = ["/favicon.ico", "/healthcheck"]
+        if request.url.path in bypass_paths:
             return await call_next(request)
 
         authorization_header = request.headers.get("authorization")
