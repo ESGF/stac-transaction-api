@@ -1,5 +1,8 @@
-import json
+import hashlib
 import logging
+import time
+from dataclasses import dataclass
+from threading import Lock
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -18,8 +21,68 @@ FastAPI Middleware Authorizer
     Token source: Authorization
     Token validation: ^Bearer\\s[^\\s]+$ # noqa: W605
                       ^Bearer\\s[0-9A-Za-z]+$ for access tokens issued by Globus Auth (?)  # noqa: W605
-    Authorization caching: 300 seconds
+    Authorization caching: 300 seconds (TRANSACTION_CLIENT__AUTHORIZER_CACHE_TTL_SECONDS)
 """
+
+_AUTH_CACHE_MAX_ENTRIES = 2048
+
+
+@dataclass
+class _CachedAuth:
+    expires_at: float
+    auth: dict
+
+
+class _AuthTTLCache:
+    """In-process TTL cache of authorizer context keyed by access token hash."""
+
+    def __init__(self, max_entries: int = _AUTH_CACHE_MAX_ENTRIES) -> None:
+        self._max_entries = max_entries
+        self._entries: dict[str, _CachedAuth] = {}
+        self._lock = Lock()
+
+    @staticmethod
+    def _key(access_token: str) -> str:
+        return hashlib.sha256(access_token.encode()).hexdigest()
+
+    def get(self, access_token: str) -> dict | None:
+        key = self._key(access_token)
+        now = time.monotonic()
+        with self._lock:
+            entry = self._entries.get(key)
+            if entry is None:
+                return None
+            if now >= entry.expires_at:
+                del self._entries[key]
+                return None
+            return entry.auth
+
+    def set(self, access_token: str, auth: dict, ttl: int) -> None:
+        if ttl <= 0:
+            return
+        key = self._key(access_token)
+        expires_at = time.monotonic() + ttl
+        with self._lock:
+            self._entries[key] = _CachedAuth(expires_at=expires_at, auth=auth)
+            if len(self._entries) > self._max_entries:
+                self._evict_expired()
+
+    def _evict_expired(self) -> None:
+        now = time.monotonic()
+        for key, entry in list(self._entries.items()):
+            if now >= entry.expires_at:
+                del self._entries[key]
+
+
+_auth_cache = _AuthTTLCache()
+
+
+def _cache_ttl_seconds(token_info: dict, max_ttl: int) -> int:
+    exp = token_info.get("exp")
+    if exp is None:
+        return max_ttl
+    remaining = int(exp) - int(time.time())
+    return max(0, min(max_ttl, remaining))
 
 
 class GlobusAuthorizer(BaseHTTPMiddleware):
@@ -31,54 +94,72 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
             return await call_next(request)
 
         authorization_header = request.headers.get("authorization")
+        if not authorization_header:
+            return JSONResponse(
+                content={"detail": "Unauthorized - No authorization header"},
+                status_code=401,
+            )
+        if not authorization_header.startswith("Bearer "):
+            return JSONResponse(
+                content={"detail": "Unauthorized - Invalid authorization header"},
+                status_code=401,
+            )
 
-        # Set API Gateway token validation correctly to avoid IndexError exception
-        access_token = authorization_header[7:]
-        response = settings.client.confidential_client.oauth2_token_introspect(
-            access_token, include="identity_set_detail"
-        )
+        access_token = authorization_header[7:].strip()
+        cached_auth = _auth_cache.get(access_token)
+        if cached_auth is not None:
+            request.state.authorizer = cached_auth
+            return await call_next(request)
+
+        response = settings.client.confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
 
-        # Verify the access token
+        auth_error = self._validate_token_info(token_info)
+        if auth_error is not None:
+            return auth_error
+
+        groups = self.get_groups(access_token)
+        if not groups:
+            return JSONResponse(
+                content={"detail": "Unauthorized - No active group memberships found"},
+                status_code=401,
+            )
+
+        auth = {
+            "token_info": token_info,
+            "groups": groups,
+        }
+        ttl = _cache_ttl_seconds(token_info, settings.client.authorizer_cache_ttl_seconds)
+        _auth_cache.set(access_token, auth, ttl)
+        request.state.authorizer = auth
+        return await call_next(request)
+
+    def _validate_token_info(self, token_info: dict) -> JSONResponse | None:
         if not token_info.get("active", False):
             return JSONResponse(
-                content={"message": "Unauthorized - Inactive token"}, 
-                status_code=401
+                content={"detail": "Unauthorized - Inactive token"},
+                status_code=401,
             )
 
         if settings.client.client_id not in token_info.get("aud", []):
             return JSONResponse(
-                content={"message": "Unauthorized - Invalid token audience"}, 
-                status_code=401
+                content={"detail": "Unauthorized - Invalid token audience"},
+                status_code=401,
             )
 
         if settings.client.scope_string != token_info.get("scope", ""):
             return JSONResponse(
-                content={"message": "Unauthorized - Invalid token scope"}, 
-                status_code=401
+                content={"detail": "Unauthorized - Invalid token scope"},
+                status_code=401,
             )
 
         if settings.client.issuer != token_info.get("iss", ""):
             return JSONResponse(
-                content={"message": "Unauthorized - Invalid token issuer"}, 
-                status_code=401
+                content={"detail": "Unauthorized - Invalid token issuer"},
+                status_code=401,
             )
 
-        # Get the user's groups
-        groups = self.get_groups(access_token)
-        if not groups:
-            return JSONResponse(
-                content={"message": "Unauthorized - No active group memberships found"}, 
-                status_code=401
-            )
-
-        auth = self.generate_auth(
-            token_info.get("sub"),
-            token_info=token_info,
-            groups=groups,
-        )
-        request.state.authorizer = auth
-        return await call_next(request)
+        return None
 
     def get_groups(self, token):
         """
@@ -89,9 +170,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
         and if the a new request with the same bearer token
         """
 
-        tokens = settings.client.confidential_client.oauth2_get_dependent_tokens(
-            token, scope=GroupsScopes.view_my_groups_and_memberships
-        )
+        tokens = settings.client.confidential_client.oauth2_get_dependent_tokens(token, scope=GroupsScopes.view_my_groups_and_memberships)
         groups_token = tokens.by_resource_server[GroupsClient.resource_server]
         authorizer = AccessTokenAuthorizer(groups_token["access_token"])
         groups_client = GroupsClient(authorizer=authorizer)
@@ -109,14 +188,3 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
                         }
                     )
         return groups
-
-    def generate_auth(self, user, token_info=None, groups=None):
-        auth_response = {}
-        if token_info:
-            auth_response["context"] = {
-                "access_token": json.dumps(token_info),
-            }
-            if groups:
-                auth_response["context"]["groups"] = json.dumps(groups)
-
-        return auth_response

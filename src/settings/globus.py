@@ -1,5 +1,4 @@
 import json
-import os
 from typing import Any, Self
 
 import boto3
@@ -24,6 +23,7 @@ class GlobusClientSettings(BaseModel):
     policy_path: str
     secret_name: str = "transaction-api/integration"
     region: str = "us-east-1"
+    authorizer_cache_ttl_seconds: int = 300
 
     def load_access_control_policy(policy_path: str) -> dict:
         """load access control policy
@@ -75,9 +75,7 @@ class GlobusClientSettings(BaseModel):
         """
         Load the access control policy, secrets, and confidential_client.
         """
-        data["access_control_policy"] = self.load_access_control_policy(
-            data["policy_path"]
-        )
+        data["access_control_policy"] = self.load_access_control_policy(data["policy_path"])
 
         data["confidential_client"] = ConfidentialAppAuthClient(
             client_id=data["client_id"],
