@@ -8,10 +8,52 @@ if os.environ.get("TRANSACTION_AUTHORIZER") == "egi":
 else:
     from settings.globus import GlobusClientSettings as ClientSettings
 DEFAULT_EXTENSIONS = {
+    "obs4MIPs": {
+        "obs4MIPs": {
+            "regex": [r"https:\/\/esgf\.github\.io\/stac-transaction-api\/obs4mips\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://esgf.github.io/stac-transaction-api/obs4mips/v1.0.0/schema.json",
+        },
+        "alternate_assets": {
+            "regex": [r"https:\/\/stac-extensions\.github\.io\/alternate-assets\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"],
+            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+        },
+        "file": {
+            "regex": [r"https:\/\/stac-extensions\.github\.io\/file\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+        },
+    },
     "CMIP6": {
         "CMIP6": {
             "regex": [r"https:\/\/esgf\.github\.io\/stac-transaction-api\/cmip6\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
             "default": "https://esgf.github.io/stac-transaction-api/cmip6/v3.0.4/schema.json",
+        },
+        "alternate_assets": {
+            "regex": [r"https:\/\/stac-extensions\.github\.io\/alternate-assets\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"],
+            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+        },
+        "file": {
+            "regex": [r"https:\/\/stac-extensions\.github\.io\/file\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+        },
+    },
+    "CMIP6Plus": {
+        "CMIP6Plus": {
+            "regex": [r"https:\/\/esgf\.github\.io\/stac-transaction-api\/cmip6plus\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://esgf.github.io/stac-transaction-api/cmip6plus/v1.0.4/schema.json",
+        },
+        "alternate_assets": {
+            "regex": [r"https:\/\/stac-extensions\.github\.io\/alternate-assets\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"],
+            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+        },
+        "file": {
+            "regex": [r"https:\/\/stac-extensions\.github\.io\/file\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+        },
+    },
+    "CORDEX-CMIP6": {
+        "CORDEX-CMIP6": {
+            "regex": [r"https:\/\/esgf\.github\.io\/stac-transaction-api\/cordex-cmip6\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://esgf.github.io/stac-transaction-api/cordex-cmip6/v3.1.2/schema.json",
         },
         "alternate_assets": {
             "regex": [r"https:\/\/stac-extensions\.github\.io\/alternate-assets\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"],
