@@ -324,7 +324,14 @@
         },
         "cordex-cmip6:tracking_id": {
           "type": "string",
-          "pattern": "^hdl:21\\.14103/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+          "anyOf": [
+            {
+              "pattern": "^hdl:21\\.14103/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+            },
+            {
+              "pattern": "^hdl:21\\.14103/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+            }
+          ]
         }
       }
     },
@@ -343,11 +350,17 @@
           "minimum": 0
         },
         "cordex-cmip6:activity_id": {
-          "type": "string",
-          "enum": [
-            "DD",
-            "ESD"
-          ]
+          "type": "array",
+          "items": {
+            "enum": [
+              "CPRCM",
+              "DD",
+              "ESD",
+              "FPS-URB-RCC"
+            ],
+            "minItems": 1,
+            "type": "string"
+          }
         },
         "cordex-cmip6:contact": {
           "type": "string",
@@ -440,7 +453,8 @@
           ]
         },
         "cordex-cmip6:driving_experiment": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 1064
         },
         "cordex-cmip6:driving_experiment_id": {
           "type": "string",
@@ -698,6 +712,7 @@
             "Climate Limited-area Modelling Community (CLMcom) partner: Luxembourg Institute of Science and Technology",
             "Climate Service Center Germany, Helmholtz Centre hereon GmbH",
             "Climate and Atmosphere Research Center (CARE-C), The Cyprus Institute, Nicosia, Cyprus",
+            "Commonwealth Scientific and Industrial Research Organisation",
             "Consortium on Regional Climatology and Adaptation to Climate Change (Qu\u00e9bec, Canada)",
             "Cornell University",
             "DWD [Deutscher Wetterdienst]; BSH [Bundesamt fuer Seeschifffahrt und Hydrographie]",
@@ -706,23 +721,27 @@
             "HARMONIE Climate Modelling Community (HCLIMcom) partner: Norwegian Meteorological Institute (METNo)",
             "HARMONIE Climate Modelling Community (HCLIMcom) partner: Swedish Meteorological and Hydrological Institute (SMHI)",
             "IRD [Institut de Recherche pour le Developpement, Noumea (New Caledonia), France]; MF [Meteo France, Toulouse, France]",
+            "IUM [Institute of Urban Meteorology, China Meteorological Administration,  Beijing, China]; FDU [Fudan University, Shanghai, China]",
             "Institute for Marine and Atmospheric research Utrecht (IMAU), Utrecht University",
             "Institute of Meteorology and Water Management",
             "Instituto Dom Luiz, Faculdade de Ciencias, Universidade de Lisboa",
+            "Instituto de Fisica de Cantabria (IFCA), CSIC-Universidad de Cantabria",
             "Italian National Agency for New Technologies, Energy and the Environment",
             "Italian National Research Council, Institute of Atmospheric Sciences and Climate, Lecce, Italy",
             "Met Office Hadley Centre",
-            "NCAR",
-            "NIMS-KMA",
             "NORCE [NORCE Norwegian Research Centre, Bergen, Norway]; BCCR [Bjerknes Centre for Climate Research, Bergen, Norway]",
+            "NSF National Center for Atmospheric Research",
+            "National Institute of Meteorological Sciences, Korea Meteorological Administration",
+            "National Meteorology and Hydrology Service of Peru, Lima, Peru",
             "National and Kapodistrian University of Athens",
-            "RU-CORE",
+            "Ramkhamhaeng University Center Of Regional Climate Change and Renewable Energy",
             "Royal Meteorological Institute of Belgium & Ghent University downscaling consortium",
             "Royal Netherlands Meteorological Institute",
             "TASK [Centre of Informatics TASK, Gdansk University of Technology, Gdansk, Poland]; IMWM [Institute of Meteorology and Water Management, Warsaw, Poland]",
             "The Abdus Salam International Centre for Theoretical Physics",
             "UBA [Universidad de Buenos Aires, C. A. Buenos Aires (CABA), Argentina]; CIMA [Centro de Investigaciones del Mar y la Atmosfera, C. A. Buenos Aires (CABA), Argentina]; IFAECI [Instituto Franco-Argentino sobre Estudios de Clima y sus Impactos, C. A. Buenos Aires (CABA), Argentina]",
-            "UQ [University of Queensland, Brisbane, Australia]; DEC [Department of Energy and Climate, Brisbane, Australia]"
+            "UQ [University of Queensland, Brisbane, Australia]; DEC [Department of Energy and Climate, Brisbane, Australia]",
+            "clmcom-wegc institute"
           ]
         },
         "cordex-cmip6:institution_id": {
@@ -747,10 +766,12 @@
             "CLMcom-KIT",
             "CLMcom-KUL",
             "CLMcom-LIST",
+            "CLMcom-WEGC",
             "CNR-ISAC",
             "CNRM",
             "CNRM-MF",
             "CORNELL",
+            "CSIRO",
             "CYI",
             "DWD-BSH",
             "ENEA",
@@ -760,8 +781,10 @@
             "HCLIMcom-SMHI",
             "ICTP",
             "IDL-FCUL",
+            "IFCA",
             "IMWM",
             "IRD-MF",
+            "IUM-FDU",
             "KNMI",
             "MOHC",
             "NCAR",
@@ -771,6 +794,7 @@
             "OURANOS",
             "RMIB-UGent",
             "RU-CORE",
+            "SENAMHI-PER",
             "TASK-IMWM",
             "UBA-CIMA-IFAECI",
             "UNSW-CCRC",
@@ -781,8 +805,7 @@
         "cordex-cmip6:license": {
           "type": "string",
           "enum": [
-            "CC-BY-4.0",
-            "https://cordex.org/data-access/cordex-cmip6-data/cordex-cmip6-terms-of-use"
+            "CC-BY-4.0"
           ]
         },
         "cordex-cmip6:mip_era": {
@@ -793,7 +816,14 @@
         },
         "cordex-cmip6:pid": {
           "type": "string",
-          "pattern": "^hdl:21\\.14103/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+          "anyOf": [
+            {
+              "pattern": "^hdl:21\\.14103/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+            },
+            {
+              "pattern": "^hdl:21\\.14103/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+            }
+          ]
         },
         "cordex-cmip6:product": {
           "type": "string",
@@ -814,6 +844,9 @@
             "BARPA-R1-NN",
             "CCAM-v2105",
             "CCAM-v2112",
+            "CCAM-v2307conv17-SN",
+            "CCAM-v2307conv21-SN",
+            "CCAM-v2507-SN",
             "CCAMoc-v2112",
             "CCLM5-0-9-NEMOMED12-3-6",
             "CCLM6-0-1",
@@ -840,6 +873,7 @@
             "ICON-CLM-202407-1-1",
             "ICON-CLM-202407-1-2",
             "ICON-CLM-202407-1-3",
+            "ICON-CLM-202410-2-1-x2yn2",
             "MedX-CM",
             "MetUM",
             "RACMO23E",
@@ -1208,7 +1242,8 @@
           ]
         },
         "cordex-cmip6:variable_long_name": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 1064
         },
         "cordex-cmip6:variable_units": {
           "type": "string",
