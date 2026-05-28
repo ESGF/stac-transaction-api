@@ -51,5 +51,6 @@ COPY ./src .
 
 CMD ["uvicorn", "api:app", \
      "--host", "0.0.0.0", "--port", "8000", \
+     "--forwarded-allow-ips", "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
      "--ssl-keyfile", "/etc/ssl/transaction/server.key", \
      "--ssl-certfile", "/etc/ssl/transaction/server.crt"]
