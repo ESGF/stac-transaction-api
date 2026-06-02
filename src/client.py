@@ -79,9 +79,10 @@ class TransactionClient(BaseTransactionsClient):
             properties = item.properties
         elif role == "UPDATE" and item_id:
             facets = item_id.split(".")
+            extension_id = collection_id.lower()
             properties = {
                 "project": collection_id,
-                "institute_id": facets[2],
+                f"{extension_id}:institute_id": facets[2],
             }
         else:
             properties = item.properties
