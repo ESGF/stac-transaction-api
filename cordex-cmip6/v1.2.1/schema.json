@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://esgf.github.io/stac-transaction-api/cordex-cmip6/1.2.1/schema.json#",
+  "$id": "https://esgf.github.io/stac-transaction-api/cordex-cmip6/v1.2.1/schema.json#",
   "title": "CORDEX-CMIP6 Extension",
   "description": "STAC CORDEX-CMIP6 Extension for STAC Items and STAC Collection Summaries.",
   "type": "object",
@@ -23,7 +23,7 @@
         },
         {
           "contains": {
-            "const": "https://esgf.github.io/stac-transaction-api/cordex-cmip6/1.2.1/schema.json"
+            "const": "https://esgf.github.io/stac-transaction-api/cordex-cmip6/v1.2.1/schema.json"
           }
         }
       ]
