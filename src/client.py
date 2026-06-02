@@ -73,8 +73,18 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         request_id: str,
         event_id: str,
+        item_id: str = None,
     ) -> dict:
-        properties = item.properties
+        if role == "CREATE":
+            properties = item.properties
+        elif role == "UPDATE" and item_id:
+            facets = item_id.split(".")
+            properties = {
+                "project": collection_id,
+                "institute_id": facets[2],
+            }
+        else:
+            properties = item.properties
 
         allowed_groups = self.allowed_groups(properties, settings.client.access_control_policy)
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
@@ -151,6 +161,7 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
         request_id: str,
         event_id: str,
+        item_id: str = None,
     ) -> Auth:
 
         if settings.authorizer == "globus":
@@ -161,6 +172,7 @@ class TransactionClient(BaseTransactionsClient):
                 request=request,
                 request_id=request_id,
                 event_id=event_id,
+                item_id=item_id,
             )
         else:
             return self.egi_authorize(
@@ -352,6 +364,7 @@ class TransactionClient(BaseTransactionsClient):
             request=request,
             request_id=request_id,
             event_id=event_id,
+            item_id=item_id,
         )
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
