@@ -82,7 +82,7 @@ class TransactionClient(BaseTransactionsClient):
             extension_id = collection_id.lower()
             properties = {
                 "project": collection_id,
-                f"{extension_id}:institute_id": facets[2],
+                f"{extension_id}:institution_id": facets[2],
             }
         else:
             properties = item.properties
