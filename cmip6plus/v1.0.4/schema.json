@@ -90,10 +90,7 @@
                   "rel": {
                     "const": "cite-as"
                   }
-                },
-                "required": [
-                  "rel"
-                ]
+                }
               }
             }
           ]
