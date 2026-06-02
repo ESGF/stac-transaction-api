@@ -2,7 +2,7 @@
   "project": {
     "CMIP6": {
       "cmip6:institution_id": {
-        "ALCF": [
+        "AER": [
           {
             "name": "ESGFNG Integration",
             "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
@@ -10,34 +10,6 @@
           }
         ],
         "AS-RCEC": [
-          {
-            "name": "ESGFNG Integration",
-            "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
-            "url": "https://app.globus.org/groups/e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3"
-          }
-        ],
-        "EC-Earth-Consortium": [
-          {
-            "name": "ESGFNG Integration",
-            "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
-            "url": "https://app.globus.org/groups/e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3"
-          }
-        ],
-        "LLNL": [
-          {
-            "name": "ESGFNG Integration",
-            "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
-            "url": "https://app.globus.org/groups/e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3"
-          }
-        ],
-        "UCI": [
-          {
-            "name": "ESGFNG Integration",
-            "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
-            "url": "https://app.globus.org/groups/e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3"
-          }
-        ],
-        "AER": [
           {
             "name": "ESGFNG Integration",
             "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
@@ -142,6 +114,13 @@
             "url": "https://app.globus.org/groups/e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3"
           }
         ],
+        "EC-Earth-Consortium": [
+          {
+            "name": "ESGFNG Integration",
+            "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
+            "url": "https://app.globus.org/groups/e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3"
+          }
+        ],
         "FIO-QLNM": [
           {
             "name": "ESGFNG Integration",
@@ -171,6 +150,13 @@
           }
         ],
         "KIOST": [
+          {
+            "name": "ESGFNG Integration",
+            "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
+            "url": "https://app.globus.org/groups/e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3"
+          }
+        ],
+        "LLNL": [
           {
             "name": "ESGFNG Integration",
             "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
@@ -297,6 +283,13 @@
           }
         ],
         "UA": [
+          {
+            "name": "ESGFNG Integration",
+            "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",
+            "url": "https://app.globus.org/groups/e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3"
+          }
+        ],
+        "UCI": [
           {
             "name": "ESGFNG Integration",
             "uuid": "e3329078-b8f6-11f0-9fdd-0e7d9e9fc9e3",

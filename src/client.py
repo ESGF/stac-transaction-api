@@ -54,8 +54,10 @@ class TransactionClient(BaseTransactionsClient):
         if isinstance(acp, list):
             return acp
         for facet, subpolicy in acp.items():
+            logger.info("FACET: %s", facet)
             if hasattr(properties, facet):
                 property_value = getattr(properties, facet)
+                logger.info("PROPERTY VALUE: %s", property_value)
                 if isinstance(property_value, str):
                     property_value = [property_value]
                 matches = list(set(property_value) & set(subpolicy.keys()))
