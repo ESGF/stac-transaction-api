@@ -65,13 +65,16 @@ class TransactionClient(BaseTransactionsClient):
                         return groups
         return []
 
-    def globus_authorize(self, item: Item, request: Request, collection_id: str) -> dict:
+    def globus_authorize(
+        self,
+        collection_id: str,
+        item: Item,
+        role: str,
+        request: Request,
+        request_id: str,
+        event_id: str,
+    ) -> dict:
         properties = item.properties
-
-        if item.collection != collection_id:
-            raise ValueError("Item collection must match path collection_id")
-        if getattr(properties, "project", None) != collection_id:
-            raise ValueError("Item project must match path collection_id")
 
         allowed_groups = self.allowed_groups(properties, settings.client.access_control_policy)
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
@@ -151,7 +154,14 @@ class TransactionClient(BaseTransactionsClient):
     ) -> Auth:
 
         if settings.authorizer == "globus":
-            return self.globus_authorize(collection_id=collection_id, item=item, request=request)
+            return self.globus_authorize(
+                collection_id=collection_id,
+                item=item,
+                role=role,
+                request=request,
+                request_id=request_id,
+                event_id=event_id,
+            )
         else:
             return self.egi_authorize(
                 collection_id=collection_id,
