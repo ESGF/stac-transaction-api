@@ -87,7 +87,9 @@ class TransactionClient(BaseTransactionsClient):
         else:
             properties = item.properties
 
+        logger.info("PROPERTIES: %s", properties)
         allowed_groups = self.allowed_groups(properties, settings.client.access_control_policy)
+        logger.info("ALLOWED GROUPS: %s", allowed_groups)
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
 
         authorizer = request.state.authorizer
