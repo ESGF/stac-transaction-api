@@ -2,6 +2,8 @@ import logging
 import uuid
 from datetime import datetime
 from typing import Optional, Union
+from types import SimpleNamespace
+
 
 from esgf_core_utils.models.auth.egi import EGIAuth
 from esgf_core_utils.models.exceptions import (
@@ -54,10 +56,8 @@ class TransactionClient(BaseTransactionsClient):
         if isinstance(acp, list):
             return acp
         for facet, subpolicy in acp.items():
-            logger.info("FACET: %s", facet)
             if hasattr(properties, facet):
                 property_value = getattr(properties, facet)
-                logger.info("PROPERTY VALUE: %s", property_value)
                 if isinstance(property_value, str):
                     property_value = [property_value]
                 matches = list(set(property_value) & set(subpolicy.keys()))
@@ -77,19 +77,17 @@ class TransactionClient(BaseTransactionsClient):
         event_id: str,
         item_id: str = None,
     ) -> dict:
+        extension_id = collection_id.lower()
         if role == "CREATE":
             properties = item.properties
         elif role == "UPDATE" and item_id:
+            properties = SimpleNamespace()
             facets = item_id.split(".")
-            extension_id = collection_id.lower()
-            properties = {
-                "project": collection_id,
-                f"{extension_id}:institution_id": facets[2],
-            }
+            setattr(properties, "project", collection_id)
+            setattr(properties, f"{extension_id}:institution_id", facets[2])
         else:
             properties = item.properties
 
-        logger.info("PROPERTIES: %s", properties)
         allowed_groups = self.allowed_groups(properties, settings.client.access_control_policy)
         logger.info("ALLOWED GROUPS: %s", allowed_groups)
         allowed_groups_uuid = [g.get("uuid") for g in allowed_groups]
