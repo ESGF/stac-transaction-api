@@ -11,6 +11,7 @@ from esgf_core_utils.models.exceptions import (
     UnexpectedExtensionException,
 )
 from jsonschema.protocols import Validator
+from shapely.geometry import shape
 from stac_fastapi.extensions.core.transaction.request import (
     PartialItem,
     PatchAddReplaceTest,
@@ -180,6 +181,20 @@ def get_extension_validator(extension: str) -> Validator:
     return cls(schema)
 
 
+def validate_geometry(geometry: dict) -> None:
+    """Validate GeoJSON geometry
+
+    Args:
+        geometry (dict): geometry to be validation.
+
+    Raises:
+        STACValidationException: Validation error
+    """
+    geometry_shape = shape(geometry)
+    if not geometry_shape.is_valid:
+        raise STACValidationException()
+
+
 def validate_patch(
     item_id: str,
     item: PartialItem,
@@ -196,6 +211,9 @@ def validate_patch(
         STACValidationException: Validation error
         UnexpectedExtensionException: Unexpect exception with validation
     """
+    if item.geometry:
+        validate_geometry(item.geometry)
+
     item, null_keys = get_null_keys(item)
 
     for extension in extensions:
@@ -246,6 +264,8 @@ def validate_post(
     Raises:
         STACValidationException: Validation error
     """
+    validate_geometry(item.geometry)
+
     for extension in extensions:
         extension_validator = get_extension_validator(str(extension))
 
