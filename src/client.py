@@ -384,11 +384,16 @@ class TransactionClient(BaseTransactionsClient):
 
         user_agent = headers.get("user-agent", "/").split("/")
 
+        if isinstance(patch, list):
+            patch_body = [op.model_dump() for op in patch]
+        else:
+            patch_body = item.model_dump()
+
         payload = PatchPayload(
             method="PATCH",
             collection_id=collection_id,
             item_id=item_id,
-            patch=patch.model_dump(),
+            patch=patch_body,
         )
 
         data = Data(type="STAC", payload=payload)
