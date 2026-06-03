@@ -171,6 +171,8 @@ def get_extension_validator(extension: str) -> Validator:
 
 
 def validate_patch(
+    event_id: str,
+    request_id: str,
     item_id: str,
     item: PartialItem,
     extensions: list[str],
