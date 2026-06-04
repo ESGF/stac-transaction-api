@@ -535,7 +535,7 @@
             "yrPt"
           ]
         },
-        "cmip6:grid": {
+        "cmip6plus:grid": {
           "type": "string"
         },	  
         "cmip6plus:grid_label": {
