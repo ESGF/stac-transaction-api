@@ -535,6 +535,9 @@
             "yrPt"
           ]
         },
+        "cmip6:grid": {
+          "type": "string"
+        },	  
         "cmip6plus:grid_label": {
           "type": "string",
           "enum": [
