@@ -4,10 +4,9 @@ from typing import Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if os.environ.get("TRANSACTION_AUTHORIZER") == "egi":
-    from src.settings.ceda import CEDAClientSettings as ClientSettings
+    from settings.ceda import CEDAClientSettings as ClientSettings
 else:
-    from src.settings.globus import GlobusClientSettings as ClientSettings
-
+    from settings.globus import GlobusClientSettings as ClientSettings
 DEFAULT_EXTENSIONS = {
     "CMIP6": {
         "CMIP6": {
@@ -29,32 +28,12 @@ DEFAULT_EXTENSIONS = {
             "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
         },
     },
-    "CMIP6PLUS": {
-        "CMIP6PLUS": {
+    "CMIP6Plus": {
+        "CMIP6Plus": {
             "regex": [
                 r"https:\/\/esgf\.github\.io\/stac-transaction-api\/cmip6plus\/v[0-9]\.[0-9]\.[0-9]/schema\.json"
             ],
-            "default": "https://esgf.github.io/stac-transaction-api/cmip6plus/v1.0.1/schema.json",
-        },
-        "alternate_assets": {
-            "regex": [
-                r"https:\/\/stac-extensions\.github\.io\/alternate-assets\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"
-            ],
-            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
-        },
-        "file": {
-            "regex": [
-                r"https:\/\/stac-extensions\.github\.io\/file\/v[0-9]\.[0-9]\.[0-9]/schema\.json"
-            ],
-            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
-        },
-    },
-    "CMIP7": {
-        "CMIP7": {
-            "regex": [
-                r"https:\/\/stac-extensions\.github\.io\/cmip7\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"
-            ],
-            "default": "https://stac-extensions.github.io/cmip7/v3.0.6/schema.json",
+            "default": "https://esgf.github.io/stac-transaction-api/cmip6plus/v1.0.4/schema.json",
         },
         "alternate_assets": {
             "regex": [
@@ -75,6 +54,26 @@ DEFAULT_EXTENSIONS = {
                 r"https:\/\/esgf\.github\.io\/stac-transaction-api\/cordex-cmip6\/v[0-9]\.[0-9]\.[0-9]/schema\.json"
             ],
             "default": "https://esgf.github.io/stac-transaction-api/cordex-cmip6/v3.1.2/schema.json",
+        },
+        "alternate_assets": {
+            "regex": [
+                r"https:\/\/stac-extensions\.github\.io\/alternate-assets\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"
+            ],
+            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+        },
+        "file": {
+            "regex": [
+                r"https:\/\/stac-extensions\.github\.io\/file\/v[0-9]\.[0-9]\.[0-9]/schema\.json"
+            ],
+            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+        },
+    },
+    "CMIP7": {
+        "CMIP7": {
+            "regex": [
+                r"https:\/\/stac-extensions\.github\.io\/cmip7\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"
+            ],
+            "default": "https://stac-extensions.github.io/cmip7/v3.0.6/schema.json",
         },
         "alternate_assets": {
             "regex": [
@@ -161,11 +160,11 @@ class Settings(BaseSettings):
         env_prefix="TRANSACTION_",
         env_nested_delimiter="__",
         env_file=".env",
+        extra="ignore",
     )
 
     authorizer: Literal["egi", "globus"]
     client: ClientSettings
-
     debug: bool = False
 
 
