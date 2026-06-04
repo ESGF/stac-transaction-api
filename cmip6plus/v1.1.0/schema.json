@@ -83,16 +83,26 @@
           "items": {
             "$ref": "#/definitions/link_fields"
           },
-          "allOf": [
-            {
-              "contains": {
-                "properties": {
-                  "rel": {
-                    "const": "cite-as"
-                  }
-                }
-              }
-            }
+            "allOf": [
+		{
+		    "if": {
+			"properties": {
+			    "rel": {
+				"const": "cite-as"
+			    }
+			}
+		    },
+		    "then": {
+			"properties": {
+			    "title": {
+				"const": "Citation URL"
+			    },
+			    "type": {
+				"const": "application/json"
+			    }
+			}
+		    }
+		}
           ]
         }
       }
