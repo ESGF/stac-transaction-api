@@ -381,7 +381,8 @@
         },
         "cmip6plus:data_specs_version": {
           "type": "string",
-          "enum": [
+            "enum": [
+		"6.5.0.0",
             "01.00.22",
             "01.00.23",
             "01.00.25",
