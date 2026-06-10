@@ -25,7 +25,9 @@ from settings import DEFAULT_EXTENSIONS
 logger = logging.getLogger("uvicorn.error")
 
 
-def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
+def operation_to_partial_item(
+    collection_id: str, operations: list[PatchOperation]
+) -> PartialItem:
     """Convert operations to partial item
 
     Args:
@@ -82,7 +84,9 @@ def operation_to_partial_item(collection_id: str, operations: list[PatchOperatio
     return PartialItem.model_validate(item)
 
 
-def validate_extensions(collection_id: str, item_extensions: list[str], strict: bool = False) -> list[str]:
+def validate_extensions(
+    collection_id: str, item_extensions: list[str], strict: bool = False
+) -> list[str]:
     """Validate expected default extensions are present.
 
     Args:
@@ -106,14 +110,20 @@ def validate_extensions(collection_id: str, item_extensions: list[str], strict: 
             expected_extension_key,
             expected_extension,
         ) in expected_extensions.copy().items():
-            if any(re.compile(regex).match(str(item_extension)) for regex in expected_extension["regex"]):
+            if any(
+                re.compile(regex).match(str(item_extension))
+                for regex in expected_extension["regex"]
+            ):
                 expected_extensions.pop(expected_extension_key)
                 expected = True
 
         if not expected:
             raise UnexpectedExtensionException(extension=item_extension)
 
-    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions.values()]
+    missing_extensions = [
+        expected_extension["default"]
+        for expected_extension in expected_extensions.values()
+    ]
 
     if strict & len(missing_extensions) > 0:
         raise ExpectedExtensionsMissingException(extensions=missing_extensions)
@@ -171,6 +181,22 @@ def get_extension_validator(extension: str) -> Validator:
     return cls(schema)
 
 
+def validate_bbox(bbox: list[int | float]) -> None:
+    """Validate bounding box is WGS84
+
+    Args:
+        bbox (int | float): bounding box to be validated
+
+    Raises:
+        STACValidationException: _description_
+    """
+    minx, miny, maxx, maxy = bbox[:4]
+    if not (-180.0 <= minx <= 180.0 and -180.0 <= maxx <= 180.0) or not (
+        -90.0 <= miny <= 90.0 and -90.0 <= maxy <= 90.0
+    ):
+        raise STACValidationException()
+
+
 def validate_geometry(geometry: dict) -> None:
     """Validate GeoJSON geometry
 
@@ -183,6 +209,9 @@ def validate_geometry(geometry: dict) -> None:
     geometry_shape = shape(geometry)
     if not geometry_shape.is_valid:
         raise STACValidationException()
+
+    # Check geometry is WGS84
+    validate_bbox(geometry_shape.bounds)
 
 
 def validate_patch(
@@ -204,6 +233,9 @@ def validate_patch(
     if item.geometry:
         validate_geometry(item.geometry)
 
+    if item.bbox:
+        validate_bbox(item.bbox)
+
     item, null_keys = get_null_keys(item)
 
     for extension in extensions:
@@ -211,7 +243,9 @@ def validate_patch(
 
         required_keys = set()
         raise_errors = []
-        for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+        for error in extension_validator.iter_errors(
+            json.loads(item.model_dump_json())
+        ):
 
             if error.validator in ["oneOf"]:
                 continue
@@ -223,7 +257,9 @@ def validate_patch(
                 raise_errors.append(error)
 
         for null_key_error in required_keys & null_keys:
-            raise_errors.append(f"Variable {null_key_error} is required and cannot be removed")
+            raise_errors.append(
+                f"Variable {null_key_error} is required and cannot be removed"
+            )
 
         if raise_errors:
             logger.error(f"STAC validation error: {item_id}")
@@ -251,12 +287,15 @@ def validate_post(
         STACValidationException: Validation error
     """
     validate_geometry(item.geometry)
+    validate_bbox(item.bbox)
 
     for extension in extensions:
         extension_validator = get_extension_validator(str(extension))
 
         raise_errors = []
-        for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+        for error in extension_validator.iter_errors(
+            json.loads(item.model_dump_json())
+        ):
             raise_errors.append(error)
 
         if raise_errors:
