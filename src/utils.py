@@ -181,7 +181,7 @@ def validate_bbox(bbox: list[int | float]) -> None:
         STACValidationException: _description_
     """
     minx, miny, maxx, maxy = bbox[:4]
-    if not (-180.0 <= minx <= 180.0 and -180.0 <= maxx <= 180.0) or not (-90.0 <= miny <= 90.0 and -90.0 <= maxy <= 90.0):
+    if not (-180.0 <= minx <= 180.0 and -180.0 <= maxx <= 180.0 and -90.0 <= miny <= 90.0 and -90.0 <= maxy <= 90.0):
         raise STACValidationException()
 
 
