@@ -1,7 +1,5 @@
-import json
 from typing import Any, Self
 
-import boto3
 from globus_sdk import ConfidentialAppAuthClient
 from pydantic import BaseModel, model_validator
 

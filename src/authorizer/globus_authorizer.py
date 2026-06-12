@@ -103,9 +103,7 @@ def _load_access_control_policy(policy_path: str) -> dict:
         logger.info("Access Control Policy loaded from %s", policy_path)
         return json.loads(response.data.decode("utf-8"))
 
-    raise RuntimeError(
-        f"Failed to load access control policy from {policy_path}: HTTP {response.status}"
-    )
+    raise RuntimeError(f"Failed to load access control policy from {policy_path}: HTTP {response.status}")
 
 
 def get_access_control_policy() -> dict:

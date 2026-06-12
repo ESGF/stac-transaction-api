@@ -247,7 +247,7 @@ def validate_post(
             error_parts = []
             for error in raise_errors:
                 # anyOf/oneOf failures expose root causes in context (jsonschema docs).
-                if  error.context:
+                if error.context:
                     error_parts.append(error.context[0].message)
                 else:
                     error_parts.append(error.message)
