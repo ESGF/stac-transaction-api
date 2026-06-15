@@ -101,7 +101,6 @@ def _load_access_control_policy(policy_path: str) -> list[str]:
         text = response.data.decode("utf-8")
 
     lines = [line.strip() for line in text.splitlines() if line.strip()]
-    logger.info("Access control policy loaded (%s lines)", len(lines))
     return lines
 
 
@@ -188,7 +187,6 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         response = settings.client.confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
-        logger.info("Token info: %s", token_info)
 
         auth_error = self._validate_token_info(token_info)
         if auth_error is not None:

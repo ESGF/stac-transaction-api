@@ -189,8 +189,6 @@ class GlobusAuth(BaseModel):
         Raises:
             AuthorizationException: Raised if either node or role permission is missing
         """
-        logger.info("Projects: %s", self.projects)
-        logger.info("Nodes: %s", self.nodes)
         try:
             self.projects.authorize(collection_id, role)
             self.nodes.authorize(item.assets or {}, role)

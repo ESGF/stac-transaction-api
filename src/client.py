@@ -71,7 +71,6 @@ class TransactionClient(BaseTransactionsClient):
             Auth: Auth object if successful
         """
         authorizer: GlobusAuth = request.state.authorizer
-        logger.info("Authorizer: %s", authorizer)
         authorizer.authorize(
             collection_id=collection_id,
             item=item,
