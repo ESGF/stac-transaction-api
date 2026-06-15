@@ -1,17 +1,18 @@
 import hashlib
-import json
 import logging
 import time
 from dataclasses import dataclass
 from threading import Lock
 
 import urllib3
+from esgf_core_utils.models.kafka.events import RequesterData
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from globus_sdk import AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
+from authorizer.globus_auth import GlobusAuth
 from settings import settings
 
 logger = logging.getLogger("uvicorn.error")
@@ -19,10 +20,7 @@ logger = logging.getLogger("uvicorn.error")
 """
 FastAPI Middleware Authorizer
     Authorizer type: FastAPI Middleware
-    Event payload: Token
     Token source: Authorization
-    Token validation: ^Bearer\\s[^\\s]+$ # noqa: W605
-                      ^Bearer\\s[0-9A-Za-z]+$ for access tokens issued by Globus Auth (?)  # noqa: W605
     Authorization caching: 300 seconds (TRANSACTION_CLIENT__AUTHORIZER_CACHE_TTL_SECONDS)
 """
 
@@ -82,31 +80,32 @@ _auth_cache = _AuthTTLCache()
 @dataclass
 class _CachedPolicy:
     expires_at: float
-    policy: dict
+    policy: list[str]
 
 
 _policy_cache: _CachedPolicy | None = None
 _policy_lock = Lock()
 
 
-def _load_access_control_policy(policy_path: str) -> dict:
+def _load_access_control_policy(policy_path: str) -> list[str]:
     logger.info("Loading access control policy from %s", policy_path)
     parsed = urllib3.util.parse_url(policy_path)
     if parsed.scheme == "file":
-        with open(parsed.path) as file:
-            logger.info("Access Control Policy loaded from %s", policy_path)
-            return json.load(file)
+        with open(parsed.path, encoding="utf-8") as file:
+            text = file.read()
+    else:
+        http = urllib3.PoolManager()
+        response = http.request("GET", policy_path)
+        if response.status != 200:
+            raise RuntimeError(f"Failed to load access control policy from {policy_path}: HTTP {response.status}")
+        text = response.data.decode("utf-8")
 
-    http = urllib3.PoolManager()
-    response = http.request("GET", policy_path)
-    if response.status == 200:
-        logger.info("Access Control Policy loaded from %s", policy_path)
-        return json.loads(response.data.decode("utf-8"))
-
-    raise RuntimeError(f"Failed to load access control policy from {policy_path}: HTTP {response.status}")
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    logger.info("Access control policy loaded (%s lines)", len(lines))
+    return lines
 
 
-def get_access_control_policy() -> dict:
+def get_access_control_policy() -> list[str]:
     """Return access control policy, reloading from policy_path when cache expires."""
     global _policy_cache
 
@@ -132,9 +131,25 @@ def get_access_control_policy() -> dict:
     return policy
 
 
-def _authorizer_context(auth: dict) -> dict:
-    """Attach access control policy to token auth (policy has its own TTL cache)."""
-    return {**auth, "access_control_policy": get_access_control_policy()}
+def _authorizer_context(auth: dict) -> GlobusAuth:
+    """Build GlobusAuth from token auth and cached access control policy entitlements."""
+    token_info = auth["token_info"]
+    user_group_ids = {group["group_id"] for group in auth["groups"]}
+
+    entitlements = [entitlement for entitlement in get_access_control_policy() if entitlement.rsplit(":group:", 1)[-1] in user_group_ids]
+
+    authorizer = GlobusAuth(
+        requester_data=RequesterData(
+            client_id=token_info.get("client_id"),
+            sub=token_info.get("sub"),
+            iss=token_info.get("iss"),
+        ),
+        regex=settings.client.regex,
+    )
+
+    authorizer.add(entitlements)
+
+    return authorizer
 
 
 def _cache_ttl_seconds(token_info: dict, max_ttl: int) -> int:
@@ -173,6 +188,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
 
         response = settings.client.confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
         token_info = response.data
+        logger.info("Token info: %s", token_info)
 
         auth_error = self._validate_token_info(token_info)
         if auth_error is not None:

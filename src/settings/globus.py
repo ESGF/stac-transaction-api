@@ -19,6 +19,7 @@ class GlobusClientSettings(BaseModel):
     policy_path: str
     authorizer_cache_ttl_seconds: int = 300
     policy_cache_ttl_seconds: int = 300
+    regex: str = r"(?P<type>[^:]*)\:(?P<id>[^:]*)(\:institution\:(?P<institution>[^:]*))?" r"\:role=(?P<role>[^:]*)\:group\:(?P<group_id>[^:]*)"
 
     @model_validator(mode="before")
     @classmethod
