@@ -9,6 +9,7 @@ from esgf_core_utils.models.exceptions import (
     OperationNotPermittedException,
     STACValidationException,
     UnexpectedExtensionException,
+    ExtensionBelowMinimumException,
 )
 from jsonschema.protocols import Validator
 from shapely.geometry import shape
@@ -18,11 +19,21 @@ from stac_fastapi.extensions.core.transaction.request import (
     PatchOperation,
 )
 from stac_pydantic.item import Item
-
+from packaging.version import Version
 from settings import DEFAULT_EXTENSIONS
 
 # Setup logger
 logger = logging.getLogger("uvicorn.error")
+
+VERSION_REGEX = re.compile(
+        r'/v('
+        r'(?P<major>0|[1-9]\d*)\.'
+        r'(?P<minor>0|[1-9]\d*)\.'
+        r'(?P<patch>0|[1-9]\d*)'
+        r'(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?'
+        r'(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?'
+        r')/'
+    )
 
 
 def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
@@ -81,6 +92,23 @@ def operation_to_partial_item(collection_id: str, operations: list[PatchOperatio
 
     return PartialItem.model_validate(item)
 
+def validate_extension_version(minimum: str, extension: str) -> None:
+    """Validate an extenions version is above the minimum.
+
+    Args:
+        default (str): default extension with minimum version.
+        extension (str): extension to be validated.
+
+    Raises:
+        ExtensionBelowMinimumException: extension below minimum
+    """
+
+    minimum_version = VERSION_REGEX.search(extension).group(1)
+    extension_version = VERSION_REGEX.search(minimum).group(1)
+
+    if Version(extension_version) < Version(minimum_version):
+        raise ExtensionBelowMinimumException(extension=extension, minimum_version=f"v{minimum_version}")
+
 
 def validate_extensions(collection_id: str, item_extensions: list[str], strict: bool = False) -> list[str]:
     """Validate expected default extensions are present.
@@ -109,6 +137,8 @@ def validate_extensions(collection_id: str, item_extensions: list[str], strict: 
             if any(re.compile(regex).match(str(item_extension)) for regex in expected_extension["regex"]):
                 expected_extensions.pop(expected_extension_key)
                 expected = True
+
+                validate_extension_version(minimum=expected_extension["default"], extension=str(item_extension))
 
         if not expected:
             raise UnexpectedExtensionException(extension=item_extension)
