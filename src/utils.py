@@ -26,14 +26,14 @@ from settings import DEFAULT_EXTENSIONS
 logger = logging.getLogger("uvicorn.error")
 
 VERSION_REGEX = re.compile(
-        r'/v('
-        r'(?P<major>0|[1-9]\d*)\.'
-        r'(?P<minor>0|[1-9]\d*)\.'
-        r'(?P<patch>0|[1-9]\d*)'
-        r'(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?'
-        r'(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?'
-        r')/'
-    )
+    r"/v("
+    r"(?P<major>0|[1-9]\d*)\."
+    r"(?P<minor>0|[1-9]\d*)\."
+    r"(?P<patch>0|[1-9]\d*)"
+    r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
+    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
+    r")/"
+)
 
 
 def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
@@ -91,6 +91,7 @@ def operation_to_partial_item(collection_id: str, operations: list[PatchOperatio
             raise OperationNotPermittedException(op=operation.op)
 
     return PartialItem.model_validate(item)
+
 
 def validate_extension_version(minimum: str, extension: str) -> None:
     """Validate an extenions version is above the minimum.
