@@ -1,12 +1,13 @@
 import os
 from typing import Literal
-
+import re
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if os.environ.get("TRANSACTION_AUTHORIZER") == "egi":
     from settings.ceda import CEDAClientSettings as ClientSettings
 else:
     from settings.globus import GlobusClientSettings as ClientSettings
+
 DEFAULT_EXTENSIONS = {
     "CMIP6": {
         "CMIP6": {
@@ -79,6 +80,16 @@ DEFAULT_EXTENSIONS = {
         },
     },
 }
+
+VERSION_REGEX = re.compile(
+    r"/v("
+    r"(?P<major>0|[1-9]\d*)\."
+    r"(?P<minor>0|[1-9]\d*)\."
+    r"(?P<patch>0|[1-9]\d*)"
+    r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
+    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
+    r")/"
+)
 
 
 class Settings(BaseSettings):

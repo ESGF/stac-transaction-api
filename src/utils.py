@@ -20,20 +20,10 @@ from stac_fastapi.extensions.core.transaction.request import (
 )
 from stac_pydantic.item import Item
 from packaging.version import Version
-from settings import DEFAULT_EXTENSIONS
+from settings import DEFAULT_EXTENSIONS, VERSION_REGEX
 
 # Setup logger
 logger = logging.getLogger("uvicorn.error")
-
-VERSION_REGEX = re.compile(
-    r"/v("
-    r"(?P<major>0|[1-9]\d*)\."
-    r"(?P<minor>0|[1-9]\d*)\."
-    r"(?P<patch>0|[1-9]\d*)"
-    r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
-    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
-    r")/"
-)
 
 
 def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
