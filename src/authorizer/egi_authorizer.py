@@ -28,7 +28,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
         # Need to bypass authorization for this endpoint
-        if request.url.path == "/healthcheck":
+        if request.url.path in ["/healthcheck", "/scope"]:
             return await call_next(request)
 
         logger.info("Request Headers %s", request.headers)
