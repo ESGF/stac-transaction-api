@@ -21,6 +21,17 @@ async def healthcheck():
     )
 
 
+if settings.authorizer == "egi":
+
+    @app.get("/scope")
+    async def scope():
+        return JSONResponse(
+            content={"scope": "offline_access entitlements"},
+            media_type="application/json",
+            status_code=200,
+        )
+
+
 @app.exception_handler(RFC9457Exception)
 async def rfc9457_handler(request: Request, exc: RFC9457Exception):
     return JSONResponse(
