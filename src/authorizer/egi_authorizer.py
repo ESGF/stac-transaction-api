@@ -31,7 +31,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         if request.url.path in ["/healthcheck", "/scope"]:
             return await call_next(request)
 
-        logger.info("Request Headers %s", request.headers)
+        logger.debug("Request Headers %s", request.headers)
 
         auth = httpx.BasicAuth(
             username=settings.client.client_id,
@@ -39,7 +39,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
         )
 
         async with httpx.AsyncClient(timeout=5.0, verify=False) as client:
-            logger.info(
+            logger.debug(
                 "Post request to %s",
                 settings.client.introspection_endpoint,
             )
@@ -53,6 +53,8 @@ class EGIAuthorizer(BaseHTTPMiddleware):
             response.raise_for_status()
 
         token_info = response.json()
+
+        logger.debug("Token info: %s", token_info)
 
         authorizer = EGIAuth(
             regex=settings.client.regex,
