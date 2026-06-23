@@ -1,7 +1,7 @@
 from esgf_core_utils.models.exceptions import RFC9457Exception
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from stac_fastapi.extensions.core.transaction import TransactionExtension
+from stac_fastapi.extensions import TransactionExtension
 from stac_fastapi.types.config import ApiSettings
 
 from authorizer import Authorizer
