@@ -2,6 +2,7 @@ import logging
 
 import httpx
 from esgf_core_utils.models.auth.egi import EGIAuth
+from esgf_core_utils.models.exceptions import InvalidTokenAudienceException
 from esgf_core_utils.models.kafka.events import RequesterData
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -53,6 +54,12 @@ class EGIAuthorizer(BaseHTTPMiddleware):
             response.raise_for_status()
 
         token_info = response.json()
+
+        if request.headers["host"] not in token_info["aud"]:
+            raise InvalidTokenAudienceException(
+                token_audience=request.headers["host"],
+                expected_audience=", ".join(token_info["aud"]),
+            )
 
         logger.debug("Token info: %s", token_info)
 
