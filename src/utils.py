@@ -13,7 +13,7 @@ from esgf_core_utils.models.exceptions import (
 )
 from jsonschema.protocols import Validator
 from shapely.geometry import shape
-from stac_fastapi.extensions.core.transaction.request import (
+from stac_fastapi.extensions.transaction.request import (
     PartialItem,
     PatchAddReplaceTest,
     PatchOperation,

@@ -14,8 +14,8 @@ dependencies = [
     "jsonschema>=4.24.0",
     "packaging>=26.2",
     "shapely>=2.1.2",
-    "stac-fastapi.types>=6.0.0",
-    "stac-fastapi.extensions>=6.0.0",
+    "stac-fastapi.types>=6.3.0",
+    "stac-fastapi.extensions>=6.3.0",
     "uvicorn>=0.46.0",
 ]
 
