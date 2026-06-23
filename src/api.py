@@ -1,3 +1,5 @@
+import logging
+
 from esgf_core_utils.models.exceptions import RFC9457Exception
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -7,6 +9,9 @@ from stac_fastapi.types.config import ApiSettings
 from authorizer import Authorizer
 from client import TransactionClient
 from settings import settings
+
+logger = logging.getLogger("uvicorn.error")
+logger.setLevel(logging.DEBUG if settings.debug else logging.INFO)
 
 app = FastAPI(debug=settings.debug)
 
