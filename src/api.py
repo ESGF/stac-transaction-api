@@ -13,6 +13,14 @@ from settings import settings
 logger = logging.getLogger("uvicorn.error")
 logger.setLevel(logging.DEBUG if settings.debug else logging.INFO)
 
+
+class HealthCheckFilter(logging.Filter):
+    def filter(self, record):
+        return "/healthcheck" not in record.getMessage()
+
+
+logging.getLogger("uvicorn.access").addFilter(HealthCheckFilter())
+
 app = FastAPI(debug=settings.debug)
 
 
