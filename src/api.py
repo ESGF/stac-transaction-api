@@ -26,7 +26,7 @@ if settings.authorizer == "egi":
     @app.get("/scope")
     async def scope():
         return JSONResponse(
-            content={"scope": "offline_access entitlements"},
+            content={"scope": settings.client.scope},
             media_type="application/json",
             status_code=200,
         )
