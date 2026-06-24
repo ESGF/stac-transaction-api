@@ -6,12 +6,13 @@ import httpx
 import jsonschema
 from esgf_core_utils.models.exceptions import (
     ExpectedExtensionsMissingException,
+    ExtensionBelowMinimumException,
     OperationNotPermittedException,
     STACValidationException,
     UnexpectedExtensionException,
-    ExtensionBelowMinimumException,
 )
 from jsonschema.protocols import Validator
+from packaging.version import Version
 from shapely.geometry import shape
 from stac_fastapi.extensions.transaction.request import (
     PartialItem,
@@ -19,14 +20,16 @@ from stac_fastapi.extensions.transaction.request import (
     PatchOperation,
 )
 from stac_pydantic.item import Item
-from packaging.version import Version
+
 from settings import DEFAULT_EXTENSIONS, VERSION_REGEX
 
 # Setup logger
 logger = logging.getLogger("uvicorn.error")
 
 
-def operation_to_partial_item(collection_id: str, operations: list[PatchOperation]) -> PartialItem:
+def operation_to_partial_item(
+    collection_id: str, operations: list[PatchOperation]
+) -> PartialItem:
     """Convert operations to partial item
 
     Args:
@@ -98,10 +101,14 @@ def validate_extension_version(minimum: str, extension: str) -> None:
     extension_version = VERSION_REGEX.search(minimum).group(1)
 
     if Version(extension_version) < Version(minimum_version):
-        raise ExtensionBelowMinimumException(extension=extension, minimum_version=f"v{minimum_version}")
+        raise ExtensionBelowMinimumException(
+            extension=extension, minimum_version=f"v{minimum_version}"
+        )
 
 
-def validate_extensions(collection_id: str, item_extensions: list[str], strict: bool = False) -> list[str]:
+def validate_extensions(
+    collection_id: str, item_extensions: list[str], strict: bool = False
+) -> list[str]:
     """Validate expected default extensions are present.
 
     Args:
@@ -125,16 +132,24 @@ def validate_extensions(collection_id: str, item_extensions: list[str], strict: 
             expected_extension_key,
             expected_extension,
         ) in expected_extensions.copy().items():
-            if any(re.compile(regex).match(str(item_extension)) for regex in expected_extension["regex"]):
+            if any(
+                re.compile(regex).match(str(item_extension))
+                for regex in expected_extension["regex"]
+            ):
                 expected_extensions.pop(expected_extension_key)
                 expected = True
 
-                validate_extension_version(minimum=expected_extension["default"], extension=str(item_extension))
+                validate_extension_version(
+                    minimum=expected_extension["default"], extension=str(item_extension)
+                )
 
         if not expected:
             raise UnexpectedExtensionException(extension=item_extension)
 
-    missing_extensions = [expected_extension["default"] for expected_extension in expected_extensions.values()]
+    missing_extensions = [
+        expected_extension["default"]
+        for expected_extension in expected_extensions.values()
+    ]
 
     if strict & len(missing_extensions) > 0:
         raise ExpectedExtensionsMissingException(extensions=missing_extensions)
@@ -202,7 +217,12 @@ def validate_bbox(bbox: list[int | float]) -> None:
         STACValidationException: _description_
     """
     minx, miny, maxx, maxy = bbox[:4]
-    if not (-180.0 <= minx <= 180.0 and -180.0 <= maxx <= 180.0 and -90.0 <= miny <= 90.0 and -90.0 <= maxy <= 90.0):
+    if not (
+        -180.0 <= minx <= 180.0
+        and -180.0 <= maxx <= 180.0
+        and -90.0 <= miny <= 90.0
+        and -90.0 <= maxy <= 90.0
+    ):
         raise STACValidationException()
 
 
@@ -252,7 +272,9 @@ def validate_patch(
 
         required_keys = set()
         raise_errors = []
-        for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+        for error in extension_validator.iter_errors(
+            json.loads(item.model_dump_json())
+        ):
 
             if error.validator in ["oneOf"]:
                 continue
@@ -264,17 +286,17 @@ def validate_patch(
                 raise_errors.append(error)
 
         for null_key_error in required_keys & null_keys:
-            raise_errors.append(f"Variable {null_key_error} is required and cannot be removed")
+            raise_errors.append(
+                f"Variable {null_key_error} is required and cannot be removed"
+            )
 
         if raise_errors:
-            logger.error(f"STAC validation error: {item_id}")
+            logger.error("STAC validation error: %s", item_id)
 
             raise STACValidationException()
 
 
 def validate_post(
-    event_id: str,
-    request_id: str,
     item_id: str,
     item: Item,
     extensions: list[str],
@@ -282,8 +304,6 @@ def validate_post(
     """Validate a Item post request
 
     Args:
-        event_id (str): ID of the Kafka event
-        request_id (str): ID of the request
         item_id (str): ID of the item to validate
         item (Item): Partial Item to be validated to validate
         extensions (list[str]): List of STAC extensions to be validated against
@@ -298,10 +318,12 @@ def validate_post(
         extension_validator = get_extension_validator(str(extension))
 
         raise_errors = []
-        for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+        for error in extension_validator.iter_errors(
+            json.loads(item.model_dump_json())
+        ):
             raise_errors.append(error)
 
         if raise_errors:
-            logger.error(f"STAC validation error: {item_id}")
+            logger.error("STAC validation error: %s", item_id)
 
             raise STACValidationException()

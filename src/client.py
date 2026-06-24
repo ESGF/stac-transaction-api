@@ -202,8 +202,6 @@ class TransactionClient(BaseTransactionsClient):
                 collection_id=collection_id, item_extensions=item_extensions
             )
             validate_post(
-                event_id=event_id,
-                request_id=request_id,
                 item_id=item.id,
                 item=item,
                 extensions=item_extensions,
@@ -290,8 +288,6 @@ class TransactionClient(BaseTransactionsClient):
         )
 
         validate_post(
-            event_id=event_id,
-            request_id=request_id,
             item_id=item.id,
             item=item,
             extensions=item_extensions,
@@ -372,8 +368,6 @@ class TransactionClient(BaseTransactionsClient):
         )
 
         validate_patch(
-            event_id=event_id,
-            request_id=request_id,
             item_id=item_id,
             item=item,
             extensions=item_extensions,
