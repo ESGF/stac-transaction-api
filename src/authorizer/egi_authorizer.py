@@ -1,7 +1,7 @@
 import logging
 
 import httpx
-from esgf_core_utils.models.auth.egi import EGIAuth
+from esgf_core_utils.models.auth import Authorizer
 from esgf_core_utils.models.exceptions import InvalidTokenAudienceException
 from esgf_core_utils.models.kafka.events import RequesterData
 from fastapi import Request
@@ -63,7 +63,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
 
         logger.debug("Token info: %s", token_info)
 
-        authorizer = EGIAuth(
+        authorizer = Authorizer(
             regex=settings.client.regex,
             requester_data=RequesterData(
                 client_id=token_info["client_id"],
