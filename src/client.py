@@ -7,6 +7,7 @@ from esgf_core_utils.models.auth import Authorizer
 from esgf_core_utils.models.exceptions import (
     AuthorizationException,
     ExpectedExtensionsMissingException,
+    ExtensionBelowMinimumException,
     MissingPermissionException,
     OperationNotPermittedException,
     RFC9457Exception,
@@ -202,6 +203,7 @@ class TransactionClient(BaseTransactionsClient):
             OperationNotPermittedException,
             STACValidationException,
             UnexpectedExtensionException,
+            ExtensionBelowMinimumException,
         ) as exc:
             rfc_exc = RFC9457Exception()
             rfc_exc.status_code = 400
@@ -210,6 +212,7 @@ class TransactionClient(BaseTransactionsClient):
             rfc_exc.detail = exc.detail
             rfc_exc.instance = f"{request_id}:{event_id}"
             raise rfc_exc from exc
+
         user_agent = headers.get("user-agent", "/").split("/")
 
         payload = CreatePayload(
@@ -342,14 +345,29 @@ class TransactionClient(BaseTransactionsClient):
         )
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
+        try:
 
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+            item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
 
-        validate_patch(
-            item_id=item_id,
-            item=item,
-            extensions=item_extensions,
-        )
+            validate_patch(
+                item_id=item_id,
+                item=item,
+                extensions=item_extensions,
+            )
+        except (
+            ExpectedExtensionsMissingException,
+            OperationNotPermittedException,
+            STACValidationException,
+            UnexpectedExtensionException,
+            ExtensionBelowMinimumException,
+        ) as exc:
+            rfc_exc = RFC9457Exception()
+            rfc_exc.status_code = 400
+            rfc_exc.type = exc.type
+            rfc_exc.title = exc.title
+            rfc_exc.detail = exc.detail
+            rfc_exc.instance = f"{request_id}:{event_id}"
+            raise rfc_exc from exc
 
         user_agent = headers.get("user-agent", "/").split("/")
 

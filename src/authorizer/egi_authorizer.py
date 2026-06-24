@@ -58,9 +58,7 @@ class EGIAuthorizer(BaseHTTPMiddleware):
 
         logger.debug("Token info: %s", token_info)
 
-        if request.headers["host"] not in [
-            urlparse(aud).hostname for aud in token_info["aud"]
-        ]:
+        if request.headers["host"] not in [urlparse(aud).hostname for aud in token_info["aud"]]:
             raise InvalidTokenAudienceException(
                 token_audience=request.headers["host"],
                 expected_audience=", ".join(token_info["aud"]),
