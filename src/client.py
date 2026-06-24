@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-from esgf_core_utils.models.auth.egi import EGIAuth
+from esgf_core_utils.models.auth import Authorizer
 from esgf_core_utils.models.exceptions import (
     AuthorizationException,
     ExpectedExtensionsMissingException,
@@ -132,7 +132,7 @@ class TransactionClient(BaseTransactionsClient):
         Returns:
             Auth: Auth object if successful
         """
-        authorizer: EGIAuth = request.state.authorizer
+        authorizer: Authorizer = request.state.authorizer
         authorizer.authorize(
             collection_id=collection_id,
             item=item,
