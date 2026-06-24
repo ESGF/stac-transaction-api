@@ -1,6 +1,10 @@
 import logging
+import uuid
 
-from esgf_core_utils.models.exceptions import RFC9457Exception
+from esgf_core_utils.models.exceptions import (
+    InvalidTokenAudienceException,
+    RFC9457Exception,
+)
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from stac_fastapi.extensions import TransactionExtension
@@ -55,6 +59,24 @@ async def rfc9457_handler(request: Request, exc: RFC9457Exception):
             "title": exc.title,
             "detail": exc.detail,
             "instance": exc.instance,
+        },
+    )
+
+
+@app.exception_handler(InvalidTokenAudienceException)
+async def invalid_token_audience_handler(
+    request: Request, exc: InvalidTokenAudienceException
+):
+    event_id = uuid.uuid4().hex
+    request_id = request.headers.get("x-request-id", uuid.uuid4().hex)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "status_code": exc.status_code,
+            "type": exc.type,
+            "title": exc.title,
+            "detail": exc.detail,
+            "instance": f"{request_id}:{event_id}",
         },
     )
 
