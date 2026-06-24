@@ -31,9 +31,7 @@ class TransactionClient:
         self._create_clients()
 
     def _do_login_flow(self):
-        self.auth_client.oauth2_start_flow(
-            requested_scopes=self.scopes, refresh_tokens=True
-        )
+        self.auth_client.oauth2_start_flow(requested_scopes=self.scopes, refresh_tokens=True)
         authorize_url = self.auth_client.oauth2_get_authorize_url()
         print("Please go to this URL and login: {0}".format(authorize_url))
         auth_code = input("Please enter the code here: ").strip()
@@ -45,19 +43,11 @@ class TransactionClient:
         if not token_storage.file_exists():
             response = self._do_login_flow()
             token_storage.store(response)
-            self.groups_tokens = response.by_resource_server[
-                GroupsClient.resource_server
-            ]
-            self.transaction_tokens = response.by_resource_server[
-                STAC_TRANSACTION_API.get("client_id")
-            ]
+            self.groups_tokens = response.by_resource_server[GroupsClient.resource_server]
+            self.transaction_tokens = response.by_resource_server[STAC_TRANSACTION_API.get("client_id")]
         else:
-            self.groups_tokens = token_storage.get_token_data(
-                GroupsClient.resource_server
-            )
-            self.transaction_tokens = token_storage.get_token_data(
-                STAC_TRANSACTION_API.get("client_id")
-            )
+            self.groups_tokens = token_storage.get_token_data(GroupsClient.resource_server)
+            self.transaction_tokens = token_storage.get_token_data(STAC_TRANSACTION_API.get("client_id"))
 
         groups_authorizer = RefreshTokenAuthorizer(
             self.groups_tokens["refresh_token"],
@@ -75,9 +65,7 @@ class TransactionClient:
             expires_at=self.transaction_tokens["expires_at_seconds"],
             on_refresh=token_storage.on_refresh,
         )
-        self.transaction_client = BaseClient(
-            base_url=self.stac_api, authorizer=transaction_authorizer
-        )
+        self.transaction_client = BaseClient(base_url=self.stac_api, authorizer=transaction_authorizer)
 
     def get_my_groups(self):
         groups = self.groups_client.get_my_groups()
@@ -88,9 +76,7 @@ class TransactionClient:
         headers = {
             "User-Agent": f"test_client/{__version__}",
         }
-        resp = self.transaction_client.post(
-            f"/collections/{collection}/items", headers=headers, data=entry
-        )
+        resp = self.transaction_client.post(f"/collections/{collection}/items", headers=headers, data=entry)
         if resp.http_status == 201:
             print(resp.http_status)
             print("Published (POST)")
@@ -109,9 +95,7 @@ class TransactionClient:
         headers = {
             "User-Agent": f"test_client/{__version__}",
         }
-        resp = self.transaction_client.put(
-            f"/collections/{collection}/items/{item_id}", headers=headers, data=entry
-        )
+        resp = self.transaction_client.put(f"/collections/{collection}/items/{item_id}", headers=headers, data=entry)
         if resp.http_status == 201:
             print(resp.http_status)
             print("Updated (PUT)")
@@ -135,9 +119,7 @@ class TransactionClient:
             "Content-Type": "application/json-patch+json",
             "User-Agent": f"test_client/{__version__}",
         }
-        resp = self.transaction_client.patch(
-            f"/collections/{collection}/items/{item_id}", headers=headers, data=entry
-        )
+        resp = self.transaction_client.patch(f"/collections/{collection}/items/{item_id}", headers=headers, data=entry)
         if resp.http_status == 201:
             print(resp.http_status)
             print("Updated (JSON PATCH)")
@@ -160,9 +142,7 @@ class TransactionClient:
             "Content-Type": "application/merge-patch+json",
             "User-Agent": f"test_client/{__version__}",
         }
-        resp = self.transaction_client.patch(
-            f"/collections/{collection}/items/{item_id}", headers=headers, data=entry
-        )
+        resp = self.transaction_client.patch(f"/collections/{collection}/items/{item_id}", headers=headers, data=entry)
         if resp.http_status == 201:
             print(resp.http_status)
             print("Updated (MERGE PATCH)")
