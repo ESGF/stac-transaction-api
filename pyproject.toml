@@ -1,8 +1,8 @@
 [project]
 name = "stac-transaction-api"
 requires-python = ">=3.12,<4.0"
-description = "West ESGF STAC Transaction API"
-version = "0.1.0"
+description = "ESGF STAC Transaction API"
+version = "0.2.0"
 authors = [
     {"name" = "Lukasz Lacinski", "email" = "lukasz@uchicago.edu"},
     {"name" = "Steve Turoscy", "email" = "sturoscy@uchicago.edu"},
