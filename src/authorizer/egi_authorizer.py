@@ -55,13 +55,13 @@ class EGIAuthorizer(BaseHTTPMiddleware):
 
         token_info = response.json()
 
+        logger.debug("Token info: %s", token_info)
+
         if request.headers["host"] not in token_info["aud"]:
             raise InvalidTokenAudienceException(
                 token_audience=request.headers["host"],
                 expected_audience=", ".join(token_info["aud"]),
             )
-
-        logger.debug("Token info: %s", token_info)
 
         authorizer = Authorizer(
             regex=settings.client.regex,
