@@ -3,10 +3,11 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-from esgf_core_utils.models.auth.egi import EGIAuth
+from esgf_core_utils.models.auth import Authorizer
 from esgf_core_utils.models.exceptions import (
     AuthorizationException,
     ExpectedExtensionsMissingException,
+    ExtensionBelowMinimumException,
     MissingPermissionException,
     OperationNotPermittedException,
     RFC9457Exception,
@@ -27,8 +28,8 @@ from esgf_core_utils.models.kafka.events import (
 )
 from esgf_core_utils.models.kafka.producer import KafkaProducer
 from fastapi import Request, Response, status
-from stac_fastapi.extensions.core.transaction import BaseTransactionsClient
-from stac_fastapi.extensions.core.transaction.request import PartialItem, PatchOperation
+from stac_fastapi.extensions.transaction import BaseTransactionsClient
+from stac_fastapi.extensions.transaction.request import PartialItem, PatchOperation
 from stac_fastapi.types.stac import Collection
 from stac_pydantic.item import Item
 
@@ -43,6 +44,7 @@ from utils import (
 # Setup logger
 # logger = logging.getLogger(__name__)
 logger = logging.getLogger("uvicorn.error")
+logger.setLevel(logging.DEBUG)
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -125,7 +127,7 @@ class TransactionClient(BaseTransactionsClient):
         Returns:
             Auth: Auth object if successful
         """
-        authorizer: EGIAuth = request.state.authorizer
+        authorizer: Authorizer = request.state.authorizer
         authorizer.authorize(
             collection_id=collection_id,
             item=item,
@@ -191,8 +193,6 @@ class TransactionClient(BaseTransactionsClient):
         try:
             item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
             validate_post(
-                event_id=event_id,
-                request_id=request_id,
                 item_id=item.id,
                 item=item,
                 extensions=item_extensions,
@@ -203,6 +203,7 @@ class TransactionClient(BaseTransactionsClient):
             OperationNotPermittedException,
             STACValidationException,
             UnexpectedExtensionException,
+            ExtensionBelowMinimumException,
         ) as exc:
             rfc_exc = RFC9457Exception()
             rfc_exc.status_code = 400
@@ -211,6 +212,7 @@ class TransactionClient(BaseTransactionsClient):
             rfc_exc.detail = exc.detail
             rfc_exc.instance = f"{request_id}:{event_id}"
             raise rfc_exc from exc
+
         user_agent = headers.get("user-agent", "/").split("/")
 
         payload = CreatePayload(
@@ -275,8 +277,6 @@ class TransactionClient(BaseTransactionsClient):
         item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
 
         validate_post(
-            event_id=event_id,
-            request_id=request_id,
             item_id=item.id,
             item=item,
             extensions=item_extensions,
@@ -345,16 +345,29 @@ class TransactionClient(BaseTransactionsClient):
         )
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
+        try:
 
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+            item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
 
-        validate_patch(
-            event_id=event_id,
-            request_id=request_id,
-            item_id=item_id,
-            item=item,
-            extensions=item_extensions,
-        )
+            validate_patch(
+                item_id=item_id,
+                item=item,
+                extensions=item_extensions,
+            )
+        except (
+            ExpectedExtensionsMissingException,
+            OperationNotPermittedException,
+            STACValidationException,
+            UnexpectedExtensionException,
+            ExtensionBelowMinimumException,
+        ) as exc:
+            rfc_exc = RFC9457Exception()
+            rfc_exc.status_code = 400
+            rfc_exc.type = exc.type
+            rfc_exc.title = exc.title
+            rfc_exc.detail = exc.detail
+            rfc_exc.instance = f"{request_id}:{event_id}"
+            raise rfc_exc from exc
 
         user_agent = headers.get("user-agent", "/").split("/")
 
