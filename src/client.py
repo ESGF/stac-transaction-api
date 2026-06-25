@@ -24,7 +24,6 @@ from esgf_core_utils.models.kafka.events import (
     PatchPayload,
     Publisher,
     RequesterData,
-    UpdatePayload,
 )
 from esgf_core_utils.models.kafka.producer import KafkaProducer
 from fastapi import Request, Response, status
@@ -32,6 +31,7 @@ from stac_fastapi.extensions.transaction import BaseTransactionsClient
 from stac_fastapi.extensions.transaction.request import PartialItem, PatchOperation
 from stac_fastapi.types.stac import Collection
 from stac_pydantic.item import Item
+from pydantic import TypeAdapter
 
 from settings import settings
 from utils import (
@@ -45,6 +45,8 @@ from utils import (
 # logger = logging.getLogger(__name__)
 logger = logging.getLogger("uvicorn.error")
 logger.setLevel(logging.DEBUG)
+
+patch_adapter = TypeAdapter(PartialItem | list[PatchOperation])
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -257,75 +259,15 @@ class TransactionClient(BaseTransactionsClient):
         item: Item,
         request: Request,
     ) -> Optional[Union[Item, Response]]:
-
-        headers = request.headers.get("headers", {})
-
-        event_id = uuid.uuid4().hex
-        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
-
-        auth = self.authorize(
-            collection_id=collection_id,
-            item=item,
-            role="UPDATE",
-            request=request,
-            request_id=request_id,
-            event_id=event_id,
-        )
-
-        item_extensions = item.stac_extensions if item.stac_extensions else []
-
-        item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
-
-        validate_post(
-            item_id=item.id,
-            item=item,
-            extensions=item_extensions,
-        )
-
-        user_agent = headers.get("User-Agent", "/").split("/")
-
-        payload = UpdatePayload(
-            method="PUT",
-            collection_id=collection_id,
-            item_id=item_id,
-            item=item.model_dump(),
-        )
-
-        data = Data(type="STAC", payload=payload)
-
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
-        metadata = Metadata(
-            auth=auth,
-            event_id=event_id,
-            publisher=publisher,
-            request_id=request_id,
-            time=datetime.now().isoformat(),
-            schema_version="1.0.0",
-        )
-        event = KafkaEvent(metadata=metadata, data=data)
-
-        try:
-            self.producer.success(
-                key=item_id,
-                value=event.model_dump_json().encode("utf8"),
-            )
-
-        except Exception as exc:
-            logger.error("Error producing message: %s", exc)
-            raise UnknownException(instance=f"{request_id}:{event_id}") from exc
-
-        return Response(
-            status_code=status.HTTP_202_ACCEPTED,
-            content="Item queued for update",
-        )
+        raise NotImplementedError("update_item is not implemented")
 
     async def patch_item(
         self,
         collection_id: str,
         item_id: str,
-        patch: Union[PartialItem, list[PatchOperation]],
+        patch: PartialItem | list[PatchOperation],
         request: Request,
-    ) -> Optional[Union[Item, Response]]:
+    ) -> Item | Response | None:
         logger.info("PATCH REQUEST: %s", patch)
 
         item = operation_to_partial_item(collection_id=collection_id, operations=patch) if isinstance(patch, list) else patch
@@ -375,7 +317,7 @@ class TransactionClient(BaseTransactionsClient):
             method="PATCH",
             collection_id=collection_id,
             item_id=item_id,
-            patch=patch.model_dump(),
+            patch=patch_adapter.dump_python(patch),
         )
 
         data = Data(type="STAC", payload=payload)
@@ -412,59 +354,7 @@ class TransactionClient(BaseTransactionsClient):
         item_id: str,
         request: Request,
     ) -> Optional[Union[Item, Response]]:
-        logger.info("DELETE REQUEST: %s %s", collection_id, item_id)
-
-        headers = request.headers.get("headers", {})
-
-        event_id = uuid.uuid4().hex
-        request_id = headers.get("x-request-id", uuid.uuid4().hex)
-
-        auth = self.authorize(
-            collection_id=collection_id,
-            item=item_id,
-            role="UPDATE",
-            request=request,
-            request_id=request_id,
-            event_id=event_id,
-        )
-
-        user_agent = headers.get("user-agent", "/").split("/")
-
-        payload = PatchPayload(
-            method="PATCH",
-            collection_id=collection_id,
-            item_id=item_id,
-            patch=[{"op": "add", "path": "properties.retracted", "value": True}],
-        )
-
-        data = Data(type="STAC", payload=payload)
-
-        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
-
-        metadata = Metadata(
-            auth=auth,
-            event_id=event_id,
-            publisher=publisher,
-            request_id=request_id,
-            time=datetime.now().isoformat(),
-            schema_version="1.0.0",
-        )
-        event = KafkaEvent(metadata=metadata, data=data)
-
-        try:
-            self.producer.success(
-                key=item_id,
-                value=event.model_dump_json().encode("utf8"),
-            )
-
-        except Exception as exc:
-            logger.error("Error producing message: %s", exc)
-            raise UnknownException(instance=f"{request_id}:{event_id}") from exc
-
-        return Response(
-            status_code=status.HTTP_202_ACCEPTED,
-            content="Item queued for deletion",
-        )
+        raise NotImplementedError("delete_item is not implemented")
 
     async def create_collection(self, collection: Collection, **kwargs) -> Collection:
         raise NotImplementedError("create_collection is not implemented")
