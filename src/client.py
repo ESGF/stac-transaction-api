@@ -24,7 +24,6 @@ from esgf_core_utils.models.kafka.events import (
     PatchPayload,
     Publisher,
     RequesterData,
-    UpdatePayload,
 )
 from esgf_core_utils.models.kafka.producer import KafkaProducer
 from fastapi import Request, Response, status
@@ -48,6 +47,7 @@ logger = logging.getLogger("uvicorn.error")
 logger.setLevel(logging.DEBUG)
 
 patch_adapter = TypeAdapter(PartialItem | list[PatchOperation])
+
 
 class TransactionClient(BaseTransactionsClient):
 
