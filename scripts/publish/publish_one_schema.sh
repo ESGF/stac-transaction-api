@@ -1,10 +1,11 @@
-
-
 proj=$1
-pushd $proj
-ver=`python ../get_schema_version.py $proj`
+ver=`python scripts/publish/get_schema_version.py $proj`
 echo $ver
 esgvoc use "$proj@latest"
+
+branch=$(git branch --show-current)
+git checkout gh-pages
+pushd $proj
 esgvoc schema $proj -o schema.json
 
 if [ ! -d $ver ] ; then
@@ -20,3 +21,5 @@ else
     fi
 fi
 popd
+git commit -m"updating $proj to $ver" 
+git checkout $branch
