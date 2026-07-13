@@ -72,17 +72,9 @@ Fixed. A global `NotImplementedError` handler in `api.py` now returns `405 Metho
 
 ---
 
-### Inconsistent import style in `client.py`
+### ✅ Inconsistent import style in `client.py`
 
-```python
-# client.py uses:
-from src.authorizer import Authorizer
-
-# api.py and everything else uses:
-from authorizer import Authorizer
-```
-
-This suggests `client.py` was written or run from a different working directory context. It may work in some environments and fail in others depending on how `PYTHONPATH` is set.
+Fixed. `from src.authorizer import Authorizer` corrected to `from authorizer import Authorizer`, consistent with all other files.
 
 ---
 
@@ -169,7 +161,7 @@ This is correct and necessary for `confluent-kafka` on the AWS SAM base image. H
 | **P2** | ✅ Fixed | Return 405 from unimplemented endpoints instead of 500 |
 | **P2** | ✅ Fixed | Offload sync Globus/HTTPX calls off the event loop |
 | **P2** | Open | Fix `run-local.sh` `--detach` flag placement |
-| **P2** | Open | Fix inconsistent `from src.authorizer` import in `client.py` |
+| **P2** | ✅ Fixed | Fix inconsistent `from src.authorizer` import in `client.py` |
 | **P3** | ✅ Fixed | globus-sdk upgraded to 4.8.1 |
 | **P3** | Open | Move `DEFAULT_EXTENSIONS` to external config |
 | **P3** | Open | Remove or justify `pyjwt` dependency |
