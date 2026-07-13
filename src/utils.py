@@ -1,3 +1,4 @@
+import functools
 import json
 import logging
 import re
@@ -177,6 +178,7 @@ def get_null_keys(item: PartialItem) -> tuple[PartialItem, set[str]]:
     return item, null_keys
 
 
+@functools.lru_cache(maxsize=None)
 def get_extension_validator(extension: str) -> Validator:
     """Get JSON schema validator for an extension.
 
