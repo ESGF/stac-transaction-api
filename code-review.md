@@ -88,7 +88,7 @@ This is the area most in need of investment.
 
 The entire automated test suite is a single test: `test_api.py::TestAPI::test_api__healthcheck`. It verifies the healthcheck endpoint returns 200. Nothing else is tested automatically.
 
-The real test tooling lives in `test/` — but those are manual integration scripts (`data_challenge.py`, `stac_client.py`), not pytest tests. They require live Globus auth, a running API, and real Kafka. Valuable for data challenges, but they're not a substitute for automated tests.
+The real test tooling lives in `tools/` — but those are manual integration scripts (`data_challenge.py`, `stac_client.py`), not pytest tests. They require live Globus auth, a running API, and real Kafka. Valuable for data challenges, but they're not a substitute for automated tests.
 
 ---
 
@@ -112,7 +112,7 @@ The real test tooling lives in `test/` — but those are manual integration scri
 
 ### ✅ globus-sdk upgraded from 3.62.0 to 4.8.1
 
-`test/stac_client.py` migrated from deprecated `SimpleJSONFileAdapter` to `JSONTokenStorage`.
+`tools/stac_client.py` migrated from deprecated `SimpleJSONFileAdapter` to `JSONTokenStorage`.
 
 ---
 

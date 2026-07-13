@@ -769,14 +769,14 @@ ssh = ["bcrypt (>=3.1.5)"]
 
 [[package]]
 name = "esgf-core-utils"
-version = "1.0.7"
+version = "1.1.0"
 description = "Common library and models for the ESGF core architecture"
 optional = false
 python-versions = "<4.0,>=3.12"
 groups = ["main"]
 files = [
-    {file = "esgf_core_utils-1.0.7-py3-none-any.whl", hash = "sha256:6a22b314a8b2f59152424688d5c1d89e6631635ed5a31052b5af581faa18ae3b"},
-    {file = "esgf_core_utils-1.0.7.tar.gz", hash = "sha256:3dd1c5e5f678746f924bb24a73cde8f0e3d05147c6ea868e383deea696f96509"},
+    {file = "esgf_core_utils-1.1.0-py3-none-any.whl", hash = "sha256:8e3702998da2d5f8941091981cc5ed302ddb91e2eaf741d1f3a0bd295cd532cf"},
+    {file = "esgf_core_utils-1.1.0.tar.gz", hash = "sha256:091073d71117895657ca7ed1dc8166241b9d047fab8bb4d54bcaaac996f9939a"},
 ]
 
 [package.dependencies]
@@ -785,7 +785,7 @@ fastapi = ">=0.114.0"
 jinja2 = ">=3.1.6"
 pydantic = ">=2.11.0"
 pydantic-settings = ">=2.6.1"
-stac-fastapi-extensions = ">=6.0.0"
+stac-fastapi-extensions = ">=6.3.0"
 stac-pydantic = ">=3.1.1"
 
 [[package]]
@@ -831,14 +831,14 @@ test = ["pytest", "pytest-cov", "shapely"]
 
 [[package]]
 name = "globus-sdk"
-version = "3.62.0"
+version = "4.8.1"
 description = "Globus SDK for Python"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["globus"]
 files = [
-    {file = "globus_sdk-3.62.0-py3-none-any.whl", hash = "sha256:76e1d1699aefd556339f5caff780bb59ea966455b97eb6153769387aef842459"},
-    {file = "globus_sdk-3.62.0.tar.gz", hash = "sha256:5eabe95ee8c8f891b6b3367924037627bcd388b3433f2994062c5efc67915890"},
+    {file = "globus_sdk-4.8.1-py3-none-any.whl", hash = "sha256:48b57862902a26d8606e73374c354415724cfa9d99301af7e9e406659dafe78d"},
+    {file = "globus_sdk-4.8.1.tar.gz", hash = "sha256:564b168e6fdcac2fe96b1e9a76ebd05666be84d34748315b579b0ecf9956e21a"},
 ]
 
 [package.dependencies]
@@ -1994,4 +1994,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "912d4156e14111ffaef1793ddc85859099bab225ab2356b768115e9e8d8fae78"
+content-hash = "c2d7227ad7e89d4db1fd2002d8f3d4bea3ed6104aefaba16f40113ca2b8ad4e5"
