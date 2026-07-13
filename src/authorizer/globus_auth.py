@@ -104,7 +104,7 @@ class Nodes(BaseModel):
             asset = asset.model_dump() if not isinstance(asset, dict) else asset
 
             if "href" in asset:
-                self.authorize_href(f"https://{asset.get("alternate:name")}", role)
+                self.authorize_href(f"https://{asset.get('alternate:name')}", role)
 
             if alternates := asset.get("alternate"):
                 self.authorize(alternates, role)

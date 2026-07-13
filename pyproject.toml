@@ -28,7 +28,7 @@ ceda = [
 ]
 globus = [
     "boto3==1.43.6",
-    "globus-sdk==3.62.0",
+    "globus-sdk==4.8.1",
     "pyjwt==2.12.1",
 ]
 test = [

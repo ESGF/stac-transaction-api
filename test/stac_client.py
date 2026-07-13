@@ -7,7 +7,7 @@ from globus_sdk import (
     RefreshTokenAuthorizer,
 )
 from globus_sdk.scopes import GroupsScopes
-from globus_sdk.tokenstorage import SimpleJSONFileAdapter
+from globus_sdk.token_storage import JSONTokenStorage
 
 from settings import STAC_CLIENT, STAC_TRANSACTION_API, TOKEN_STORAGE_FILE
 
@@ -39,10 +39,10 @@ class TransactionClient:
 
     def _create_clients(self):
         filename = os.path.expanduser(TOKEN_STORAGE_FILE)
-        token_storage = SimpleJSONFileAdapter(filename)
+        token_storage = JSONTokenStorage(filename)
         if not token_storage.file_exists():
             response = self._do_login_flow()
-            token_storage.store(response)
+            token_storage.store_token_response(response)
             self.groups_tokens = response.by_resource_server[GroupsClient.resource_server]
             self.transaction_tokens = response.by_resource_server[STAC_TRANSACTION_API.get("client_id")]
         else:
@@ -54,7 +54,7 @@ class TransactionClient:
             self.auth_client,
             access_token=self.groups_tokens["access_token"],
             expires_at=self.groups_tokens["expires_at_seconds"],
-            on_refresh=token_storage.on_refresh,
+            on_refresh=token_storage.store_token_response,
         )
         self.groups_client = GroupsClient(authorizer=groups_authorizer)
 
@@ -63,7 +63,7 @@ class TransactionClient:
             self.auth_client,
             access_token=self.transaction_tokens["access_token"],
             expires_at=self.transaction_tokens["expires_at_seconds"],
-            on_refresh=token_storage.on_refresh,
+            on_refresh=token_storage.store_token_response,
         )
         self.transaction_client = BaseClient(base_url=self.stac_api, authorizer=transaction_authorizer)
 
