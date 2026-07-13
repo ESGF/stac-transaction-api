@@ -12,7 +12,7 @@ from globus_sdk import AccessTokenAuthorizer, GroupsClient
 from globus_sdk.scopes import GroupsScopes
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from authorizer.globus_auth import GlobusAuth
+from authorizer.globus_auth_model import GlobusAuth
 from settings import settings
 
 logger = logging.getLogger("uvicorn.error")

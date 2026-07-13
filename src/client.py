@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional, Union
 
 
-from authorizer.globus_auth import GlobusAuth
+from authorizer.globus_auth_model import GlobusAuth
 from esgf_core_utils.models.exceptions import (
     AuthorizationException,
     ExpectedExtensionsMissingException,
