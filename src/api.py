@@ -49,6 +49,14 @@ if settings.authorizer == "egi":
         )
 
 
+@app.exception_handler(NotImplementedError)
+async def not_implemented_handler(request: Request, exc: NotImplementedError):
+    return JSONResponse(
+        status_code=405,
+        content={"detail": "Method not allowed"},
+    )
+
+
 @app.exception_handler(RFC9457Exception)
 async def rfc9457_handler(request: Request, exc: RFC9457Exception):
     return JSONResponse(
