@@ -258,19 +258,22 @@ class TransactionClient(BaseTransactionsClient):
 
         item = operation_to_partial_item(collection_id=collection_id, operations=patch) if isinstance(patch, list) else patch
 
-        headers = request.headers.get("headers", {})
+        headers = request.headers
 
         event_id = uuid.uuid4().hex
-        request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
+        request_id = headers.get("x-request-id", uuid.uuid4().hex)
 
-        auth = self.authorize(
-            collection_id=collection_id,
-            item=item,
-            role="UPDATE",
-            request=request,
-            request_id=request_id,
-            event_id=event_id,
-        )
+        try:
+            auth = self.authorize(
+                collection_id=collection_id,
+                item=item,
+                role="UPDATE",
+                request=request,
+                request_id=request_id,
+                event_id=event_id,
+            )
+        except MissingPermissionException as exc:
+            raise AuthorizationException(instance=f"{request_id}:{event_id}") from exc
 
         item_extensions = item.stac_extensions if item.stac_extensions else []
         try:
