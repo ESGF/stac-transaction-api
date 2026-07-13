@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import logging
 import time
@@ -182,17 +183,21 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
         access_token = authorization_header[7:].strip()
         cached_auth = _auth_cache.get(access_token)
         if cached_auth is not None:
-            request.state.authorizer = _authorizer_context(cached_auth)
+            request.state.authorizer = await asyncio.to_thread(_authorizer_context, cached_auth)
             return await call_next(request)
 
-        response = settings.client.confidential_client.oauth2_token_introspect(access_token, include="identity_set_detail")
+        response = await asyncio.to_thread(
+            lambda: settings.client.confidential_client.oauth2_token_introspect(
+                access_token, include="identity_set_detail"
+            )
+        )
         token_info = response.data
 
         auth_error = self._validate_token_info(token_info)
         if auth_error is not None:
             return auth_error
 
-        groups = self.get_groups(access_token)
+        groups = await asyncio.to_thread(self.get_groups, access_token)
         if not groups:
             return JSONResponse(
                 content={"detail": "Unauthorized - No active group memberships found"},
@@ -205,7 +210,7 @@ class GlobusAuthorizer(BaseHTTPMiddleware):
         }
         ttl = _cache_ttl_seconds(token_info, settings.client.authorizer_cache_ttl_seconds)
         _auth_cache.set(access_token, auth, ttl)
-        request.state.authorizer = _authorizer_context(auth)
+        request.state.authorizer = await asyncio.to_thread(_authorizer_context, auth)
         return await call_next(request)
 
     def _validate_token_info(self, token_info: dict) -> JSONResponse | None:
