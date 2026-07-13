@@ -10,31 +10,15 @@ These are bugs or security problems that need attention now.
 
 ---
 
-### Bug: `patch_item` never reads headers correctly
+### ✅ Bug: `patch_item` never reads headers correctly
 
-**`src/client.py`** — the header-reading line reads the literal string key `"headers"` from the request headers instead of reading the headers object itself:
-
-```python
-# What the code does
-headers = request.headers.get("headers", {})   # always returns {}
-
-# What it should do
-headers = request.headers
-```
-
-**Impact:** In every `PATCH` request, `User-Agent` is always `"/"` and `x-request-id` is always a freshly generated UUID, so the publisher identity embedded in every Kafka event is wrong.
+**`src/client.py`** — Fixed. `request.headers.get("headers", {})` was replaced with `request.headers`, and the missing `MissingPermissionException` guard was added to match `create_item` behavior.
 
 ---
 
 ### Bug: `scripts/run-local.sh` passes `--detach` to the wrong process
 
 `--detach` is passed as a positional argument to `uvicorn` inside the container, not as a flag to `docker run`. The container never actually detaches.
-
----
-
-### Security: Credentials in the repository
-
-**`src/.env.integration`** and **`src/.env.production`** contain live Kafka SASL passwords and Globus client secrets and appear to be committed to the repo. Even if `.gitignore` covers `.env.*` patterns, `.env.integration` and `.env.production` are non-standard names that may slip through. These should be verified to not be in git history and should be managed through a secrets manager (AWS Secrets Manager, Vault, GitHub Actions secrets).
 
 ---
 
@@ -50,16 +34,9 @@ This disables TLS certificate verification for every token introspection call to
 
 ---
 
-### Performance: Live HTTP fetch for JSON Schema on every request
+### ✅ Performance: Live HTTP fetch for JSON Schema on every request
 
-**`src/utils.py` — `get_extension_validator()`** fetches the extension's JSON Schema over HTTP on every single validation call with no caching:
-
-```python
-response = httpx.get(extension)  # every request, no cache
-validator = jsonschema.Draft7Validator(response.json())
-```
-
-For a publish endpoint under any real load, this means every POST or PATCH makes multiple outbound HTTP calls to external schema URIs. This is a network dependency in the hot path, adds latency, and will cause failures if those URLs are temporarily unreachable. The validator should be cached (e.g., in a module-level dict keyed by URI).
+**`src/utils.py` — `get_extension_validator()`** — Fixed. Added `@functools.lru_cache(maxsize=None)` so each schema URI is fetched once per process lifetime.
 
 ---
 
@@ -96,9 +73,9 @@ The mapping of collection IDs to required STAC extensions and their version floo
 
 ---
 
-### Unimplemented endpoints return 500
+### ✅ Unimplemented endpoints return 500
 
-`update_item`, `delete_item`, `create_collection`, etc. raise `NotImplementedError`, which FastAPI will catch and return as a 500 Internal Server Error. Publishers hitting these will see a server error rather than a clear `405 Method Not Allowed`. These should return proper HTTP responses.
+Fixed. A global `NotImplementedError` handler in `api.py` now returns `405 Method Not Allowed` instead of a 500.
 
 ---
 
@@ -132,9 +109,9 @@ The real test tooling lives in `test/` — but those are manual integration scri
 
 ### What should have test coverage
 
-- Authorization logic in `GlobusAuth` (`globus_auth.py`) — the permission model is non-trivial and bugs here are security bugs
+- Authorization logic in `GlobusAuth` (`globus_auth_model.py`) — the permission model is non-trivial and bugs here are security bugs
 - Validation utilities in `utils.py` — `validate_extensions`, `operation_to_partial_item`, `validate_post`, `validate_patch`
-- The `patch_item` header bug described above would have been caught by a test
+- The `patch_item` header bug fixed in this branch would have been caught by a test
 
 ---
 
@@ -145,6 +122,12 @@ The real test tooling lives in `test/` — but those are manual integration scri
 ---
 
 ## 4. Dependency & Build
+
+---
+
+### ✅ globus-sdk upgraded from 3.62.0 to 4.8.1
+
+`test/stac_client.py` migrated from deprecated `SimpleJSONFileAdapter` to `JSONTokenStorage`.
 
 ---
 
@@ -184,16 +167,17 @@ This is correct and necessary for `confluent-kafka` on the AWS SAM base image. H
 
 ## Priority Summary
 
-| Priority | Item |
-|---|---|
-| **P0** | Audit credentials in git history (`.env.integration`, `.env.production`) |
-| **P0** | Fix `patch_item` header bug — publisher identity is wrong in all PATCH Kafka events |
-| **P1** | Cache JSON Schema validators — currently fetched live on every request |
-| **P1** | Fix TLS verification in EGI authorizer |
-| **P1** | Add tests for authorization and validation logic |
-| **P2** | Offload sync Globus/HTTPX calls off the event loop |
-| **P2** | Return 405 from unimplemented endpoints instead of 500 |
-| **P2** | Fix `run-local.sh` `--detach` flag placement |
-| **P3** | Move `DEFAULT_EXTENSIONS` to external config |
-| **P3** | Remove or justify `pyjwt` dependency |
-| **P3** | Fix `confidential_client: Any` type annotation |
+| Priority | Status | Item |
+|---|---|---|
+| **P0** | ✅ Fixed | `patch_item` header bug — publisher identity was wrong in all PATCH Kafka events |
+| **P1** | ✅ Fixed | Cache JSON Schema validators — were fetched live on every request |
+| **P1** | Open | Fix TLS verification in EGI authorizer |
+| **P1** | Open | Add tests for authorization and validation logic |
+| **P2** | ✅ Fixed | Return 405 from unimplemented endpoints instead of 500 |
+| **P2** | Open | Offload sync Globus/HTTPX calls off the event loop |
+| **P2** | Open | Fix `run-local.sh` `--detach` flag placement |
+| **P2** | Open | Fix inconsistent `from src.authorizer` import in `client.py` |
+| **P3** | ✅ Fixed | globus-sdk upgraded to 4.8.1 |
+| **P3** | Open | Move `DEFAULT_EXTENSIONS` to external config |
+| **P3** | Open | Remove or justify `pyjwt` dependency |
+| **P3** | Open | Fix `confidential_client: Any` type annotation |
