@@ -44,16 +44,9 @@ This disables TLS certificate verification for every token introspection call to
 
 ---
 
-### Sync Globus/HTTPX calls inside async middleware
+### ✅ Sync Globus/HTTPX calls inside async middleware
 
-Both `GlobusAuthorizer` and `EGIAuthorizer` are `async def dispatch()` methods, but internally they make blocking synchronous calls:
-
-- Globus SDK (`oauth2_token_introspect`, `oauth2_get_dependent_tokens`, `get_my_groups`) is synchronous
-- `EGIAuthorizer` uses `httpx.post(...)` (synchronous) inside an async handler
-
-This blocks the entire asyncio event loop during every token validation cache miss. For a research infrastructure service that may experience bursty load during data challenges or publication campaigns, this could cause significant latency spikes. The fix is to either use `asyncio.to_thread()` to offload blocking calls, or switch to an async HTTP client for the EGI path.
-
-The existing auth cache in `GlobusAuthorizer` partially mitigates this, but only after the first request per token.
+Fixed. `oauth2_token_introspect`, `get_groups`, and `_authorizer_context` in `GlobusAuthorizer` are now wrapped with `asyncio.to_thread()`. The EGI authorizer was already using `httpx.AsyncClient` correctly — no change needed there.
 
 ---
 
@@ -174,7 +167,7 @@ This is correct and necessary for `confluent-kafka` on the AWS SAM base image. H
 | **P1** | Open | Fix TLS verification in EGI authorizer |
 | **P1** | Open | Add tests for authorization and validation logic |
 | **P2** | ✅ Fixed | Return 405 from unimplemented endpoints instead of 500 |
-| **P2** | Open | Offload sync Globus/HTTPX calls off the event loop |
+| **P2** | ✅ Fixed | Offload sync Globus/HTTPX calls off the event loop |
 | **P2** | Open | Fix `run-local.sh` `--detach` flag placement |
 | **P2** | Open | Fix inconsistent `from src.authorizer` import in `client.py` |
 | **P3** | ✅ Fixed | globus-sdk upgraded to 4.8.1 |
