@@ -65,6 +65,20 @@ DEFAULT_EXTENSIONS = {
             "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
         },
     },
+    "CMIP6Test": {
+        "CMIP6Test": {
+            "regex": [r"https:\/\/esgf\.github\.io\/stac-transaction-api\/cmip6\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://esgf.github.io/stac-transaction-api/cmip6/v2.0.0/schema.json",
+        },
+        "alternate_assets": {
+            "regex": [r"https:\/\/stac-extensions\.github\.io\/alternate-assets\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"],
+            "default": "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json",
+        },
+        "file": {
+            "regex": [r"https:\/\/stac-extensions\.github\.io\/file\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://stac-extensions.github.io/file/v2.1.0/schema.json",
+        },
+    },
 }
 
 VERSION_REGEX = re.compile(
