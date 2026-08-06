@@ -67,8 +67,8 @@ DEFAULT_EXTENSIONS = {
     },
     "CMIP6Test": {
         "CMIP6Test": {
-            "regex": [r"https:\/\/esgf\.github\.io\/stac-transaction-api\/cmip6\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
-            "default": "https://esgf.github.io/stac-transaction-api/cmip6/v2.0.0/schema.json",
+            "regex": [r"https:\/\/esgf\.github\.io\/stac-transaction-api\/cmip6test\/v[0-9]\.[0-9]\.[0-9]/schema\.json"],
+            "default": "https://esgf.github.io/stac-transaction-api/cmip6test/v2.0.0/schema.json",
         },
         "alternate_assets": {
             "regex": [r"https:\/\/stac-extensions\.github\.io\/alternate-assets\/v[0-9]\.[0-9]\.[0-9]\/schema\.json"],
