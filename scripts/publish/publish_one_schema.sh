@@ -6,27 +6,26 @@ esgvoc use "$proj@latest"
 ver=$(python scripts/publish/get_schema_version.py "$proj")
 echo "$proj -> $ver"
 
-branch=$(git branch --show-current)
-git checkout gh-pages
+tmpdir=$(mktemp -d)
+pages_dir="$tmpdir/gh-pages"
+schema_file="$tmpdir/schema.json"
+cleanup() {
+    git worktree remove --force "$pages_dir" > /dev/null 2>&1 || true
+    rm -rf "$tmpdir"
+}
+trap cleanup EXIT
 
-mkdir -p "$proj"
-pushd "$proj"
+esgvoc schema "$proj" -o "$schema_file"
+git worktree add --quiet "$pages_dir" gh-pages
 
-esgvoc schema "$proj" -o schema.json
-
-if [ ! -d "$ver" ]; then
-    mkdir "$ver"
-    mv schema.json "$ver"
-    git add "$ver"
-    git commit -m "updating $proj to $ver"
+version_dir="$pages_dir/$proj/$ver"
+if [ ! -d "$version_dir" ]; then
+    mkdir -p "$version_dir"
+    mv "$schema_file" "$version_dir/schema.json"
+    git -C "$pages_dir" add "$proj/$ver"
+    git -C "$pages_dir" commit -m "updating $proj to $ver"
+elif diff -q "$schema_file" "$version_dir/schema.json" > /dev/null; then
+    echo "Matching schemas $proj/$ver"
 else
-    if diff -q schema.json "$ver/schema.json" > /dev/null; then
-        echo "Matching schemas $proj/$ver"
-        rm schema.json
-    else
-        echo "Schemas differ for $proj/$ver"
-    fi
+    echo "Schemas differ for $proj/$ver"
 fi
-
-popd
-git checkout "$branch"

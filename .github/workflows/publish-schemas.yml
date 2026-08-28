@@ -31,13 +31,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Poetry
-        run: pipx install poetry
-
       - name: Install dependencies
-        run: |
-          poetry install --no-interaction
-          poetry run pip install esgvoc
+        run: python -m pip install esgvoc
 
       - name: Configure git identity
         run: |
@@ -58,7 +53,7 @@ jobs:
           elif [ -n "$DEFAULT_PROJECTS" ]; then
             echo "$DEFAULT_PROJECTS" | tr ', ' '\n' | sed '/^$/d' > projects.txt
           else
-            poetry run python scripts/publish/get_projects.py > projects.txt
+            python scripts/publish/get_projects.py > projects.txt
           fi
           cat projects.txt
 
