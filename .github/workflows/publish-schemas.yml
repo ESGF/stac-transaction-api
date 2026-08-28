@@ -1,0 +1,75 @@
+name: Publish schemas to gh-pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      projects:
+        description: "Comma or space separated project names (leave blank to use the PUBLISH_PROJECTS repo variable)"
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - "scripts/publish/**"
+      - "schemas/**"
+  schedule:
+    - cron: "15 3 * * *" # nightly at 03:15 UTC
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so the gh-pages branch can be checked out locally
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction
+          poetry run pip install esgvoc
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch gh-pages branch
+        run: git fetch origin gh-pages:gh-pages
+
+      - name: Determine projects to publish
+        id: projects
+        env:
+          INPUT_PROJECTS: ${{ inputs.projects }}
+          DEFAULT_PROJECTS: ${{ vars.PUBLISH_PROJECTS }}
+        run: |
+          if [ -n "$INPUT_PROJECTS" ]; then
+            echo "$INPUT_PROJECTS" | tr ', ' '\n' | sed '/^$/d' > projects.txt
+          elif [ -n "$DEFAULT_PROJECTS" ]; then
+            echo "$DEFAULT_PROJECTS" | tr ', ' '\n' | sed '/^$/d' > projects.txt
+          else
+            poetry run python scripts/publish/get_projects.py > projects.txt
+          fi
+          cat projects.txt
+
+      - name: Publish schema for each project
+        run: |
+          while IFS= read -r proj; do
+            [ -z "$proj" ] && continue
+            echo "::group::Publishing $proj"
+            bash scripts/publish/publish_one_schema.sh "$proj"
+            echo "::endgroup::"
+          done < projects.txt
+
+      - name: Push gh-pages
+        run: git push origin gh-pages
