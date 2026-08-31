@@ -7,6 +7,11 @@ on:
         description: "Comma or space separated project names (leave blank to use the PUBLISH_PROJECTS repo variable)"
         required: false
         type: string
+      dry_run:
+        description: "Generate and commit schemas without pushing gh-pages"
+        required: false
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -67,4 +72,5 @@ jobs:
           done < projects.txt
 
       - name: Push gh-pages
+        if: ${{ !inputs.dry_run }}
         run: git push origin gh-pages
