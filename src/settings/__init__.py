@@ -40,7 +40,7 @@ DEFAULT_EXTENSIONS = {
     "CMIP7": {
         "CMIP7": {
             "regex": [r"https://esgf\.github\.io/stac-transaction-api/cmip7/v\d+\.\d+\.\d+/schema\.json"],
-            "default": "https://esgf.github.io/stac-transaction-api/cmip7/v1.2.1/schema.json",
+            "default": "https://esgf.github.io/stac-transaction-api/cmip7/v1.2.3/schema.json",
         },
         "alternate_assets": {
             "regex": [r"https://stac-extensions\.github\.io/alternate-assets/v\d+\.\d+\.\d+/schema\.json"],
