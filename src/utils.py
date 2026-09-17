@@ -20,8 +20,7 @@ from stac_fastapi.extensions.transaction.request import (
     PatchAddReplaceTest,
     PatchOperation,
 )
-from stac_pydantic.item import Item
-
+from models import ESGFItem
 from settings import DEFAULT_EXTENSIONS, VERSION_REGEX
 
 # Setup logger
@@ -301,14 +300,15 @@ def validate_patch(
 
 def validate_post(
     item_id: str,
-    item: Item,
+    item: ESGFItem,
     extensions: list[str],
 ) -> None:
     """Validate a Item post request
 
     Args:
         item_id (str): ID of the item to validate
-        item (Item): Partial Item to be validated to validate
+        item (ESGFItem): Item to be validated, with extension-defined
+            top-level fields (e.g. base_id, version) preserved
         extensions (list[str]): List of STAC extensions to be validated against
 
     Raises:
