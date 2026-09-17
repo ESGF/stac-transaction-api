@@ -33,6 +33,8 @@ from stac_fastapi.types.stac import Collection
 from stac_pydantic.item import Item
 from pydantic import TypeAdapter
 
+from models import ESGFItem
+
 from utils import (
     operation_to_partial_item,
     validate_extensions,
@@ -56,7 +58,7 @@ class TransactionClient(BaseTransactionsClient):
     def authorize(
         self,
         collection_id: str,
-        item: Item | PartialItem,
+        item: ESGFItem | PartialItem,
         role: str,
         request: Request,
         request_id: str,
@@ -90,9 +92,9 @@ class TransactionClient(BaseTransactionsClient):
     async def create_item(
         self,
         collection_id: str,
-        item: Item,
+        item: ESGFItem,
         request: Request,
-    ) -> Optional[Union[Item, Response, None]]:
+    ) -> Optional[Union[ESGFItem, Response, None]]:
 
         headers = request.headers
 
@@ -177,9 +179,9 @@ class TransactionClient(BaseTransactionsClient):
         self,
         collection_id: str,
         item_id: str,
-        item: Item,
+        item: ESGFItem,
         request: Request,
-    ) -> Optional[Union[Item, Response]]:
+    ) -> Optional[Union[ESGFItem, Response]]:
         raise NotImplementedError("update_item is not implemented")
 
     async def patch_item(
