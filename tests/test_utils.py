@@ -1,6 +1,5 @@
 """Unit tests for src/utils.py (validation logic)."""
 
-import json
 from unittest import mock
 
 import httpx
@@ -194,9 +193,7 @@ class TestGetExtensionValidator:
         assert "Error 404" in exc.value.detail
 
     def test_request_error(self, schema_get):
-        schema_get.side_effect = httpx.ConnectError(
-            "boom", request=httpx.Request("GET", "https://example.org/schema.json")
-        )
+        schema_get.side_effect = httpx.ConnectError("boom", request=httpx.Request("GET", "https://example.org/schema.json"))
         with pytest.raises(UnexpectedExtensionException) as exc:
             utils.get_extension_validator("https://example.org/schema.json")
         assert "An error occurred" in exc.value.detail
@@ -219,21 +216,15 @@ def _op(**kwargs) -> PatchOperation:
 
 class TestOperationToPartialItem:
     def test_add_nested_property(self):
-        item = utils.operation_to_partial_item(
-            "CMIP6", [_op(op="add", path="/properties/title", value="hello")]
-        )
+        item = utils.operation_to_partial_item("CMIP6", [_op(op="add", path="/properties/title", value="hello")])
         assert item.properties["title"] == "hello"
 
     def test_replace_nested_property(self):
-        item = utils.operation_to_partial_item(
-            "CMIP6", [_op(op="replace", path="/properties/title", value="new")]
-        )
+        item = utils.operation_to_partial_item("CMIP6", [_op(op="replace", path="/properties/title", value="new")])
         assert item.properties["title"] == "new"
 
     def test_remove_becomes_null(self):
-        item = utils.operation_to_partial_item(
-            "CMIP6", [_op(op="remove", path="/properties/title")]
-        )
+        item = utils.operation_to_partial_item("CMIP6", [_op(op="remove", path="/properties/title")])
         assert item.properties["title"] is None
 
     def test_multiple_operations_merge(self):
@@ -333,9 +324,7 @@ class TestValidatePost:
         schema_get.return_value = _response(
             {
                 "type": "object",
-                "properties": {
-                    "properties": {"type": "object", "required": ["experiment_id"]}
-                },
+                "properties": {"properties": {"type": "object", "required": ["experiment_id"]}},
             }
         )
         with pytest.raises(STACValidationException) as exc:
@@ -346,9 +335,7 @@ class TestValidatePost:
         assert "experiment_id" in detail
 
     def test_oneof_failure_reports_root_cause(self, schema_get):
-        schema_get.return_value = _response(
-            {"oneOf": [{"required": ["nope1"]}, {"required": ["nope2"]}]}
-        )
+        schema_get.return_value = _response({"oneOf": [{"required": ["nope1"]}, {"required": ["nope2"]}]})
         with pytest.raises(STACValidationException) as exc:
             utils.validate_post("item-1", _item(), ["https://example.org/ext.json"])
         assert "nope1" in exc.value.detail
@@ -398,9 +385,7 @@ class TestValidatePatch:
         schema_get.return_value = _response(
             {
                 "type": "object",
-                "properties": {
-                    "properties": {"type": "object", "required": ["experiment_id"]}
-                },
+                "properties": {"properties": {"type": "object", "required": ["experiment_id"]}},
             }
         )
         patch = PartialItem.model_validate({"properties": {"title": "t"}})
@@ -411,9 +396,7 @@ class TestValidatePatch:
         schema_get.return_value = _response(
             {
                 "type": "object",
-                "properties": {
-                    "properties": {"type": "object", "required": ["experiment_id"]}
-                },
+                "properties": {"properties": {"type": "object", "required": ["experiment_id"]}},
             }
         )
         patch = PartialItem.model_validate({"properties": {"experiment_id": None}})

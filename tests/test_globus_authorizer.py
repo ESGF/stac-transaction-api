@@ -316,9 +316,7 @@ class TestMiddleware:
 class TestGetGroups:
     def test_only_active_memberships_returned(self, fake_client):
         resource_server = ga.GroupsClient.resource_server
-        fake_client.oauth2_get_dependent_tokens.return_value.by_resource_server = {
-            resource_server: {"access_token": "groups-token"}
-        }
+        fake_client.oauth2_get_dependent_tokens.return_value.by_resource_server = {resource_server: {"access_token": "groups-token"}}
         groups_response = [
             {
                 "id": "g1",
