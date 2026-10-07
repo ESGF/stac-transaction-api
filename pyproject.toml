@@ -11,32 +11,56 @@ readme = "README.md"
 dependencies = [
     "esgf-core-utils>=1.1.0",
     "fastapi>=0.114.0",
+    "httpx>=0.28.1",
     "jsonschema>=4.24.0",
     "packaging>=26.2",
+    "pydantic>=2.12",
+    "pydantic-settings>=2.6.1",
     "shapely>=2.1.2",
     "stac-fastapi.types>=6.3.0",
     "stac-fastapi.extensions>=6.3.0",
+    "stac-pydantic>=3.3.2",
+    "starlette>=0.38.6",
     "uvicorn>=0.46.0",
 ]
 
 [dependency-groups]
 ceda = [
-    "httpx>=0.28.1",
     "httpx-auth>=0.23.1",
     "confluent-kafka>=2.12.1",
-    "pydantic>=2.12"
 ]
 globus = [
     "boto3==1.43.6",
     "globus-sdk==3.62.0",
     "pyjwt==2.12.1",
+    "urllib3>=2.7.0",
 ]
 test = [
-    "httpx>=0.28.1",
     "pytest>=8.3.5",
     "pytest-cov>=6.0.0",
     "pytest-mock>=3.14.0",
 ]
+
+[tool.black]
+line-length = 145
+target-version = ["py312"]
+extend-exclude = '''
+/(
+    \.venv
+  | \.poetry
+  | \.mypy_cache
+  | \.ruff_cache
+)/
+'''
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "--cov=src --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["src/settings/ceda.py"]
 
 [tool.poetry]
 packages = [
