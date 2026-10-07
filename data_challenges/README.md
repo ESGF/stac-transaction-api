@@ -1,4 +1,4 @@
-# Data Challenges and Tests
+# Data Challenges
 
 This subdirectory contains tools to generate STAC metadata payloads from ESGF1 metadata and to run data challenges using those payloads.
 
