@@ -68,7 +68,7 @@ DEFAULT_EXTENSIONS = {
     "CMIP6Test": {
         "CMIP6Test": {
             "regex": [r"https://esgf\.github\.io/stac-transaction-api/cmip6test/v\d+\.\d+\.\d+/schema\.json"],
-            "default": "https://esgf.github.io/stac-transaction-api/cmip6test/v2.0.0/schema.json",
+            "default": "https://esgf.github.io/stac-transaction-api/cmip6test/v2.0.2/schema.json",
         },
         "alternate_assets": {
             "regex": [r"https://stac-extensions\.github\.io/alternate-assets/v\d+\.\d+\.\d+/schema\.json"],
