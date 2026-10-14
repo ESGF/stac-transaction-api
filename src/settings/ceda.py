@@ -15,7 +15,7 @@ class ScopeSettings(BaseModel):
     Scope settings
     """
 
-    default: str = "offline_access entitlements"
+    default: str = "offline_access"
 
     client_id: str = ""
     client_secret: str = ""

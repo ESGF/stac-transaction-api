@@ -2,6 +2,7 @@ import logging
 import uuid
 
 import requests
+from cachetools import TTLCache, cached
 from esgf_core_utils.models.exceptions import (
     InvalidTokenAudienceException,
     RFC9457Exception,
@@ -40,6 +41,54 @@ async def healthcheck():
 
 
 if settings.authorizer == "egi":
+    scope_cache = TTLCache(maxsize=1, ttl=86400)
+
+    def subgroup(groups, name):
+        return next((g["extraSubGroups"] for g in groups if g["name"] == name), [])
+
+    @cached(scope_cache)
+    def get_dynamic_scopes():
+        scope_settings = settings.client.scope
+
+        with requests.Session() as session:
+            token_response = session.post(
+                scope_settings.token_url,
+                auth=(scope_settings.client_id, scope_settings.client_secret),
+                data={"grant_type": "client_credentials"},
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+
+            token_response.raise_for_status()
+            token = token_response.json()
+
+            group_response = session.get(
+                scope_settings.group_url,
+                headers={"Authorization": f"Bearer {token['access_token']}"},
+            )
+
+            group_response.raise_for_status()
+            groups = group_response.json()
+
+        esgf_vo = next(g for g in groups["results"] if g["name"] == "esgf.vo.egi.eu")
+
+        nodes = subgroup(esgf_vo["extraSubGroups"], "node")
+        projects = subgroup(esgf_vo["extraSubGroups"], "project")
+        institutions = [
+            institution
+            for project in projects
+            for institution in subgroup(project["extraSubGroups"], "institution")
+        ]
+
+        groups = nodes + projects + institutions
+
+        return " ".join(
+            scope_settings.template.format(
+                group=group["path"].replace("/", ":"), role=role
+            )
+            for group in groups
+            if group["name"] != "*"
+            for role in scope_settings.roles
+        )
 
     @app.get("/scope")
     async def scope():
@@ -47,43 +96,7 @@ if settings.authorizer == "egi":
         scopes = scope_settings.default
 
         if scope_settings.client_id:
-            with requests.Session() as session:
-                token_response = session.post(
-                    scope_settings.token_url,
-                    auth=(scope_settings.client_id, scope_settings.client_secret),
-                    data={"grant_type": "client_credentials"},
-                    headers={"Content-Type": "application/x-www-form-urlencoded"},
-                )
-
-                token_response.raise_for_status()
-                token = token_response.json()
-
-                group_response = session.get(
-                    scope_settings.group_url,
-                    headers={"Authorization": f"Bearer {token['access_token']}"},
-                )
-
-                group_response.raise_for_status()
-                groups = group_response.json()
-
-            esgf_vo = next(
-                g for g in groups["results"] if g["name"] == "esgf.vo.egi.eu"
-            )
-
-            subgroups = {
-                g["name"]: g["extraSubGroups"] for g in esgf_vo["extraSubGroups"]
-            }
-
-            groups = subgroups["node"] + subgroups["project"]
-
-            scopes = ["offline"] + [
-                scope_settings.template.format(
-                    group=g["path"].replace("/", ":"), role=r
-                )
-                for g in groups
-                if g["name"] != "*"
-                for r in ("CREATE", "REPLICATE")
-            ]
+            scopes = f"{scopes} {get_dynamic_scopes()}"
 
         return JSONResponse(
             content={"scope": scopes},
