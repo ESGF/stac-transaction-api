@@ -44,7 +44,7 @@ if settings.authorizer == "egi":
     @app.get("/scope")
     async def scope():
         scope_settings = settings.client.scope
-        scope_str = scope_settings.default
+        scopes = scope_settings.default
 
         if scope_settings.client_id:
             with requests.Session() as session:
@@ -66,25 +66,27 @@ if settings.authorizer == "egi":
                 group_response.raise_for_status()
                 groups = group_response.json()
 
-            esgf_vo = next(g for g in groups if g["name"] == "esgf.vo.egi.eu")
-
-            subgroups = {g["name"]: g for g in esgf_vo["extraSubGroups"]}
-
-            groups = (
-                subgroups["nodes"]["extraSubGroups"]
-                + subgroups["projects"]["extraSubGroups"]
+            esgf_vo = next(
+                g for g in groups["results"] if g["name"] == "esgf.vo.egi.eu"
             )
 
-            scope_str = ["offline"] + [
+            subgroups = {
+                g["name"]: g["extraSubGroups"] for g in esgf_vo["extraSubGroups"]
+            }
+
+            groups = subgroups["node"] + subgroups["project"]
+
+            scopes = ["offline"] + [
                 scope_settings.template.format(
                     group=g["path"].replace("/", ":"), role=r
                 )
                 for g in groups
+                if g["name"] != "*"
                 for r in ("CREATE", "REPLICATE")
             ]
 
         return JSONResponse(
-            content={"scope": scope_str},
+            content={"scope": scopes},
             media_type="application/json",
             status_code=200,
         )
