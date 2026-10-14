@@ -1,6 +1,7 @@
 import logging
 import uuid
 
+import requests
 from esgf_core_utils.models.exceptions import (
     InvalidTokenAudienceException,
     RFC9457Exception,
@@ -42,8 +43,48 @@ if settings.authorizer == "egi":
 
     @app.get("/scope")
     async def scope():
+        scope_settings = settings.client.scope
+        scope_str = scope_settings.default
+
+        if scope_settings.client_id:
+            with requests.Session() as session:
+                token_response = session.post(
+                    scope_settings.token_url,
+                    auth=(scope_settings.client_id, scope_settings.client_secret),
+                    data={"grant_type": "client_credentials"},
+                    headers={"Content-Type": "application/x-www-form-urlencoded"},
+                )
+
+                token_response.raise_for_status()
+                token = token_response.json()
+
+                group_response = session.get(
+                    scope_settings.group_url,
+                    headers={"Authorization": f"Bearer {token['access_token']}"},
+                )
+
+                group_response.raise_for_status()
+                groups = group_response.json()
+
+            esgf_vo = next(g for g in groups if g["name"] == "esgf.vo.egi.eu")
+
+            subgroups = {g["name"]: g for g in esgf_vo["extraSubGroups"]}
+
+            groups = (
+                subgroups["nodes"]["extraSubGroups"]
+                + subgroups["projects"]["extraSubGroups"]
+            )
+
+            scope_str = ["offline"] + [
+                scope_settings.template.format(
+                    group=g["path"].replace("/", ":"), role=r
+                )
+                for g in groups
+                for r in ("CREATE", "REPLICATE")
+            ]
+
         return JSONResponse(
-            content={"scope": settings.client.scope},
+            content={"scope": scope_str},
             media_type="application/json",
             status_code=200,
         )
@@ -64,7 +105,9 @@ async def rfc9457_handler(request: Request, exc: RFC9457Exception):
 
 
 @app.exception_handler(InvalidTokenAudienceException)
-async def invalid_token_audience_handler(request: Request, exc: InvalidTokenAudienceException):
+async def invalid_token_audience_handler(
+    request: Request, exc: InvalidTokenAudienceException
+):
     event_id = uuid.uuid4().hex
     request_id = request.headers.get("x-request-id", uuid.uuid4().hex)
     return JSONResponse(
