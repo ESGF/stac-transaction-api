@@ -1,53 +1,62 @@
-FROM public.ecr.aws/sam/build-python3.12:latest-x86_64 AS base
+FROM python:3.12-slim AS cert
 
-# Poetry envvars
-ENV POETRY_HOME="/opt/poetry"
-ENV POETRY_VIRTUALENVS_IN_PROJECT=true
-ENV POETRY_NO_INTERACTION=1
-ENV PYSETUP_PATH="/var/task"
-ENV VENV_PATH="/var/task/.venv"
+ARG CERT_CN=uvicorn
+ARG CERT_O=esgf-west.org
 
-ENV LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
-ENV PATH=/root/.local/bin:/sbin:/usr/sbin:${PATH}
-
-RUN dnf upgrade -y
-RUN dnf group install -y "Development Tools"
-RUN dnf install -y gcc git libcurl-devel make openssl openssl-devel which
-
-RUN git clone https://github.com/confluentinc/librdkafka  && \
-    cd librdkafka && git checkout tags/v2.6.0 && \
-    ./configure --install-deps && make && make install && \
-    ldconfig
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Generate self-signed cert
-RUN mkdir /etc/ssl/transaction \
-    && openssl genrsa -out /etc/ssl/transaction/server.key 2048 \
-    && openssl req -new -key /etc/ssl/transaction/server.key -out /etc/ssl/transaction/server.csr \
-        -subj '/C=/ST=/L=/O=esgf-west.org/OU=discovery-api/CN=uvicorn' \
-    && openssl x509 -req -days 365 -in /etc/ssl/transaction/server.csr \
-        -signkey /etc/ssl/transaction/server.key -out /etc/ssl/transaction/server.crt
+RUN mkdir -p /etc/ssl/transaction \
+    && openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+        -keyout /etc/ssl/transaction/server.key \
+        -out /etc/ssl/transaction/server.crt \
+        -subj "/O=${CERT_O}/OU=discovery-api/CN=${CERT_CN}"
 
 
-FROM base AS builder
+FROM python:3.12-slim AS builder
 
-# Install poetry
-RUN pip install poetry
+# Dependency group providing the authorizer: globus (default) or ceda
+ARG AUTHORIZER_GROUP=globus
 
-WORKDIR $PYSETUP_PATH
-
-ENV PATH="$POETRY_HOME/bin:$PATH"
-
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-root --with globus
-
-FROM base AS production
-
-COPY --from=builder $VENV_PATH $VENV_PATH
-ENV PATH="/var/task/.venv/bin:$PATH"
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=true
 
 WORKDIR /var/task
+
+RUN pip install --no-cache-dir poetry
+
+COPY pyproject.toml poetry.lock ./
+RUN poetry install --no-root --only main,${AUTHORIZER_GROUP}
+
+
+# Shared by local and production: venv + app code, no TLS, no CMD
+FROM python:3.12-slim AS runtime
+
+ENV PATH="/var/task/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /var/task
+
+COPY --from=builder /var/task/.venv ./.venv
 COPY ./src .
+
+EXPOSE 8000
+
+
+# docker build --target local .
+FROM runtime AS local
+
+CMD ["uvicorn", "api:app", \
+     "--host", "0.0.0.0", "--port", "8000", \
+     "--reload"]
+
+
+# Default target (last stage): docker build .
+FROM runtime AS production
+
+COPY --from=cert /etc/ssl/transaction /etc/ssl/transaction
 
 CMD ["uvicorn", "api:app", \
      "--host", "0.0.0.0", "--port", "8000", \
