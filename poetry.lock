@@ -532,7 +532,7 @@ version = "2.14.0"
 description = "Confluent's Python client for Apache Kafka"
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "ceda"]
+groups = ["main"]
 files = [
     {file = "confluent_kafka-2.14.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a9a5205a90f60895737a671ee1a027813d539aaaa82984b793e7807ca35b24bf"},
     {file = "confluent_kafka-2.14.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:f6405feef51d2881aeb6d360176bc1d20ffb1793f10684149bd89bf95483b535"},
@@ -1994,4 +1994,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "791b770a68b5426ea15e1ffa447de2401f6efd9fbf1b9bd094f95400e1c00174"
+content-hash = "bb6c0e05d1e5970fa73093295ae790f46690ef931849fdd351fea9027095d1c0"
