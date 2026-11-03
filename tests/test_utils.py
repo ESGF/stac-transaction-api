@@ -37,9 +37,14 @@ def _response(schema=None, status=200, text=None):
 
 @pytest.fixture
 def schema_get():
-    """Patch httpx.get in utils; set .return_value / .side_effect in the test."""
+    """Patch httpx.get in utils; set .return_value / .side_effect in the test.
+
+    Clears the get_extension_validator cache so tests don't share validators.
+    """
+    utils.get_extension_validator.cache_clear()
     with mock.patch("utils.httpx.get") as get:
         yield get
+    utils.get_extension_validator.cache_clear()
 
 
 # Known bugs in src/utils.py, pinned as strict xfails (they flip to failures,
@@ -203,6 +208,26 @@ class TestGetExtensionValidator:
         with pytest.raises(UnexpectedExtensionException) as exc:
             utils.get_extension_validator("https://example.org/schema.json")
         assert "Failed to decode" in exc.value.detail
+
+    def test_result_is_cached_per_uri(self, schema_get):
+        schema_get.return_value = _response({"type": "object"})
+        first = utils.get_extension_validator("https://example.org/schema.json")
+        second = utils.get_extension_validator("https://example.org/schema.json")
+        assert first is second
+        assert schema_get.call_count == 1
+
+        utils.get_extension_validator("https://example.org/other.json")
+        assert schema_get.call_count == 2
+
+    def test_failure_is_not_cached(self, schema_get):
+        schema_get.return_value = _response({}, status=500)
+        with pytest.raises(UnexpectedExtensionException):
+            utils.get_extension_validator("https://example.org/schema.json")
+
+        schema_get.return_value = _response({"type": "object"})
+        validator = utils.get_extension_validator("https://example.org/schema.json")
+        assert validator.is_valid({})
+        assert schema_get.call_count == 2
 
 
 # --------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from functools import lru_cache
 
 import httpx
 import jsonschema
@@ -177,8 +178,12 @@ def get_null_keys(item: PartialItem) -> tuple[PartialItem, set[str]]:
     return item, null_keys
 
 
+@lru_cache(maxsize=128)
 def get_extension_validator(extension: str) -> Validator:
     """Get JSON schema validator for an extension.
+
+    Results are cached per extension URI, which assumes versioned (immutable)
+    URIs. Failures raise and are not cached, so they are retried on the next call.
 
     Args:
         extension (str): Extension URI
@@ -271,13 +276,14 @@ def validate_patch(
         validate_bbox(item.bbox)
 
     item, null_keys = get_null_keys(item)
+    instance = json.loads(item.model_dump_json())
 
     for extension in extensions:
         extension_validator = get_extension_validator(str(extension))
 
         required_keys = set()
         raise_errors = []
-        for error in extension_validator.iter_errors(json.loads(item.model_dump_json())):
+        for error in extension_validator.iter_errors(instance):
 
             if error.validator in ["oneOf"]:
                 continue
@@ -315,11 +321,13 @@ def validate_post(
     validate_geometry(item.geometry)
     validate_bbox(item.bbox)
 
+    instance = json.loads(item.model_dump_json())
+
     for extension in extensions:
         extension_validator = get_extension_validator(str(extension))
 
         raise_errors = sorted(
-            extension_validator.iter_errors(json.loads(item.model_dump_json())),
+            extension_validator.iter_errors(instance),
             key=relevance,
         )
 
