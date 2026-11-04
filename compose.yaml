@@ -6,6 +6,7 @@ services:
       target: local
     ports:
       - "8000:8000"
+      - "8001:8001"
     volumes:
       - ./src:/var/task
       - /var/task/.venv
