@@ -10,20 +10,11 @@ from esgf_core_utils.models.exceptions import (
     ExtensionBelowMinimumException,
     MissingPermissionException,
     OperationNotPermittedException,
-    RFC9457Exception,
     STACValidationException,
     UnexpectedExtensionException,
     UnknownException,
 )
-from esgf_core_utils.models.kafka.events import (
-    Auth,
-    CreatePayload,
-    Data,
-    KafkaEvent,
-    Metadata,
-    PatchPayload,
-    Publisher,
-)
+from esgf_core_utils.models.kafka.events import Auth, CreatePayload, Data, KafkaEvent, Metadata, PatchPayload, Publisher
 from esgf_core_utils.models.kafka.producer import KafkaProducer
 from esgf_core_utils.models.validation import (
     evaluate_patch,
@@ -144,9 +135,7 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(
-            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
-        )
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
 
         metadata = Metadata(
             auth=auth,
@@ -192,11 +181,7 @@ class TransactionClient(BaseTransactionsClient):
     ) -> Item | Response | None:
         logger.info("PATCH REQUEST: %s", patch)
 
-        item = (
-            operation_to_partial_item(collection_id=collection_id, operations=patch)
-            if isinstance(patch, list)
-            else patch
-        )
+        item = operation_to_partial_item(collection_id=collection_id, operations=patch) if isinstance(patch, list) else patch
 
         headers = request.headers.get("headers", {})
 
@@ -219,9 +204,7 @@ class TransactionClient(BaseTransactionsClient):
         item_extensions = item.stac_extensions if item.stac_extensions else []
         try:
 
-            item_extensions = validate_extensions(
-                collection_id=collection_id, item_extensions=item_extensions
-            )
+            item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
 
             validate_patch(
                 item_id=item_id,
@@ -249,9 +232,7 @@ class TransactionClient(BaseTransactionsClient):
 
         data = Data(type="STAC", payload=payload)
 
-        publisher = Publisher(
-            package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else ""
-        )
+        publisher = Publisher(package=user_agent[0], version=user_agent[1] if len(user_agent) > 1 else "")
         metadata = Metadata(
             auth=auth,
             event_id=event_id,

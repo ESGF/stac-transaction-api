@@ -73,18 +73,12 @@ if settings.authorizer == "egi":
 
         nodes = subgroup(esgf_vo["extraSubGroups"], "node")
         projects = subgroup(esgf_vo["extraSubGroups"], "project")
-        institutions = [
-            institution
-            for project in projects
-            for institution in subgroup(project["extraSubGroups"], "institution")
-        ]
+        institutions = [institution for project in projects for institution in subgroup(project["extraSubGroups"], "institution")]
 
         groups = nodes + projects + institutions
 
         return " ".join(
-            scope_settings.template.format(
-                group=group["path"].replace("/", ":"), role=role
-            )
+            scope_settings.template.format(group=group["path"].replace("/", ":"), role=role)
             for group in groups
             if group["name"] != "*"
             for role in scope_settings.roles
@@ -120,9 +114,7 @@ async def rfc9457_handler(request: Request, exc: RFC9457Exception):
 
 
 @app.exception_handler(InvalidTokenAudienceException)
-async def invalid_token_audience_handler(
-    request: Request, exc: InvalidTokenAudienceException
-):
+async def invalid_token_audience_handler(request: Request, exc: InvalidTokenAudienceException):
     event_id = uuid.uuid4().hex
     request_id = request.headers.get("x-request-id", uuid.uuid4().hex)
     return JSONResponse(
