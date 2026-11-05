@@ -10,73 +10,17 @@ Getting up and running
   - For an example, please see `src/settings/example.env`
   - Add the `CLIENT_ID` and `CLIENT_SECRET` and set `RUN_ENVIRONMENT=local` in the `.env` file
 - To build the local Confluent kafka environment, run `docker compose -f compose-kafka.yaml up` This can take a minute or two to complete.
-- To build the FastAPI and esgvoc container, run
+- To run the FastAPI container locally, run `docker compose up --build`
+  - Builds the `local` target of the `Dockerfile`: plain HTTP on `http://localhost:8000`, with `--reload` against `./src`
+  - Or without compose:
     ```
-    docker volume create esgvoc
-    
-    docker build -f ./Dockerfile-esgvoc -t esgvoc .
-    docker run --name esgvoc \
-      --detach \
-      -v esgvoc:/root/.local/share/esgvoc \
-      -it esgvoc
-
-    docker build -t stac-transaction-fastapi .
-    docker run --name stac-transaction-fastapi \
-      --detach \
-      -v esgvoc:/root/.local/share/esgvoc \
-      -v ./src:/var/task \
-      -p 8000:8000 \
-      -it stac-transaction-api
+    docker build --target local -t stac-transaction-api:local .
+    docker run --rm -p 8000:8000 \
+      --env-file ./src/settings/.env \
+      -v ./src:/var/task -v /var/task/.venv \
+      stac-transaction-api:local
     ```
-- For ECS deployments, there are basic scripts in the scripts directory for building and deploying
 
 ## To-do
-- Basic instructions for deployment to AWS ECS
 - Add Consumer support
 - Add Discovery support
-
-# DEPRECATED
-### Amazon API Gateway (API with Authorizer)
-
-Authorizer:
- - Lambda function: authorizer
- - Lambda event payload: Token
- - Token source: Authorization
- - Token validation: Bearer\s[0-9A-Za-z]+
- - Authorization caching: 300 seconds
-
-API:
-```
-/
-  /{proxy+}
-    POST
-    PUT
-    DELETE
-```
-with stages:
- - dev
- - stage
- - prod
-and stage variable `lambdaAlias` set for each stage to `dev`, `stage`, `prod`, respectively.
-
-### Amazon Lambda
-
-The two functions share the same deployment zip file (`lambda.zip`):
- - `authorizer`
-   - Runtime: Python 3.10
-   - Handler: `authorizer.authorizer`
- - `api`
-   - Runtime: Python 3.10
-   - Handler: `api.api`
-Different versions of the `api` Lambda function have assigned aliases `dev`, `stage`, `prod`.
-API Gateway reads the `lambdaAlias` variable uses its value as an alias, `api:${stageVariables.lambdaAlias}` to call a corresponding version of the `api` Lambda function.
-
-Build the deployment zip file:
-```
-./scripts/build.sh
-```
-
-Update Lambda function code:
-```
-./scripts/deploy.sh {update_code|publish_version} {api|authorizer} [dev]
-```

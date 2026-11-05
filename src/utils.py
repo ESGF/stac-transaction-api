@@ -249,8 +249,6 @@ def validate_geometry(geometry: dict) -> None:
 
 
 def validate_patch(
-    event_id: str,
-    request_id: str,
     item_id: str,
     item: PartialItem,
     extensions: list[str],
