@@ -15,6 +15,8 @@ class ScopeSettings(BaseModel):
     Scope settings
     """
 
+    ttl: int = 28800
+
     default_scope: str = "offline_access entitlements"
     base_scope: str = "offline_access"
 

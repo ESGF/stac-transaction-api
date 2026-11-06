@@ -28,6 +28,7 @@ dependencies = [
 [dependency-groups]
 ceda = [
     "httpx-auth>=0.23.1",
+    "cachetools>=7.3.0",
 ]
 globus = [
     "boto3==1.43.6",

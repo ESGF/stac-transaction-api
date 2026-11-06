@@ -38,7 +38,7 @@ async def healthcheck():
 
 
 if settings.authorizer == "egi":
-    scope_cache = TTLCache(maxsize=1, ttl=86400)
+    scope_cache = TTLCache(maxsize=1, ttl=settings.client.scope.ttl)
 
     def subgroup(groups, name):
         return next((g["extraSubGroups"] for g in groups if g["name"] == name), [])

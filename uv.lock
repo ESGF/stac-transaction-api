@@ -58,16 +58,16 @@ wheels = [
 
 [[package]]
 name = "botocore"
-version = "1.43.124"
+version = "1.43.125"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jmespath" },
     { name = "python-dateutil" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d3/1e/c0abe23b9495414dc79e3faeb6e96e2336053fd8cae7d80cc6bbe4bd02f3/botocore-1.43.124.tar.gz", hash = "sha256:6df80235995e2926e0768e7ad270e774adcd6ff0307da7ab87ffb8c384edb578", size = 16509340, upload-time = "2026-11-04T21:22:30.041Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ad/57/6d638614c940c73a750b8a4203989b3edbde5ff7f83cd9031e65cb97d69b/botocore-1.43.125.tar.gz", hash = "sha256:e3ae5ebbfa8033015958a9cb16cef67a0592902ca8afb46ef06e8ae77475183f", size = 16520959, upload-time = "2026-11-05T20:24:08.59Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/84/a4/77409b07ba0b5520dbc591c33b305c5fe4c186036d881ca894a597c0dfba/botocore-1.43.124-py3-none-any.whl", hash = "sha256:4651bac68d1aef78d42c8aefb514a6cd86fda07971b8348652a9d24f21b07965", size = 16209102, upload-time = "2026-11-04T21:22:22.159Z" },
+    { url = "https://files.pythonhosted.org/packages/3a/c1/0dca9a7ea362219b1e98f7fa8aebca1c19f6516eb91792b82595d7b79dc0/botocore-1.43.125-py3-none-any.whl", hash = "sha256:e3969c8191d3435440037310187d324f37c00da53987ea31df2eceff19a2795a", size = 16223768, upload-time = "2026-11-05T20:24:04.594Z" },
 ]
 
 [[package]]
@@ -146,6 +146,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0b/ae/43a2d0c227d4cf4c9c4cdeb3688edd9530188239141c965d16ac01b5d53e/brotli_asgi-1.7.0.tar.gz", hash = "sha256:ff6ef116800d8f13b33ed6b1db2168ac5a27da7426f85f40d7ea3db1f03519a6", size = 5706, upload-time = "2026-10-27T08:10:49.968Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cc/1d/fa04de0ec3125c10b74b743565ac58c776a40b2fa501cc29d898393d587d/brotli_asgi-1.7.0-py3-none-any.whl", hash = "sha256:29d410f30e3fe5c062780270d907e212af2ea05ee79449179c9d72487b6ba5b5", size = 4657, upload-time = "2026-10-27T08:10:48.996Z" },
+]
+
+[[package]]
+name = "cachetools"
+version = "7.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5f/6b/6c1553e1e8f672f9423344a1915aad1537439ad3d14a3fbc1a02159cfd94/cachetools-7.3.0.tar.gz", hash = "sha256:3f63fc208410f0c3a3b37883c4903ecdacd6f0b259134e6d2e82debd5b2e01de", size = 48563, upload-time = "2026-11-05T20:38:46.434Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/29/aa/e54a49d0927b2fa7b86bc94dbde57125e38e8cfca7a31b6764e8dbf35e9f/cachetools-7.3.0-py3-none-any.whl", hash = "sha256:2105787c94619bde7072624fec0fe7b8a08bb7bf6c757c318f8925573c6f07c9", size = 19575, upload-time = "2026-11-05T20:38:44.928Z" },
 ]
 
 [[package]]
@@ -1539,6 +1548,7 @@ dependencies = [
 
 [package.dev-dependencies]
 ceda = [
+    { name = "cachetools" },
     { name = "httpx-auth" },
 ]
 globus = [
@@ -1572,7 +1582,10 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-ceda = [{ name = "httpx-auth", specifier = ">=0.23.1" }]
+ceda = [
+    { name = "cachetools", specifier = ">=7.3.0" },
+    { name = "httpx-auth", specifier = ">=0.23.1" },
+]
 globus = [
     { name = "boto3", specifier = "==1.43.6" },
     { name = "globus-sdk", specifier = "==3.62.0" },
