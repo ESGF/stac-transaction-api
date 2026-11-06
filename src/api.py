@@ -80,7 +80,10 @@ if settings.authorizer == "egi":
             for role in scope_settings.roles
         )
 
-        node_template_scope = " ".join(scope_settings.template.format(group=":{data_node}", role=role) for role in scope_settings.roles)
+        node_template_scope = " ".join(
+            scope_settings.template.format(group="esgf.vo.egi.eu:node:{data_node}", role=role)
+            for role in scope_settings.roles
+        )
 
         return f"{scope_settings.base_scope} {node_template_scope} {groups_scope}"
 
