@@ -3,10 +3,7 @@ import uuid
 
 import requests
 from cachetools import TTLCache, cached
-from esgf_core_utils.models.exceptions import (
-    InvalidTokenAudienceException,
-    RFC9457Exception,
-)
+from esgf_core_utils.models.exceptions import InvalidTokenAudienceException, RFC9457Exception
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from stac_fastapi.extensions import TransactionExtension
@@ -71,29 +68,31 @@ if settings.authorizer == "egi":
 
         esgf_vo = next(g for g in groups["results"] if g["name"] == "esgf.vo.egi.eu")
 
-        nodes = subgroup(esgf_vo["extraSubGroups"], "node")
         projects = subgroup(esgf_vo["extraSubGroups"], "project")
-        institutions = [institution for project in projects for institution in subgroup(project["extraSubGroups"], "institution")]
+        # nodes = subgroup(esgf_vo["extraSubGroups"], "node")
+        # institutions = [institution for project in projects for institution in subgroup(project["extraSubGroups"], "institution")]
+        # groups = nodes + projects + institutions
 
-        groups = nodes + projects + institutions
-
-        return " ".join(
+        groups_scope = " ".join(
             scope_settings.template.format(group=group["path"].replace("/", ":"), role=role)
-            for group in groups
+            for group in projects
             if group["name"] != "*"
             for role in scope_settings.roles
         )
 
+        node_template_scope = " ".join(scope_settings.template.format(group=":{data_node}", role=role) for role in scope_settings.roles)
+
+        return f"{scope_settings.base_scope} {node_template_scope} {groups_scope}"
+
     @app.get("/scope")
     async def scope():
         scope_settings = settings.client.scope
-        scopes = scope_settings.default
-
-        if scope_settings.client_id:
-            scopes = f"{scopes} {get_dynamic_scopes()}"
 
         return JSONResponse(
-            content={"scope": scopes},
+            content={
+                "scope": scope_settings.default_scope,
+                "template": get_dynamic_scopes() if scope_settings.client_id else "",
+            },
             media_type="application/json",
             status_code=200,
         )
