@@ -72,7 +72,7 @@ jobs:
           done < projects.txt
 
       - name: Transfer fixed schemas
-        run: bash scripts/publish/transfer_fixed_schemas.sh
+        run: bash scripts/publish/publish_aggregated_assets_schema.sh
 
       - name: Push gh-pages
         if: ${{ !inputs.dry_run }}
