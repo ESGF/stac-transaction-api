@@ -71,6 +71,8 @@ jobs:
             echo "::endgroup::"
           done < projects.txt
 
+      - name: Transfer fixed schemas
+
       - name: Push gh-pages
         if: ${{ !inputs.dry_run }}
         run: git push origin gh-pages
