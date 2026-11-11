@@ -3,7 +3,6 @@ import uuid
 from datetime import datetime
 from typing import Optional, Union
 
-
 from esgf_core_utils.models.auth import Authorizer
 from esgf_core_utils.models.exceptions import (
     AuthorizationException,
@@ -11,41 +10,30 @@ from esgf_core_utils.models.exceptions import (
     ExtensionBelowMinimumException,
     MissingPermissionException,
     OperationNotPermittedException,
-    RFC9457Exception,
     STACValidationException,
     UnexpectedExtensionException,
     UnknownException,
 )
-from esgf_core_utils.models.kafka.events import (
-    Auth,
-    CreatePayload,
-    Data,
-    KafkaEvent,
-    Metadata,
-    PatchPayload,
-    Publisher,
-)
+from esgf_core_utils.models.kafka.events import Auth, CreatePayload, Data, KafkaEvent, Metadata, PatchPayload, Publisher
 from esgf_core_utils.models.kafka.producer import KafkaProducer
+from esgf_core_utils.models.validation import (
+    evaluate_patch,
+    operation_to_partial_item,
+    patch_adapter,
+    validate_extensions,
+    validate_patch,
+    validate_post,
+)
 from fastapi import Request, Response, status
 from stac_fastapi.extensions.transaction import BaseTransactionsClient
 from stac_fastapi.extensions.transaction.request import PartialItem, PatchOperation
 from stac_fastapi.types.stac import Collection
 from stac_pydantic.item import Item
-from pydantic import TypeAdapter
-
-from utils import (
-    operation_to_partial_item,
-    validate_extensions,
-    validate_patch,
-    validate_post,
-)
 
 # Setup logger
 # logger = logging.getLogger(__name__)
 logger = logging.getLogger("uvicorn.error")
 logger.setLevel(logging.DEBUG)
-
-patch_adapter = TypeAdapter(PartialItem | list[PatchOperation])
 
 
 class TransactionClient(BaseTransactionsClient):
@@ -94,6 +82,7 @@ class TransactionClient(BaseTransactionsClient):
         request: Request,
     ) -> Optional[Union[Item, Response, None]]:
 
+        logger.debug("CREATE REQUEST: %s", item.model_dump_json())
         headers = request.headers
 
         event_id = uuid.uuid4().hex
@@ -112,9 +101,12 @@ class TransactionClient(BaseTransactionsClient):
         except MissingPermissionException as exc:
             raise AuthorizationException(instance=f"{request_id}:{event_id}") from exc
 
-        item_extensions = item.stac_extensions if item.stac_extensions else []
         try:
-            item_extensions = validate_extensions(collection_id=collection_id, item_extensions=item_extensions)
+            item_extensions = validate_extensions(
+                collection_id=collection_id,
+                item_extensions=item.stac_extensions or [],
+            )
+
             validate_post(
                 item_id=item.id,
                 item=item,
@@ -128,13 +120,10 @@ class TransactionClient(BaseTransactionsClient):
             UnexpectedExtensionException,
             ExtensionBelowMinimumException,
         ) as exc:
-            rfc_exc = RFC9457Exception()
-            rfc_exc.status_code = 400
-            rfc_exc.type = exc.type
-            rfc_exc.title = exc.title
-            rfc_exc.detail = exc.detail
-            rfc_exc.instance = f"{request_id}:{event_id}"
-            raise rfc_exc from exc
+            logger.error("Error producing message for %s: %s", item.id, exc)
+            logger.error("Item model dump: %s", item.model_dump_json())
+            exc.instance = f"{request_id}:{event_id}"
+            raise
 
         user_agent = headers.get("user-agent", "/").split("/")
 
@@ -165,7 +154,8 @@ class TransactionClient(BaseTransactionsClient):
             )
 
         except Exception as exc:
-            logger.error("Error producing message: %s", exc)
+            logger.error("Error producing message for %s: %s", item.id, exc)
+            logger.error("Item model dump: %s", item.model_dump_json())
             raise UnknownException(instance=f"{request_id}:{event_id}") from exc
 
         return Response(
@@ -198,10 +188,14 @@ class TransactionClient(BaseTransactionsClient):
         event_id = uuid.uuid4().hex
         request_id = headers.get("X-Request-ID", uuid.uuid4().hex)
 
+        role = evaluate_patch(patch)
+
+        logger.debug("PATCH ROLE: %s", role)
+
         auth = self.authorize(
             collection_id=collection_id,
             item=item,
-            role="UPDATE",
+            role=role,
             request=request,
             request_id=request_id,
             event_id=event_id,
@@ -224,26 +218,16 @@ class TransactionClient(BaseTransactionsClient):
             UnexpectedExtensionException,
             ExtensionBelowMinimumException,
         ) as exc:
-            rfc_exc = RFC9457Exception()
-            rfc_exc.status_code = 400
-            rfc_exc.type = exc.type
-            rfc_exc.title = exc.title
-            rfc_exc.detail = exc.detail
-            rfc_exc.instance = f"{request_id}:{event_id}"
-            raise rfc_exc from exc
+            exc.instance = f"{request_id}:{event_id}"
+            raise
 
         user_agent = headers.get("user-agent", "/").split("/")
-
-        if isinstance(patch, list):
-            patch_body = [op.model_dump() for op in patch]
-        else:
-            patch_body = item.model_dump()
 
         payload = PatchPayload(
             method="PATCH",
             collection_id=collection_id,
             item_id=item_id,
-            patch=patch_body,
+            patch=patch_adapter.dump_python(patch),
         )
 
         data = Data(type="STAC", payload=payload)
