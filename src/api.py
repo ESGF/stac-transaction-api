@@ -15,6 +15,7 @@ from authorizer import Authorizer
 from client import TransactionClient
 from settings import settings
 
+
 def get_version() -> str:
     """Version from pyproject.toml, the single source of truth for the version.
 
