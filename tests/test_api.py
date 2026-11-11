@@ -17,6 +17,30 @@ class TestAPI(unittest.TestCase):
         assert content == {"healthcheck": True}
 
 
+class TestVersion(unittest.TestCase):
+    """The version comes from pyproject.toml, not from a copy in the code."""
+
+    def test_version_matches_pyproject(self):
+        import tomllib
+        from pathlib import Path
+
+        import api
+
+        pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
+        expected = tomllib.loads(pyproject.read_text())["project"]["version"]
+
+        assert api.get_version() == expected
+        assert api.api_settings.api_version == expected
+
+    def test_version_unknown_without_pyproject(self):
+        from unittest import mock
+
+        import api
+
+        with mock.patch.object(api.Path, "is_file", return_value=False):
+            assert api.get_version() == "unknown"
+
+
 class TestExceptionHandlers(unittest.TestCase):
     """Call the registered exception handlers directly (no auth middleware)."""
 

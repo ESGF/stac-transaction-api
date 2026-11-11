@@ -1,5 +1,7 @@
 import logging
+import tomllib
 import uuid
+from pathlib import Path
 
 import requests
 from cachetools import TTLCache, cached
@@ -12,6 +14,20 @@ from stac_fastapi.types.config import ApiSettings
 from authorizer import Authorizer
 from client import TransactionClient
 from settings import settings
+
+def get_version() -> str:
+    """Version from pyproject.toml, the single source of truth for the version.
+
+    pyproject.toml sits next to this file in the container image and one level up in the
+    repository.
+    """
+    here = Path(__file__).resolve().parent
+    for directory in (here, here.parent):
+        pyproject = directory / "pyproject.toml"
+        if pyproject.is_file():
+            return tomllib.loads(pyproject.read_text())["project"]["version"]
+    return "unknown"
+
 
 logger = logging.getLogger("uvicorn.error")
 logger.setLevel(logging.DEBUG if settings.debug else logging.INFO)
@@ -134,7 +150,7 @@ core_client = TransactionClient()
 
 api_settings = ApiSettings(
     api_title="STAC Transaction API",
-    api_version="0.2.0",
+    api_version=get_version(),
     openapi_url="/openapi.json",
 )
 
