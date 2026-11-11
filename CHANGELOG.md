@@ -34,7 +34,7 @@ Includes pull request [#53](https://github.com/ESGF/stac-transaction-api/pull/53
 - nginx runs in the same container as uvicorn. It terminates TLS on port 8000 and rejects request
   bodies larger than 2 MiB with HTTP 413. uvicorn listens only behind it, on `127.0.0.1:8001`.
 - The `local` image target also publishes uvicorn directly on port 8001, bypassing nginx.
-- `docker compose --profile production up` runs the production image locally.
+- Build the production image locally with `docker build --target production -t stac-transaction-api:production .`.
 - Failed Kafka produce calls log the affected item.
 
 ### Changed
