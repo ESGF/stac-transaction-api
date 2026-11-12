@@ -101,7 +101,7 @@ def determine_new_version(old_schema, new_schema, old_version):
     # PATCH:
 
     # Once we know what counts as a change, can be more specific here.
-    old_schema.pop('$id')
+    old_schema.pop('$id', None)
 
     if old_schema == new_schema:
         return None
