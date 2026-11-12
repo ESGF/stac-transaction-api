@@ -71,6 +71,9 @@ jobs:
             echo "::endgroup::"
           done < projects.txt
 
+      - name: Transfer fixed schemas
+        run: bash scripts/publish/publish_aggregated_assets_schema.sh
+
       - name: Push gh-pages
         if: ${{ !inputs.dry_run }}
         run: git push origin gh-pages
