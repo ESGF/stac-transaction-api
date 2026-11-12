@@ -12,23 +12,21 @@ git worktree add --quiet "$pages_dir" gh-pages
 changed=0
 
 # Generate schemas into a temporary directory
-python scripts/publish/aggregated_assets_schema.py --outdir "$tmpdir"
+python scripts/publish/aggregated_assets_schema.py --outdir "$tmpdir" --schemas "$pages_dir/aggregated_assets"
 
 while read -r schema_file; do
 
     version=$(basename "$schema_file" .json)
 
-    element="aggregated_assets"
-
-    target_dir="$pages_dir/$element/$version"
+    target_dir="$pages_dir/aggregated_assets/$version"
     target_file="$target_dir/schema.json"
 
     if [ -d "$target_dir" ]; then
-        echo "Schema already exists: $element/$version"
+        echo "Schema already exists: aggregated_assets/$version"
         continue
     fi
 
-    echo "Adding $element/$version"
+    echo "Adding aggregated_assets/$version"
 
     mkdir -p "$target_dir"
     mv "$schema_file" "$target_file"
