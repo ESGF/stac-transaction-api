@@ -83,13 +83,13 @@ for asset in AGGREGATED_ASSETS:
 # Requirements for full schema.
 
 def latest_schema_version(schemas) -> str:
-    versions = sorted(
-                glob.glob(f'{schemas}/*/schema.json'))
-    return versions[-1].split('/')[-2]
+    return latest_schema_file(schemas).split('/')[-2]
 
 def latest_schema_file(schemas) -> str:
     versions = sorted(
-                glob.glob(f'{schemas}/*/schema.json'))
+        glob.glob(f'{schemas}/*/schema.json'),
+        key=lambda path: tuple(map(int, path.split('/')[-2][1:].split('.'))),
+    )
     if len(versions) == 0:
         return None
     return versions[-1]
