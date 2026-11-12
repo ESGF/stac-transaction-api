@@ -18,6 +18,7 @@ Getting up and running
     docker run --rm -p 8000:8000 -p 8001:8001 \
       --env-file ./src/settings/.env \
       -v ./src:/var/task -v /var/task/.venv \
+      -v ./pyproject.toml:/var/task/pyproject.toml:ro \
       stac-transaction-api:local
     ```
 
