@@ -9,6 +9,7 @@ services:
       - "8001:8001"
     volumes:
       - ./src:/var/task
+      - ./pyproject.toml:/var/task/pyproject.toml:ro
       - /var/task/.venv
     env_file:
       - ./src/settings/.env

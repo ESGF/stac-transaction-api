@@ -49,6 +49,8 @@ RUN apt-get update \
 
 COPY --from=builder /var/task/.venv ./.venv
 COPY ./src .
+# Read at runtime for the API version
+COPY pyproject.toml .
 COPY --from=cert /etc/ssl/transaction /etc/ssl/transaction
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY nginx/start.sh /start.sh
