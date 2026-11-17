@@ -14,7 +14,7 @@ from esgf_core_utils.models.aggregation_assets import (
     AGGREGATED_ASSETS,
     ASSET_AGG_DESCRIPTIONS,
     ASSET_AGG_MIMETYPES,
-    ASSET_AGG_PROTOCOLS
+    ASSET_AGG_PROTOCOLS,
 )
 
 schema = {
@@ -110,7 +110,7 @@ def main():
         file = latest_schema_file(args.schemas)
 
     if file is None:
-        outfile = args.outfile or f'{args.outdir}/v1.0.0.json'
+        outfile = args.outfile or f"{args.outdir}/v1.0.0.json"
 
         print(f"No initial version - output to {outfile}")
         with open(outfile, "w") as f:
