@@ -659,16 +659,17 @@ wheels = [
 
 [[package]]
 name = "globus-sdk"
-version = "3.62.0"
+version = "4.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "certifi" },
     { name = "cryptography" },
     { name = "pyjwt", extra = ["crypto"] },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/33/5d/fa84aa59bd53804bfc49848d7c0e514f98cf8829426880e98b297ad1018f/globus_sdk-3.62.0.tar.gz", hash = "sha256:5eabe95ee8c8f891b6b3367924037627bcd388b3433f2994062c5efc67915890", size = 273662, upload-time = "2025-07-31T19:02:34.401Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/71/fc/617488b6f7ce9b9b4f4d71543a80ed29dd4afaa35ddc5c3d3ef52fa9bf85/globus_sdk-4.10.0.tar.gz", hash = "sha256:d89b9a46079859c920b7402025ad25a5cbf5115b03b1f91f4d7f7e083cd310b1", size = 290328, upload-time = "2026-10-22T21:23:42.485Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/31/c6/c4771c052811e30523a74ec9b93c4062c6f7e92afb79dee8b7d5a5027542/globus_sdk-3.62.0-py3-none-any.whl", hash = "sha256:76e1d1699aefd556339f5caff780bb59ea966455b97eb6153769387aef842459", size = 415673, upload-time = "2025-07-31T19:02:32.586Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/cc/47aa83ea62af6579e48b8036a0dd0c814bdb4abbaceffc3a55129c139f61/globus_sdk-4.10.0-py3-none-any.whl", hash = "sha256:8fd14c6d5a06cfa7a0bbcf94f0a51bac9aa4186bb394ab30863980e1d3a988a9", size = 450913, upload-time = "2026-10-22T21:23:40.629Z" },
 ]
 
 [[package]]
@@ -1586,7 +1587,7 @@ requires-dist = [
 ceda = [{ name = "httpx-auth", specifier = ">=0.23.1" }]
 globus = [
     { name = "boto3", specifier = "==1.43.6" },
-    { name = "globus-sdk", specifier = "==3.62.0" },
+    { name = "globus-sdk", specifier = "==4.10.0" },
     { name = "pyjwt", specifier = "==2.12.1" },
     { name = "urllib3", specifier = ">=2.7.0" },
 ]
