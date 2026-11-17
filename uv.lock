@@ -608,7 +608,7 @@ wheels = [
 
 [[package]]
 name = "esgf-core-utils"
-version = "1.2.0"
+version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "confluent-kafka" },
@@ -623,9 +623,9 @@ dependencies = [
     { name = "stac-fastapi-extensions" },
     { name = "stac-pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/07/1c/d0cc5f4d93e0a4dbd59c3e98869ec685c36b5064cf0723692db31dc7dc22/esgf_core_utils-1.2.0.tar.gz", hash = "sha256:132784281348878d4bd57bd0e30b32031cdde8479222b2f463500f27495e0b96", size = 201790, upload-time = "2026-11-05T12:32:11.853Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/74/29/b85737a8a80a079a97d69d6d755d143df4e5f020c2303065bcd130541a8a/esgf_core_utils-1.3.1.tar.gz", hash = "sha256:d4a9abc9445b3d43a927d109dcec972a8a4ba550c39c67e3b43d7c1400e1e723", size = 203497, upload-time = "2026-11-10T15:35:40.748Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/49/77a4a14ed30c64929a81dbb5ff8fcfea1bbb9b7081db56d726e96e3eed38/esgf_core_utils-1.2.0-py3-none-any.whl", hash = "sha256:0afffe02e11bbc4a1e8c011acb640f4783e10f7906fa7644e2a04430eeb1d52d", size = 19168, upload-time = "2026-11-05T12:32:10.693Z" },
+    { url = "https://files.pythonhosted.org/packages/48/e3/16401cedf34a98a925dc221dfbbe37c578e3c57a8ed8cee4eaba0ad84e35/esgf_core_utils-1.3.1-py3-none-any.whl", hash = "sha256:bfe1e4d293c0a268740a21af2116e09b43993ad9e9432679c2adabc1ee67c3c1", size = 19521, upload-time = "2026-11-10T15:35:39.636Z" },
 ]
 
 [[package]]
@@ -1568,7 +1568,7 @@ test = [
 requires-dist = [
     { name = "cachetools", specifier = ">=7.3.0" },
     { name = "confluent-kafka", specifier = ">=2.12.1" },
-    { name = "esgf-core-utils", specifier = ">=1.2.0" },
+    { name = "esgf-core-utils", specifier = ">=1.3.1" },
     { name = "fastapi", specifier = ">=0.114.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "jsonschema", specifier = ">=4.24.0" },
