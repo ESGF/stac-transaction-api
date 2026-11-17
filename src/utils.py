@@ -8,6 +8,7 @@ from jsonschema.exceptions import relevance
 from esgf_core_utils.models.exceptions import (
     ExpectedExtensionsMissingException,
     ExtensionBelowMinimumException,
+    ExtensionValidationException,
     OperationNotPermittedException,
     STACValidationException,
     UnexpectedExtensionException,
@@ -187,24 +188,27 @@ def get_extension_validator(extension: str) -> Validator:
         Validator: Validator for extension
 
     Raises:
-        UnexpectedExtensionException: Extension schema could not be downloaded or parsed
+        ExtensionValidationException: Extension schema could not be downloaded or parsed
     """
     try:
         response = httpx.get(extension)
         response.raise_for_status()
         schema = response.json()
     except httpx.HTTPStatusError as exc:
-        e = UnexpectedExtensionException(extension=extension)
-        e.detail = f"Error {exc.response.status_code} while getting the extension schema {exc.request.url}"
-        raise e
+        raise ExtensionValidationException(
+            extension=extension,
+            detail=f"Error {exc.response.status_code} while getting the extension schema {exc.request.url}",
+        ) from exc
     except httpx.RequestError as exc:
-        e = UnexpectedExtensionException(extension=extension)
-        e.detail = f"An error occurred while getting the extension schema {exc.request.url}"
-        raise e
+        raise ExtensionValidationException(
+            extension=extension,
+            detail=f"An error occurred while getting the extension schema {exc.request.url}",
+        ) from exc
     except json.JSONDecodeError as exc:
-        e = UnexpectedExtensionException(extension=extension)
-        e.detail = f"Failed to decode the extension schema {extension}: {exc.msg}. Error occured at line: {exc.lineno}, column: {exc.colno}"
-        raise e
+        raise ExtensionValidationException(
+            extension=extension,
+            detail=f"Failed to decode the extension schema {extension}: {exc.msg}. Error occured at line: {exc.lineno}, column: {exc.colno}",
+        ) from exc
 
     # This block is cribbed (w/ change in error handling) from
     # jsonschema.validate
