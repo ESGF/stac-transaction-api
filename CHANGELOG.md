@@ -9,6 +9,27 @@ The version number lives in one place, `version` in `pyproject.toml`; the API re
 
 ## [Unreleased]
 
+### Added
+
+- The schema publishing workflow now also generates the ESGF aggregated
+  assets schema (for kerchunk, CFA, zarr and icechunk assets) from the
+  definitions in `esgf-core-utils` and publishes it to `gh-pages` under 
+  `aggregated_assets/<version>/schema.json`. Versions that are already 
+  published are never overwritten.
+  ([#71](https://github.com/ESGF/stac-transaction-api/pull/71))
+
+### Changed
+
+- Upgraded `globus-sdk` to 4.10.0 ([#74](https://github.com/ESGF/stac-transaction-api/pull/74)).
+- Upgraded `esgf-core-utils` to 1.3.1.
+
+### Fixed
+
+- Errors while downloading or parsing an extension schema are now reported as
+  `ExtensionValidationException` (HTTP 400, same type and title) instead of crashing with `AttributeError`
+  ([#73](https://github.com/ESGF/stac-transaction-api/pull/73)).
+
+
 ## [1.3.1] - 2026-11-11
 
 ### Fixed
