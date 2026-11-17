@@ -10,6 +10,7 @@ from esgf_core_utils.models.exceptions import (
     ExtensionBelowMinimumException,
     MissingPermissionException,
     OperationNotPermittedException,
+    PayloadTooLargeException,
     RFC9457Exception,
     STACValidationException,
     UnexpectedExtensionException,
@@ -197,6 +198,15 @@ class TestCreateItem:
         assert exc.value.status_code == 500
         assert exc.value.instance.startswith("req-123:")
 
+    async def test_payload_too_large_is_not_wrapped(self, tc, request_obj, item, valid):
+        original = PayloadTooLargeException()
+        tc.producer.success.side_effect = original
+        with pytest.raises(PayloadTooLargeException) as exc:
+            await tc.create_item("CMIP6", item, request_obj)
+        assert exc.value is original
+        assert exc.value.status_code == 413
+        assert exc.value.instance.startswith("req-123:")
+
 
 # --------------------------------------------------------------------------
 # patch_item
@@ -257,6 +267,17 @@ class TestPatchItem:
         patch = PartialItem.model_validate({"properties": {"title": "new"}})
         with pytest.raises(UnknownException):
             await tc.patch_item("CMIP6", "item-1", patch, request_obj)
+
+    async def test_payload_too_large_is_not_wrapped(self, tc, request_obj, valid):
+        original = PayloadTooLargeException()
+        tc.producer.success.side_effect = original
+        patch = PartialItem.model_validate({"properties": {"title": "new"}})
+        with pytest.raises(PayloadTooLargeException) as exc:
+            await tc.patch_item("CMIP6", "item-1", patch, request_obj)
+        assert exc.value is original
+        assert exc.value.status_code == 413
+        # patch_item does not read the request id from the headers yet (see the xfail below)
+        assert len(exc.value.instance.split(":")) == 2
 
     @pytest.mark.xfail(
         strict=True,
