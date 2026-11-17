@@ -167,7 +167,7 @@ class TestCreateItem:
         assert exc.value.detail == original.detail
         assert exc.value.title == original.title
         assert exc.value.instance.startswith("req-123:")
-        assert exc.value.__cause__ is original
+        assert exc.value is original
         tc.producer.success.assert_not_called()
 
     async def test_extension_validation_error_also_mapped(self, tc, request_obj, item, valid, monkeypatch):

@@ -8,6 +8,7 @@ from esgf_core_utils.models.exceptions import (
     AuthorizationException,
     ExpectedExtensionsMissingException,
     ExtensionBelowMinimumException,
+    ExtensionValidationException,
     MissingPermissionException,
     OperationNotPermittedException,
     STACValidationException,
@@ -118,6 +119,7 @@ class TransactionClient(BaseTransactionsClient):
             OperationNotPermittedException,
             STACValidationException,
             UnexpectedExtensionException,
+            ExtensionValidationException,
             ExtensionBelowMinimumException,
         ) as exc:
             logger.error("Error producing message for %s: %s", item.id, exc)
@@ -216,6 +218,7 @@ class TransactionClient(BaseTransactionsClient):
             OperationNotPermittedException,
             STACValidationException,
             UnexpectedExtensionException,
+            ExtensionValidationException,
             ExtensionBelowMinimumException,
         ) as exc:
             exc.instance = f"{request_id}:{event_id}"

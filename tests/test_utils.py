@@ -7,6 +7,7 @@ import pytest
 from esgf_core_utils.models.exceptions import (
     ExpectedExtensionsMissingException,
     ExtensionBelowMinimumException,
+    ExtensionValidationException,
     OperationNotPermittedException,
     STACValidationException,
     UnexpectedExtensionException,
@@ -188,19 +189,19 @@ class TestGetExtensionValidator:
 
     def test_http_status_error(self, schema_get):
         schema_get.return_value = _response({}, status=404)
-        with pytest.raises(UnexpectedExtensionException) as exc:
+        with pytest.raises(ExtensionValidationException) as exc:
             utils.get_extension_validator("https://example.org/schema.json")
         assert "Error 404" in exc.value.detail
 
     def test_request_error(self, schema_get):
         schema_get.side_effect = httpx.ConnectError("boom", request=httpx.Request("GET", "https://example.org/schema.json"))
-        with pytest.raises(UnexpectedExtensionException) as exc:
+        with pytest.raises(ExtensionValidationException) as exc:
             utils.get_extension_validator("https://example.org/schema.json")
         assert "An error occurred" in exc.value.detail
 
     def test_invalid_json(self, schema_get):
         schema_get.return_value = _response(text="{not json")
-        with pytest.raises(UnexpectedExtensionException) as exc:
+        with pytest.raises(ExtensionValidationException) as exc:
             utils.get_extension_validator("https://example.org/schema.json")
         assert "Failed to decode" in exc.value.detail
 

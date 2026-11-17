@@ -55,24 +55,19 @@ class TestExceptionHandlers(unittest.TestCase):
     def test_rfc9457_handler(self):
         import asyncio
 
-        from esgf_core_utils.models.exceptions import RFC9457Exception
+        from esgf_core_utils.models.exceptions import ExtensionValidationException
 
         import api
 
-        exc = RFC9457Exception()
-        exc.status_code = 400
-        exc.type = "https://example.org/problem"
-        exc.title = "Bad"
-        exc.detail = "details"
-        exc.instance = "req:evt"
+        exc = ExtensionValidationException(extension="x", detail="details", instance="req:evt")
 
         response = asyncio.run(api.rfc9457_handler(self._request(), exc))
 
         assert response.status_code == 400
         assert json.loads(response.body) == {
             "status_code": 400,
-            "type": "https://example.org/problem",
-            "title": "Bad",
+            "type": ExtensionValidationException.type,
+            "title": ExtensionValidationException.title,
             "detail": "details",
             "instance": "req:evt",
         }
