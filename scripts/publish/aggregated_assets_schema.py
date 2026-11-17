@@ -110,13 +110,10 @@ def main():
         file = latest_schema_file(args.schemas)
 
     if file is None:
-        if args.outfile is None:
-            raise ValueError(
-                "No outfile supplied where there are also no schemas defined"
-            )
+        outfile = args.outfile or f'{args.outdir}/v1.0.0.json'
 
-        print(f"No initial version - output to {args.outfile}")
-        with open(args.outfile, "w") as f:
+        print(f"No initial version - output to {outfile}")
+        with open(outfile, "w") as f:
             f.write(json.dumps(schema))
         return
 

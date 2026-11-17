@@ -7,6 +7,9 @@ echo "Generating and transferring schemas"
 tmpdir=$(mktemp -d)
 pages_dir="$tmpdir/gh-pages"
 
+echo tmpdir $tmpdir
+echo pages $pages_dir
+
 git worktree add --quiet "$pages_dir" gh-pages
 
 changed=0
