@@ -19,7 +19,7 @@ from esgf_core_utils.models.aggregation_assets import (
 
 schema = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "ESGF Aggregated Asset",
+    "title": "ESGF Aggregated Assets",
     "description": (
         "Aggregated Assets for ESGF-NG can be of type "
         "kerchunk, CFA, zarr or icechunk."
