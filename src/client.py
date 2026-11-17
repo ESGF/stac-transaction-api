@@ -11,6 +11,7 @@ from esgf_core_utils.models.exceptions import (
     ExtensionValidationException,
     MissingPermissionException,
     OperationNotPermittedException,
+    PayloadTooLargeException,
     STACValidationException,
     UnexpectedExtensionException,
     UnknownException,
@@ -155,6 +156,11 @@ class TransactionClient(BaseTransactionsClient):
                 value=event.model_dump_json().encode("utf8"),
             )
 
+        except PayloadTooLargeException as exc:
+            logger.error("Message for %s is too large: %s", item.id, exc)
+            exc.instance = f"{request_id}:{event_id}"
+            raise
+
         except Exception as exc:
             logger.error("Error producing message for %s: %s", item.id, exc)
             logger.error("Item model dump: %s", item.model_dump_json())
@@ -251,6 +257,11 @@ class TransactionClient(BaseTransactionsClient):
                 key=item_id,
                 value=event.model_dump_json().encode("utf8"),
             )
+
+        except PayloadTooLargeException as exc:
+            logger.error("Message for %s is too large: %s", item_id, exc)
+            exc.instance = f"{request_id}:{event_id}"
+            raise
 
         except Exception as exc:
             logger.error("Error producing message: %s", exc)

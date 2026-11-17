@@ -28,6 +28,8 @@ The version number lives in one place, `version` in `pyproject.toml`; the API re
 - Errors while downloading or parsing an extension schema are now reported as
   `ExtensionValidationException` (HTTP 400, same type and title) instead of crashing with `AttributeError`
   ([#73](https://github.com/ESGF/stac-transaction-api/pull/73)).
+- Creating or patching an item whose message is too large to publish to Kafka now returns HTTP 413
+  (`PayloadTooLargeException`) instead of HTTP 500.
 
 
 ## [1.3.1] - 2026-11-11
