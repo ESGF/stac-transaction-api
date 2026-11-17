@@ -12,7 +12,6 @@ from globus_sdk import (
 from globus_sdk.scopes import AuthScopes
 from globus_sdk.token_storage import JSONTokenStorage
 
-
 globus_client_id = "4950867e-8eb0-49db-9573-840056513340"
 view_my_groups_and_memberships_scope_uuid = "73320ffe-4cb4-4b25-a0a3-83d53d59ce4f"
 
