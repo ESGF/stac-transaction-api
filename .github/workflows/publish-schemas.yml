@@ -37,7 +37,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: python -m pip install esgvoc
+        run: python -m pip install esgvoc esgf-core-utils
 
       - name: Configure git identity
         run: |
@@ -70,6 +70,9 @@ jobs:
             bash scripts/publish/publish_one_schema.sh "$proj"
             echo "::endgroup::"
           done < projects.txt
+
+      - name: Transfer fixed schemas
+        run: bash scripts/publish/publish_aggregated_assets_schema.sh
 
       - name: Push gh-pages
         if: ${{ !inputs.dry_run }}
