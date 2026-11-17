@@ -21,17 +21,13 @@ project_name = "ESGFNG"
 
 class WestDeployment:
     def __init__(self):
-        self.native_client = NativeAppAuthClient(
-            client_id=globus_client_id, app_name="West Deployment Client"
-        )
+        self.native_client = NativeAppAuthClient(client_id=globus_client_id, app_name="West Deployment Client")
         self.scopes = [AuthScopes.manage_projects, "openid", "profile", "email"]
         filename = os.path.expanduser("~/.deployment_tokens.json")
         self.token_storage = JSONTokenStorage(filename)
 
     def do_login_flow(self):
-        self.native_client.oauth2_start_flow(
-            requested_scopes=self.scopes, refresh_tokens=True
-        )
+        self.native_client.oauth2_start_flow(requested_scopes=self.scopes, refresh_tokens=True)
         authorize_url = self.native_client.oauth2_get_authorize_url(prompt="login")
         print("Please go to this URL and login: {0}".format(authorize_url))
         auth_code = input("Please enter the code here: ").strip()
@@ -80,9 +76,7 @@ class WestDeployment:
                 break
 
         if not project_id:
-            r = self.auth_client.create_project(
-                project_name, self.email, admin_ids=[self.sub]
-            )
+            r = self.auth_client.create_project(project_name, self.email, admin_ids=[self.sub])
             project_id = r.data.get("project", {}).get("id")
         self.project_id = project_id
         print(f"project_id: {self.project_id}")
@@ -101,14 +95,10 @@ class WestDeployment:
             sys.exit(1)
 
     def create_client(self, new_client_name):
-        r = self.auth_client.create_client(
-            new_client_name, self.project_id, client_type="resource_server"
-        )
+        r = self.auth_client.create_client(new_client_name, self.project_id, client_type="resource_server")
 
         self.service_client_id = r.data.get("client").get("id")
-        r = self.auth_client.create_client_credential(
-            self.service_client_id, "STAC Transaction API Service Client"
-        )
+        r = self.auth_client.create_client_credential(self.service_client_id, "STAC Transaction API Service Client")
         print(json.dumps(r.data, indent=4))
         self.service_client_secret = r.data.get("credential").get("secret")
 

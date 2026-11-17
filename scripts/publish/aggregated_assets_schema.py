@@ -20,10 +20,7 @@ from esgf_core_utils.models.aggregation_assets import (
 schema = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "ESGF Aggregated Assets",
-    "description": (
-        "Aggregated Assets for ESGF-NG can be of type "
-        "kerchunk, CFA, zarr or icechunk."
-    ),
+    "description": ("Aggregated Assets for ESGF-NG can be of type " "kerchunk, CFA, zarr or icechunk."),
     "oneOf": [],
 }
 
@@ -127,9 +124,7 @@ def main():
     if new_version:
         print(f"Differing versions - producing {new_version}")
 
-        schema["$id"] = (
-            f"https://esgf.github.io/stac-transaction-api/aggregated_assets/{new_version}/schema.json#"
-        )
+        schema["$id"] = f"https://esgf.github.io/stac-transaction-api/aggregated_assets/{new_version}/schema.json#"
 
         with open(f"{args.outdir}/tmpfile_aggregation_{new_version}.json", "w") as f:
             f.write(json.dumps(schema))
