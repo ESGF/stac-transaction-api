@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main, integration]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v8.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Check lock file is up to date
+        run: uv lock --check
+      - name: Run tests
+        run: uv run --group globus --group test pytest
